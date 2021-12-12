@@ -75,6 +75,15 @@ RUN set -x; \
     && composer install --no-dev \
     && chown -R $WWW_USER:$WWW_GROUP images/
     
+##### ElasticSearch extensions
+RUN set -x; \
+    cd $MW_HOME/extensions \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/CirrusSearch \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Elastica \
+    && cd Elastica \
+    && composer install --no-dev \
+    && cd ..
+    
 EXPOSE 80
 
 COPY php.ini /etc/php/$PHP_VERSION/apache2/conf.d/mediawiki.ini

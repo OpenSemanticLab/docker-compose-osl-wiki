@@ -79,8 +79,8 @@ EXPOSE 80
 
 COPY php.ini /etc/php/$PHP_VERSION/apache2/conf.d/mediawiki.ini
 
-COPY mediawiki.conf /etc/apache2/sites-available/000-mediawiki.conf
-RUN set -x; ln -s /etc/apache2/sites-available/000-mediawiki.conf /etc/apache2/sites-enabled/000-mediawiki.conf
+COPY mediawiki.conf /etc/apache2/sites-available/mediawiki.conf
+RUN set -x; ln -s /etc/apache2/sites-available/mediawiki.conf /etc/apache2/sites-enabled/mediawiki.conf
 
 COPY run-apache.sh /run-apache.sh
 RUN chmod -v +x /run-apache.sh
@@ -90,8 +90,8 @@ RUN chmod -v +x /mwjobrunner.sh
 
 COPY DockerSettings.php $MW_HOME/DockerSettings.php
 
-COPY favicon.ico $MW_HOME/favicon.ico
-COPY logo.png $MW_HOME/logo.png
+#COPY favicon.ico $MW_HOME/favicon.ico
+#COPY logo.png $MW_HOME/logo.png
 COPY CustomSettings.php $MW_HOME/CustomSettings.php
 
 #dir for public files, e. g. main page images

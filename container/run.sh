@@ -116,7 +116,6 @@ run_script_if_needed () {
     fi
 }
 
-chown -R  $WWW_USER:$WWW_GROUP $MW_HOME/cache
 service ssh start
 
 cd $MW_HOME
@@ -172,25 +171,30 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
     php maintenance/update.php
 
     ### maintenance/update.php
-    run_maintenance_script_if_needed 'maintenance_update' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" \
-        'maintenance/update.php --quick'
+    run_maintenance_script_if_needed 'maintenance_update' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/update.php --quick' 
+    #run_script_if_needed 'maintenance_update' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/update.php --quick'
 
     ### images
-    run_maintenance_script_if_needed 'maintenance_refreshImageMetadata' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" \
-        'maintenance/refreshImageMetadata.php -f'    
-    run_maintenance_script_if_needed 'maintenance_rebuildImages' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" \
-        'maintenance/rebuildImages.php'
+    run_maintenance_script_if_needed 'maintenance_refreshImageMetadata' "$MW_VERSION-$MW_MAINTENANCE_UPDATE"  'maintenance/refreshImageMetadata.php -f'
+    #run_script_if_needed 'maintenance_refreshImageMetadata' "$MW_VERSION-$MW_MAINTENANCE_UPDATE"  'maintenance/refreshImageMetadata.php -f'    
+    run_maintenance_script_if_needed 'maintenance_rebuildImages' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/rebuildImages.php'
+    #run_script_if_needed 'maintenance_rebuildImages' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/rebuildImages.php'
 
 
 
     ### CirrusSearch
     if [ "$MW_SEARCH_TYPE" == 'CirrusSearch' ]; then
-        run_maintenance_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" \
-            'extensions/CirrusSearch/maintenance/updateSearchIndexConfig.php'
+        run_maintenance_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
+        #run_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
 
         run_maintenance_script_if_needed 'maintenance_CirrusSearch_forceIndex' "$MW_MAINTENANCE_CIRRUSSEARCH_FORCEINDEX" \
-            'extensions/CirrusSearch/maintenance/forceSearchIndex.php --skipLinks --indexOnSkip' \
-            'extensions/CirrusSearch/maintenance/forceSearchIndex.php –skipParse'
+            'extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipLinks --indexOnSkip' \
+            'extensions/CirrusSearch/maintenance/ForceSearchIndex.php –skipParse'
+
+        #run_script_if_needed 'maintenance_CirrusSearch_forceIndex' "$MW_MAINTENANCE_CIRRUSSEARCH_FORCEINDEX" \
+        #    'extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipLinks --indexOnSkip' \
+        #    'extensions/CirrusSearch/maintenance/ForceSearchIndex.php –skipParse'
+
     fi
 
     ### cldr extension
@@ -202,6 +206,9 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
             ### UniversalLanguageSelector extension
             run_maintenance_script_if_needed 'maintenance_ULS_indexer' "$MW_VERSION-$MW_SCRIPT_CLDR_REBUILD-$MW_MAINTENANCE_ULS_INDEXER" \
                 'extensions/UniversalLanguageSelector/data/LanguageNameIndexer.php'
+            #run_maintenance_script_if_needed 'maintenance_ULS_indexer' "$MW_VERSION-$MW_SCRIPT_CLDR_REBUILD-$MW_MAINTENANCE_ULS_INDEXER" \
+            #    'extensions/UniversalLanguageSelector/data/LanguageNameIndexer.php'
+
         fi
     fi
 
@@ -212,6 +219,11 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
             'maintenance/populateContentModel.php --ns=all --table=revision' \
             'maintenance/populateContentModel.php --ns=all --table=archive' \
             'maintenance/populateContentModel.php --ns=all --table=page'
+        #run_script_if_needed 'maintenance_populateContentModel' "$MW_FLOW_NAMESPACES" \
+        #    'maintenance/populateContentModel.php --ns=all --table=revision' \
+        #    'maintenance/populateContentModel.php --ns=all --table=archive' \
+        #    'maintenance/populateContentModel.php --ns=all --table=page'
+
 
 # https://phabricator.wikimedia.org/T172369
 #        if [ "$MW_SEARCH_TYPE" == 'CirrusSearch' ]; then

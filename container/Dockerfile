@@ -8,7 +8,7 @@ ENV MW_VERSION=REL1_35 \
     WWW_USER=www-data \
     WWW_GROUP=www-data \
     APACHE_LOG_DIR=/var/log/apache2 \
-    PHP_VERSION=7.4.24
+    PHP_VERSION=7.4
 
 # Install requered packages
 RUN set -x; \
@@ -72,8 +72,13 @@ RUN set -x; \
         https://gerrit.wikimedia.org/r/p/mediawiki/core.git \
         $MW_HOME \
     && cd $MW_HOME \
+    && git submodule update --init --recursive \
     && composer install --no-dev \
-    && chown -R $WWW_USER:$WWW_GROUP images/
+    && chown -R $WWW_USER:$WWW_GROUP images \
+    && chown -R $WWW_USER:$WWW_GROUP cache 
+    #\
+    #&& cd $MW_HOME/skins \
+    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector
     
 ##### ElasticSearch extensions
 RUN set -x; \
@@ -83,6 +88,33 @@ RUN set -x; \
     && cd Elastica \
     && composer install --no-dev \
     && cd ..
+
+#### Dev Tools
+ARG SSH_PASS
+RUN set -x; \
+    apt-get -y update \
+    && apt-get -y install openssh-server
+RUN useradd -m -s /bin/bash -g $WWW_GROUP -p "$(openssl passwd -1 $SSH_PASS)" sshuser
+EXPOSE 22
+
+#### Run maintenance sripts
+# Increase value for run maintenance script before web service started
+ENV MW_AUTOUPDATE=true \
+    MW_MAINTENANCE_UPDATE=8 \
+    MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG=1 \
+    MW_MAINTENANCE_CIRRUSSEARCH_FORCEINDEX=1 \
+    MW_MAINTENANCE_ULS_INDEXER=1 \
+    #MW_SCRIPT_CLDR_REBUILD=1 \
+    MW_SITE_NAME=My\ MediaWiki\ Site \
+    MW_SITE_LANG=en \
+    MW_DEFAULT_SKIN=vector \
+    MW_MAIN_CACHE_TYPE=CACHE_ACCEL \
+    MW_REST_DOMAIN=localhost \
+    MW_REST_RESTBASE_PROXY_PATH=/api/rest_ \
+    MW_REST_RESTBASE_PORT=7231 \
+    MW_SHOW_EXCEPTION_DETAILS=true \
+    PHP_LOG_ERRORS=On \
+    PHP_ERROR_REPORTING=E_ALL
     
 EXPOSE 80
 
@@ -91,8 +123,8 @@ COPY php.ini /etc/php/$PHP_VERSION/apache2/conf.d/mediawiki.ini
 COPY mediawiki.conf /etc/apache2/sites-available/mediawiki.conf
 RUN set -x; ln -s /etc/apache2/sites-available/mediawiki.conf /etc/apache2/sites-enabled/mediawiki.conf
 
-COPY run-apache.sh /run-apache.sh
-RUN chmod -v +x /run-apache.sh
+COPY run.sh /run.sh
+RUN chmod -v +x /run.sh
 
 COPY mwjobrunner.sh /mwjobrunner.sh
 RUN chmod -v +x /mwjobrunner.sh

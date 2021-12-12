@@ -74,6 +74,35 @@ switch ( getenv( 'MW_MAIN_CACHE_TYPE' ) ) {
         $wgMainCacheType = CACHE_NONE;
 }
 
+########################### Search ############################
+wfLoadExtension( 'Elastica' );
+wfLoadExtension( 'CirrusSearch' );
+$wgCirrusSearchServers =  explode( ',', getenv( 'MW_CIRRUS_SEARCH_SERVERS' ) );
+$wgSearchType = 'CirrusSearch';
+
+########################### VisualEditor ###########################
+    wfLoadExtension( 'VisualEditor' );
+    // Enable by default for everybody
+    $wgDefaultUserOptions['visualeditor-enable'] = 1;
+    // Use Visual editor in PageForms
+    #wfLoadExtension( 'VEForAll' );
+    // Optional: Set VisualEditor as the default for anonymous users
+    // otherwise they will have to switch to VE
+    $wgDefaultUserOptions['visualeditor-editor'] = "visualeditor";
+    // Don't allow users to disable it
+    $wgHiddenPrefs[] = 'visualeditor-enable';
+    // OPTIONAL: Enable VisualEditor's experimental code features
+    $wgDefaultUserOptions['visualeditor-enable-experimental'] = 1;    
+    //Whether to allow users to enable the section editing. 
+    #$wgVisualEditorEnableVisualSectionEditing = true;
+    //Whether to enable VisualEditor for every new account. 
+    $wgVisualEditorAutoAccountEnable = true;
+    //Whether to enable the wikitext source mode inside VisualEditor. 
+    $wgVisualEditorEnableWikitext = true;
+    $wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
+    //Whether to enable the visual diff function on the history special page. 
+    $wgVisualEditorEnableDiffPage = true;
+
 ############### Private Wiki ######################################
 $wgGroupPermissions['*']['createaccount'] = false;
 $wgGroupPermissions['*']['edit'] = false;
@@ -99,3 +128,8 @@ $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
 
 ## access images over img_auth.php
 $wgUploadPath = "$wgScriptPath/img_auth.php";
+
+########### Flow (AFTER SMW!!!) ###############
+#if ( $flowNamespaces ) {
+#    $wgFlowSearchServers = $wgCirrusSearchServers;
+#}

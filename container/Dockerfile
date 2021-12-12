@@ -97,6 +97,6 @@ COPY CustomSettings.php $MW_HOME/CustomSettings.php
 #dir for public files, e. g. main page images
 COPY pub $MW_HOME/pub
 
-CMD ["/run-apache.sh"]
+CMD ["/run.sh"]
 
 VOLUME ["$MW_HOME/images", "$MW_VOLUME"]

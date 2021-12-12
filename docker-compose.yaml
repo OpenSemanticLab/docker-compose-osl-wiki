@@ -1,0 +1,77 @@
+version: '3.8'
+services:
+    db:
+        image: mysql:8.0.17
+        command: mysqld --default-authentication-plugin=mysql_native_password
+        restart: always
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_HOST=%
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+    mediawiki:
+        build: 
+            context: ./container
+            dockerfile: Dockerfile
+            args:
+               SSH_PASS: ${SSH_PASS}
+        restart: always
+        depends_on:
+            - db
+            - elasticsearch
+            - memcached
+        #networks:
+        #    - default
+        #    - inter_docker
+        ports:
+            - "8080:80"
+            - "${HOST_SSH_PORT}:22"
+ 
+        environment:
+            - MW_SITE_SERVER=${MW_SITE_SERVER}
+            - MW_SITE_NAME=${MW_SITE_NAME}
+            - MW_SITE_LANG=${MW_SITE_LANG}
+            - MW_DEFAULT_SKIN=vector
+            - MW_ENABLE_UPLOADS=1
+            - MW_USE_INSTANT_COMMONS=0
+            - MW_ADMIN_USER=admin
+            - MW_ADMIN_PASS=${MW_ADMIN_PASS}
+            - MW_DB_NAME=mediawiki
+            - MW_DB_USER=mwuser
+            - MW_DB_PASS=${MW_DB_PASS}
+            - MW_DB_INSTALLDB_USER=root
+            - MW_DB_INSTALLDB_PASS=${MW_DB_INSTALLDB_PASS}
+            - MW_AUTOUPDATE=true
+            - MW_MAIN_CACHE_TYPE=CACHE_MEMCACHED
+            - MW_MEMCACHED_SERVERS=memcached:11211
+            - MW_SEARCH_TYPE=CirrusSearch
+            - MW_CIRRUS_SEARCH_SERVERS=elasticsearch
+            - MW_REST_DOMAIN=web
+            - MW_FLOW_NAMESPACES=NS_TALK,NS_USER_TALK
+            - PHP_LOG_ERRORS=On
+            - PHP_ERROR_REPORTING=E_ALL #Production Value: E_ALL & ~E_DEPRECATED & ~E_STRICT
+
+    memcached:
+        image: memcached
+        restart: always
+
+    elasticsearch:
+        image: elasticsearch:6.5.4
+        restart: always
+        environment:
+           - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
+    #pdf:
+    #    image: msokk/electron-render-service
+    #    restart: always
+    #    environment:
+    #        RENDERER_ACCESS_KEY: secret
+
+#for internal connections, e. g. non public dockered email server
+#networks:
+#    default:
+#
+#    inter_docker:
+#        external:
+#            name: mail_network

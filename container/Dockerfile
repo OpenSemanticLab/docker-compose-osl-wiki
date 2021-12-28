@@ -89,6 +89,14 @@ RUN set -x; \
     && composer install --no-dev \
     && cd ..
 
+##### SEMANTIC MEDIAWIKI
+RUN set -x; \
+    cd $MW_HOME \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:3.2.3 \
+    ## Apply 
+    && cd $MW_HOME \
+    && composer update  --no-dev --prefer-source
+
 #### Dev Tools
 ARG SSH_PASS
 RUN set -x; \

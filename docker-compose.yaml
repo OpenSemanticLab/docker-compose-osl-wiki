@@ -10,6 +10,20 @@ services:
             - MYSQL_ROOT_HOST=%
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 
+    graphdb:
+        #image: lyrasis/blazegraph
+        #ports:
+        #    - "9999:8080"
+        image: nawer/blazegraph
+        environment:
+            JAVA_XMS: 512m
+            JAVA_XMX: 1g
+        volumes:
+            - ./blazegraph/data:/var/lib/blazegraph
+            - ./blazegraph/config:/docker-entrypoint-initdb.d
+        ports:
+            - "9999:9999"
+
     mediawiki:
         build: 
             context: ./container

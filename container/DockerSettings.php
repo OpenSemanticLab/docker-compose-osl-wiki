@@ -129,6 +129,23 @@ $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
 ## access images over img_auth.php
 $wgUploadPath = "$wgScriptPath/img_auth.php";
 
+
+########### Semantic Mediawiki ###############
+#strip protocol from MW_SITE_SERVER
+enableSemantics( preg_replace( "#^[^:/.]*[:/]+#i", "", getenv( 'MW_SITE_SERVER' ) ) );
+$smwgDefaultStore = 'SMWSparqlStore';
+$smwgSparqlRepositoryConnector = 'blazegraph';
+
+$smwgSparqlEndpoint["query"] = 'http://graphdb:9999/blazegraph/namespace/kb/sparql';
+$smwgSparqlEndpoint["update"] = 'http://graphdb:9999/blazegraph/namespace/kb/sparql';
+$smwgSparqlEndpoint["data"] = '';
+
+# Optional name of default graph
+$smwgSparqlDefaultGraph = getenv( 'MW_SITE_SERVER' ) . '/id/';
+# Namespace for export
+$smwgNamespace =  getenv( 'MW_SITE_SERVER' ) . '/id/';
+#needs rebuild: php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
+
 ########### Flow (AFTER SMW!!!) ###############
 #if ( $flowNamespaces ) {
 #    $wgFlowSearchServers = $wgCirrusSearchServers;

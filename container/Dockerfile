@@ -63,6 +63,14 @@ RUN set -ex \
     && ln -sfT /dev/stdout "$APACHE_LOG_DIR/access.log" \
     && ln -sfT /dev/stdout "$APACHE_LOG_DIR/other_vhosts_access.log"
 
+#### Dev Tools
+ARG SSH_PASS
+RUN set -x; \
+    apt-get -y update \
+    && apt-get -y install openssh-server
+RUN useradd -m -s /bin/bash -g $WWW_GROUP -p "$(openssl passwd -1 $SSH_PASS)" sshuser
+EXPOSE 22
+
 ##### MediaWiki Core setup
 RUN set -x; \
     mkdir -p $MW_HOME \
@@ -89,21 +97,30 @@ RUN set -x; \
     && composer install --no-dev \
     && cd ..
 
+#### Data ####
+RUN set -x; \
+    cd $MW_HOME/extensions \
+    && git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/ExternalData ExternalData \
+    #https://www.mediawiki.org/wiki/Extension:External_Data/Local_programs
+    && apt-get -y install graphviz
+
 ##### SEMANTIC MEDIAWIKI
 RUN set -x; \
     cd $MW_HOME \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:3.2.3 \
+    #&& COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:3.2 \
+    #SRF
+    && cd $MW_HOME/extensions \
+    && git clone --depth 1 -b use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git SemanticResultFormats \
+    #&& git clone --depth 1 https://github.com/SemanticMediaWiki/Mermaid.git Mermaid \
+    && cd $MW_HOME \
+    #&& jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Apply 
     && cd $MW_HOME \
     && composer update  --no-dev --prefer-source
 
-#### Dev Tools
-ARG SSH_PASS
-RUN set -x; \
-    apt-get -y update \
-    && apt-get -y install openssh-server
-RUN useradd -m -s /bin/bash -g $WWW_GROUP -p "$(openssl passwd -1 $SSH_PASS)" sshuser
-EXPOSE 22
+
 
 #### Run maintenance sripts
 # Increase value for run maintenance script before web service started

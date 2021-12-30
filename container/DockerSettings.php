@@ -130,6 +130,22 @@ $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
 $wgUploadPath = "$wgScriptPath/img_auth.php";
 
 
+########### External Data ###############
+wfLoadExtension( 'ExternalData' );
+$wgExternalDataSources['graphviz'] = [
+   'name'              => 'GraphViz',
+   'program url'       => 'https://graphviz.org/',
+   'version command'   => null,
+   'command'           => 'dot -K$layout$ -Tsvg',
+   'params'            => [ 'layout' => 'dot' ],
+   'param filters'     => [ 'layout' => '/^(dot|neato|twopi|circo|fdp|osage|patchwork|sfdp)$/' ],
+   'input'             => 'dot',
+   'preprocess'        => 'EDConnectorExe::wikilinks4dot',
+   'postprocess'       => 'EDConnectorExe::innerXML',
+   'min cache seconds' => 30 * 24 * 60 * 60,
+   'tag'               => 'graphviz'
+];
+
 ########### Semantic Mediawiki ###############
 #strip protocol from MW_SITE_SERVER
 enableSemantics( preg_replace( "#^[^:/.]*[:/]+#i", "", getenv( 'MW_SITE_SERVER' ) ) );
@@ -145,6 +161,12 @@ $smwgSparqlDefaultGraph = getenv( 'MW_SITE_SERVER' ) . '/id/';
 # Namespace for export
 $smwgNamespace =  getenv( 'MW_SITE_SERVER' ) . '/id/';
 #needs rebuild: php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
+
+$smwgShowFactbox = SMW_FACTBOX_NONEMPTY; #Show factboxes only if they have some content 
+
+wfLoadExtension( 'SemanticResultFormats' );
+$srfgFormats[] = 'process';
+
 
 ########### Flow (AFTER SMW!!!) ###############
 #if ( $flowNamespaces ) {

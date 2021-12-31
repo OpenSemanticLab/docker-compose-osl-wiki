@@ -92,6 +92,12 @@ services:
     #    environment:
     #        RENDERER_ACCESS_KEY: secret
 
+    drawio:
+        image: jgraph/drawio
+        restart: always
+        ports:
+            - "8082:8080"
+
 #for internal connections, e. g. non public dockered email server
 #networks:
 #    default:

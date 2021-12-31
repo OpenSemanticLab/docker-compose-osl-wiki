@@ -97,6 +97,14 @@ RUN set -x; \
     && composer install --no-dev \
     && cd ..
 
+##### Flow extension #####
+RUN set -x; \
+    cd $MW_HOME/extensions \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Flow \
+    && cd Flow \
+    && composer install --no-dev \
+    && cd ..
+
 #### Data ####
 RUN set -x; \
     cd $MW_HOME/extensions \
@@ -118,9 +126,17 @@ RUN set -x; \
     && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Apply 
     && cd $MW_HOME \
-    && composer update  --no-dev --prefer-source
+    && composer update  --no-dev --prefer-source \
+    #https://www.semantic-mediawiki.org/wiki/Help:Setup_information_file
+    && touch extensions/SemanticMediaWiki/.smw.json \
+    && chown $WWW_USER:$WWW_GROUP extensions/SemanticMediaWiki/.smw.json
 
-
+##### Multimedia extension
+RUN set -x; \
+    cd $MW_HOME/extensions \
+    && git clone -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DrawioEditor.git DrawioEditor \
+    && git clone https://github.com/wikimedia/mediawiki-extensions-NativeSvgHandler.git NativeSvgHandler \
+    && cd ..
 
 #### Run maintenance sripts
 # Increase value for run maintenance script before web service started

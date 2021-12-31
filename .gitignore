@@ -1,3 +1,4 @@
 .env
 .directory
 backup/*
+blazegraph/data/*

@@ -169,6 +169,17 @@ $srfgFormats[] = 'process';
 
 
 ########### Flow (AFTER SMW!!!) ###############
-#if ( $flowNamespaces ) {
-#    $wgFlowSearchServers = $wgCirrusSearchServers;
-#}
+# https://www.mediawiki.org/wiki/Extension:Flow
+$flowNamespaces = getenv( 'MW_FLOW_NAMESPACES' );
+if ( $flowNamespaces ) {
+    wfLoadExtension( 'Flow' );
+    $wgFlowContentFormat = 'html';
+    foreach ( explode( ',', $flowNamespaces ) as $ns ) {
+        $wgNamespaceContentModels[ constant( $ns ) ] = 'flow-board';
+    }
+}
+
+############ Editors ############
+wfLoadExtension( 'DrawioEditor' );
+$wgDrawioEditorBackendUrl = 'https://drawio.kiprobatt.de:7443';
+wfLoadExtension( 'NativeSvgHandler' );

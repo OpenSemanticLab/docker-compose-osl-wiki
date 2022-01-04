@@ -1,3 +1,8 @@
+# create mount points first
+#   mkdir -p mysql/data
+#   mkdir -p mediawiki/data && chown www-data:www-data mediawiki/data
+#   mkdir -p blazegraph/data
+
 version: '3.8'
 services:
     db:
@@ -9,6 +14,8 @@ services:
         environment:
             - MYSQL_ROOT_HOST=%
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        volumes:
+            - ./mysql/data:/var/lib/mysql
 
     graphdb:
         #image: lyrasis/blazegraph
@@ -27,7 +34,7 @@ services:
 
     mediawiki:
         build: 
-            context: ./container
+            context: ./mediawiki/config
             dockerfile: Dockerfile
             args:
                SSH_PASS: ${SSH_PASS}
@@ -45,7 +52,8 @@ services:
         ports:
             - "${MW_HOST_PORT}:80"
             - "${SSH_HOST_PORT}:22"
- 
+        volumes:
+            - ./mediawiki/data:/var/www/html/w/images
         environment:
             - MW_SITE_SERVER=${MW_SITE_SERVER}
             - MW_SITE_NAME=${MW_SITE_NAME}

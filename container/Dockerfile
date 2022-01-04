@@ -131,12 +131,23 @@ RUN set -x; \
     && touch extensions/SemanticMediaWiki/.smw.json \
     && chown $WWW_USER:$WWW_GROUP extensions/SemanticMediaWiki/.smw.json
 
-##### Multimedia extension
+##### Multimedia and Editor extension
 RUN set -x; \
     cd $MW_HOME/extensions \
-    && git clone -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DrawioEditor.git DrawioEditor \
-    && git clone https://github.com/wikimedia/mediawiki-extensions-NativeSvgHandler.git NativeSvgHandler \
-    && cd ..
+    ## File formats
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-NativeSvgHandler.git NativeSvgHandler \
+    ## Visual Editor
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Math.git \
+    && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm librsvg2-dev build-essential \
+    && mkdir -p /usr/local/nodejs/mathoid/ && cd /usr/local/nodejs/mathoid/ \
+    && npm install mathoid \
+    ## https://github.com/wikimedia/mathoid/commit/8aa71deeb28d4b039d421bee011342aaf5cc124a
+    && npm install commander@6.2.1 \
+    && cd $MW_HOME/extensions \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-VEForAll.git VEForAll \
+    ## Other Editors
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DrawioEditor.git DrawioEditor \
+    && cd .. 
 
 #### Run maintenance sripts
 # Increase value for run maintenance script before web service started
@@ -172,8 +183,8 @@ RUN chmod -v +x /mwjobrunner.sh
 
 COPY DockerSettings.php $MW_HOME/DockerSettings.php
 
-#COPY favicon.ico $MW_HOME/favicon.ico
-#COPY logo.png $MW_HOME/logo.png
+COPY favicon.ico $MW_HOME/favicon.ico
+COPY logo.png $MW_HOME/logo.png
 COPY CustomSettings.php $MW_HOME/CustomSettings.php
 
 #dir for public files, e. g. main page images

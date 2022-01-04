@@ -81,27 +81,48 @@ $wgCirrusSearchServers =  explode( ',', getenv( 'MW_CIRRUS_SEARCH_SERVERS' ) );
 $wgSearchType = 'CirrusSearch';
 
 ########################### VisualEditor ###########################
-    wfLoadExtension( 'VisualEditor' );
-    // Enable by default for everybody
-    $wgDefaultUserOptions['visualeditor-enable'] = 1;
-    // Use Visual editor in PageForms
-    #wfLoadExtension( 'VEForAll' );
-    // Optional: Set VisualEditor as the default for anonymous users
-    // otherwise they will have to switch to VE
-    $wgDefaultUserOptions['visualeditor-editor'] = "visualeditor";
-    // Don't allow users to disable it
-    $wgHiddenPrefs[] = 'visualeditor-enable';
-    // OPTIONAL: Enable VisualEditor's experimental code features
-    $wgDefaultUserOptions['visualeditor-enable-experimental'] = 1;    
-    //Whether to allow users to enable the section editing. 
-    #$wgVisualEditorEnableVisualSectionEditing = true;
-    //Whether to enable VisualEditor for every new account. 
-    $wgVisualEditorAutoAccountEnable = true;
-    //Whether to enable the wikitext source mode inside VisualEditor. 
-    $wgVisualEditorEnableWikitext = true;
-    $wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
-    //Whether to enable the visual diff function on the history special page. 
-    $wgVisualEditorEnableDiffPage = true;
+wfLoadExtension( 'VisualEditor' );
+// Enable by default for everybody
+$wgDefaultUserOptions['visualeditor-enable'] = 1;
+// Use Visual editor in PageForms
+wfLoadExtension( 'VEForAll' );
+// Optional: Set VisualEditor as the default for anonymous users
+// otherwise they will have to switch to VE
+$wgDefaultUserOptions['visualeditor-editor'] = "visualeditor";
+// Don't allow users to disable it
+$wgHiddenPrefs[] = 'visualeditor-enable';
+// OPTIONAL: Enable VisualEditor's experimental code features
+$wgDefaultUserOptions['visualeditor-enable-experimental'] = 1;    
+//Whether to allow users to enable the section editing. 
+#$wgVisualEditorEnableVisualSectionEditing = true;
+//Whether to enable VisualEditor for every new account. 
+$wgVisualEditorAutoAccountEnable = true;
+//Whether to enable the wikitext source mode inside VisualEditor. 
+$wgVisualEditorEnableWikitext = true;
+$wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
+//Whether to enable the visual diff function on the history special page. 
+$wgVisualEditorEnableDiffPage = true;
+
+wfLoadExtension( 'Math' );
+#$wgMathValidModes[] = 'mathml';
+#$wgDefaultUserOptions['math'] = 'mathml';
+#$wgMathMathMLUrl = getenv( 'MATHOID_SERVER' ); //  IP of Mathoid server. RestBase is still required (only possible for public wikis)
+//use local cli. disable speech (config.prod.yaml) may improve performance
+$wgMathoidCli = ['/usr/local/nodejs/mathoid/node_modules/mathoid/cli.js', '-c', '/usr/local/nodejs/mathoid/node_modules/mathoid/config.dev.yaml'];
+// Raise MediaWiki's memory limit to 1.2G for mathoid.
+$wgMaxShellMemory = 1228800;
+#wfLoadExtension( 'CodeMirror' );
+wfLoadExtension( 'WikiEditor' );
+wfLoadExtension( 'CodeEditor' );
+
+############ Multimedia & Editors ############
+## File formats
+wfLoadExtension( 'NativeSvgHandler' );
+## Visual Editor
+## Other Editors
+wfLoadExtension( 'DrawioEditor' );
+$wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER' );
+
 
 ############### Private Wiki ######################################
 $wgGroupPermissions['*']['createaccount'] = false;
@@ -178,8 +199,3 @@ if ( $flowNamespaces ) {
         $wgNamespaceContentModels[ constant( $ns ) ] = 'flow-board';
     }
 }
-
-############ Editors ############
-wfLoadExtension( 'DrawioEditor' );
-$wgDrawioEditorBackendUrl = 'https://drawio.kiprobatt.de:7443';
-wfLoadExtension( 'NativeSvgHandler' );

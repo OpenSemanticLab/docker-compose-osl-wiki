@@ -2,3 +2,5 @@
 .directory
 backup/*
 blazegraph/data/*
+container/favicon.ico
+container/logo.png

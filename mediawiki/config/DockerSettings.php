@@ -11,6 +11,9 @@ if ( getenv( 'MW_SHOW_EXCEPTION_DETAILS' ) === 'true' ) {
 }
 
 ########################### Core Settings ##########################
+#local time zone
+$wgLocaltimezone = getenv( 'MW_TIME_ZONE' );
+
 # Site language code, should be one of the list in ./languages/Names.php
 $wgLanguageCode = getenv( 'MW_SITE_LANG' );
 

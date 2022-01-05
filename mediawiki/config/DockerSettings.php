@@ -36,7 +36,9 @@ $wgMetaNamespaceTalk = 'Site_talk';
 
 # The relative URL path to the logo.  Make sure you change this from the default,
 # or else you'll overwrite your logo when you upgrade!
-$wgLogo = "$wgScriptPath/logo.png";
+$wgLogos = [
+	'1.5x' => "$wgScriptPath/logo.png"	// path to 1.5x version
+];
 
 # The URL of the site favicon (the small icon displayed next to a URL in the address bar of a browser)
 $wgFavicon = "$wgScriptPath/favicon.ico";

@@ -103,8 +103,8 @@ $wgDefaultUserOptions['visualeditor-enable-experimental'] = 1;
 //Whether to enable VisualEditor for every new account. 
 $wgVisualEditorAutoAccountEnable = true;
 //Whether to enable the wikitext source mode inside VisualEditor. 
-$wgVisualEditorEnableWikitext = true;
-$wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
+#$wgVisualEditorEnableWikitext = true;
+#$wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
 //Whether to enable the visual diff function on the history special page. 
 $wgVisualEditorEnableDiffPage = true;
 
@@ -117,8 +117,6 @@ $wgMathoidCli = ['/usr/local/nodejs/mathoid/node_modules/mathoid/cli.js', '-c', 
 // Raise MediaWiki's memory limit to 1.2G for mathoid.
 $wgMaxShellMemory = 1228800;
 #wfLoadExtension( 'CodeMirror' );
-wfLoadExtension( 'WikiEditor' );
-wfLoadExtension( 'CodeEditor' );
 
 ############ Multimedia & Editors ############
 ## File formats
@@ -152,9 +150,55 @@ $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
     'pptx', 'ps', 'odt', 'ods', 'odp', 'odg', 'svg', 'mp4', 'mp3'
 );
 
+$wgUseImageMagick = true;
+$wgImageMagickConvertCommand = "/usr/bin/convert";
+
 ## access images over img_auth.php
 $wgUploadPath = "$wgScriptPath/img_auth.php";
 
+
+####################### Bundled extensions #########################
+wfLoadExtension( 'CategoryTree' );
+wfLoadExtension( 'Cite' );
+wfLoadExtension( 'CiteThisPage' );
+wfLoadExtension( 'CodeEditor' );
+$wgDefaultUserOptions['usebetatoolbar'] = 1; // user option provided by WikiEditor extension
+#wfLoadExtension( 'ConfirmEdit' ); //not needed for private wiki
+#wfLoadExtension( 'ApprovedRevs' ); //not bundled
+wfLoadExtension( 'Gadgets' );
+wfLoadExtension( 'ImageMap' );
+wfLoadExtension( 'InputBox' );
+wfLoadExtension( 'Interwiki' );
+$wgGroupPermissions['sysop']['interwiki'] = true; // To grant sysops permissions to edit interwiki data
+#$wgEnableScaryTranscluding = true; //To enable transclusion from other sites
+#wfLoadExtension( 'LocalisationUpdate' );
+#$wgLocalisationUpdateDirectory = "$IP/cache";
+wfLoadExtension( 'MultimediaViewer' );
+wfLoadExtension( 'Nuke' );
+#wfLoadExtension( 'OATHAuth' );
+wfLoadExtension( 'PageImages' );
+wfLoadExtension( 'ParserFunctions' );
+$wgPFEnableStringFunctions = true;
+#require_once( "$IP/extensions/Arrays/Arrays.php" ); //not bundled
+#wfLoadExtension( 'WSArrays' );  //not bundled
+#wfLoadExtension( 'Loops' );  //not bundled
+wfLoadExtension( 'PdfHandler' );
+wfLoadExtension( 'Poem' );
+wfLoadExtension( 'Renameuser' );
+wfLoadExtension( 'ReplaceText' );
+$wgGroupPermissions['bureaucrat']['replacetext'] = true;
+wfLoadExtension( 'Scribunto' );
+$wgScribuntoDefaultEngine = 'luastandalone';
+$wgScribuntoUseGeSHi = true;
+$wgScribuntoUseCodeEditor = true;
+wfLoadExtension( 'SecureLinkFixer' );
+#wfLoadExtension( 'SpamBlacklist' ); //not needed for private wiki
+wfLoadExtension( 'SyntaxHighlight_GeSHi' );
+#$wgPygmentizePath = '/usr/bin/pygmentize';
+wfLoadExtension( 'TemplateData' );
+wfLoadExtension( 'TextExtracts' );
+wfLoadExtension( 'TitleBlacklist' );
+wfLoadExtension( 'WikiEditor' );
 
 ########### External Data ###############
 wfLoadExtension( 'ExternalData' );

@@ -147,7 +147,33 @@ $wgWhitelistRead[] = 'Site:General_disclaimer';
 $wgWhitelistRead[] = 'Site:Terms_of_Service'; #redirect to Project:Privacy_policy needed
 $wgAllowExternalImages = true; #to use images on public main page
 $wgAllowImageTag = true;
+## access images over img_auth.php
+$wgUploadPath = "$wgScriptPath/img_auth.php";
 
+
+####################### Semantic Access Control ####################
+wfLoadExtension( 'SemanticACL' );
+###Partial Public Wiki ##
+## https://github.com/simontaurus/mediawiki-extensions-SemanticACL/tree/feature_default_policy_only_users #
+#$wgGroupPermissions['*']['read'] = true;
+##cp /extensions/SemanticACL/img_auth_patched.php img_auth.php
+#$wgImgAuthForceAuth = true; #force user validation also in 'public' wiki
+#$wgPublicPagesCategory = 'PublicPages';
+#$wgPublicImagesCategory = 'PublicFiles';
+$wgGroupPermissions['user']['view-non-categorized-pages'] = true;
+$wgGroupPermissions['user']['view-non-categorized-media'] = true;
+#flow-bot is active during semantic data build (??) - therefore we need to grant him all rights
+$wgGroupPermissions['flow-bot']['sacl-exempt'] = true;
+$wgGroupPermissions['flow-bot']['view-non-categorized-pages'] = true;
+$wgGroupPermissions['flow-bot']['view-non-categorized-media'] = true;
+#in case of all pages default restricted we need explicite read permission for oauth
+$wgWhitelistRead[] = 'Special:UserLogin';
+$wgWhitelistRead[] = 'Special:RequestAccount';
+$wgWhitelistRead[] = "Special:OAuth/initiate";
+$wgWhitelistRead[] = "Special:OAuth/authorize";
+$wgWhitelistRead[] = "Special:OAuth/token";
+$wgWhitelistRead[] = "Special:OAuth/authenticate";
+$wgWhitelistRead[] = "Special:OAuth/identify";
 
 ############## Uploads #####################
 $wgEnableUploads  = getenv( 'MW_ENABLE_UPLOADS' );
@@ -160,9 +186,6 @@ $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
 
 $wgUseImageMagick = true;
 $wgImageMagickConvertCommand = "/usr/bin/convert";
-
-## access images over img_auth.php
-$wgUploadPath = "$wgScriptPath/img_auth.php";
 
 
 ####################### Bundled extensions #########################
@@ -238,9 +261,14 @@ $wgExternalDataSources['graphviz'] = [
 ########### Semantic Mediawiki ###############
 #strip protocol from MW_SITE_SERVER
 enableSemantics( preg_replace( "#^[^:/.]*[:/]+#i", "", getenv( 'MW_SITE_SERVER' ) ) );
+
+#$smwgChangePropagationProtection = false; #temp fix to restore locked pages
+$smwgQMaxSize = 50; #increase max query conditions, default 12
+$smwgQMaxDepth = 20; #increase property chain query limit, default 4
+$maxRecursionDepth = 5; #increase limit of nested templates in query results, default 2
+
 $smwgDefaultStore = 'SMWSparqlStore';
 $smwgSparqlRepositoryConnector = 'blazegraph';
-
 $smwgSparqlEndpoint["query"] = 'http://graphdb:9999/blazegraph/namespace/kb/sparql';
 $smwgSparqlEndpoint["update"] = 'http://graphdb:9999/blazegraph/namespace/kb/sparql';
 $smwgSparqlEndpoint["data"] = '';
@@ -254,7 +282,50 @@ $smwgNamespace =  getenv( 'MW_SITE_SERVER' ) . '/id/';
 $smwgShowFactbox = SMW_FACTBOX_NONEMPTY; #Show factboxes only if they have some content 
 
 wfLoadExtension( 'SemanticResultFormats' );
+$srfgFormats[] = 'graph';
 $srfgFormats[] = 'process';
+wfLoadExtension( 'Mermaid' );
+$mermaidgDefaultTheme = 'dark';
+$srfgFormats[] = 'gantt';
+wfLoadExtension( 'ModernTimeline' );
+
+wfLoadExtension( 'SemanticFormsSelect' );
+wfLoadExtension( 'SemanticExtraSpecialProperties' );
+wfLoadExtension( 'SemanticCompoundQueries' );
+#wfLoadExtension( 'SemanticCite' );
+##$GLOBALS['wgGroupPermissions']['user']['sci-metasearch'] = false;
+wfLoadExtension( 'SemanticInterlanguageLinks' );
+wfLoadExtension('PageImporter'); #import templates and forms for SemanticActions
+#run once: php extensions/PageImporter/importPages.php
+wfLoadExtension('SemanticActions');
+$egSemanticActionsAssigneeValuesFrom = "User";
+
+#Enable Semantic NS
+$smwgNamespacesWithSemanticLinks[NS_MAIN] = true;
+$smwgNamespacesWithSemanticLinks[NS_USER] = true;
+$smwgNamespacesWithSemanticLinks[NS_PROJECT] = true;
+$smwgNamespacesWithSemanticLinks[NS_FILE] = true;
+$smwgNamespacesWithSemanticLinks[NS_TEMPLATE] = true;
+$smwgNamespacesWithSemanticLinks[NS_HELP] = true;
+$smwgNamespacesWithSemanticLinks[NS_CATEGORY] = true;
+$smwgNamespacesWithSemanticLinks[SMW_NS_PROPERTY] = true;
+$smwgNamespacesWithSemanticLinks[SMW_NS_SCHEMA] = true;
+$smwgNamespacesWithSemanticLinks[SMW_NS_CONCEPT] = true;
+$smwgNamespacesWithSemanticLinks[690] = true; #Action
+$smwgNamespacesWithSemanticLinks[692] = true; #Label
+
+####################### Admin Tools ####################
+
+#wfLoadExtension( 'OAuth' );
+$wgGroupPermissions['sysop']['mwoauthproposeconsumer'] = true;
+$wgGroupPermissions['sysop']['mwoauthupdateownconsumer'] = true;
+$wgGroupPermissions['sysop']['mwoauthmanageconsumer'] = true;
+$wgGroupPermissions['sysop']['mwoauthsuppress'] = true;
+$wgGroupPermissions['sysop']['mwoauthviewsuppressed'] = true;
+$wgGroupPermissions['sysop']['mwoauthviewprivate'] = true;
+$wgGroupPermissions['sysop']['mwoauthmanagemygrants'] = true;
+$wgWhitelistRead[] = "Special:OAuth";
+$wgMWOAuthSecureTokenTransfer = false; #redirect loop bug
 
 ############# Scribunto #############
 wfLoadExtension( 'Scribunto' ); //bundled

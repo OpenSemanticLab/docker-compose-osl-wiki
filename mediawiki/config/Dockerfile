@@ -128,7 +128,7 @@ RUN set -x; \
 #### Data ####
 RUN set -x; \
     cd $MW_HOME/extensions \
-    && git clone --depth 1 -b dev-REL1_35 https://github.com/simontaurus/mediawiki-extensions-ExternalData.git ExternalData \
+    && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/mediawiki-extensions-ExternalData.git ExternalData \
     #https://www.mediawiki.org/wiki/Extension:External_Data/Local_programs
     && apt-get -y install graphviz
 
@@ -137,14 +137,29 @@ RUN set -x; \
     cd $MW_HOME \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:3.2.3 \
     #&& COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:3.2 \
-    #SRF
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.0 \
+    && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:~1.0 \
+    #&& COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:2.1.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:2.1.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-interlanguage-links:2.1 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-breadcrumb-links "~2.0" \
+    ## SRF
     && cd $MW_HOME/extensions \
     #&& git clone --depth 1 -b use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git SemanticResultFormats \
     && git clone --depth 1 -b REL1.35_use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git \
-    && git clone --depth 1 https://github.com/SemanticMediaWiki/Mermaid.git Mermaid \
+    #&& git clone --depth 1 https://github.com/SemanticMediaWiki/Mermaid.git Mermaid \
+    && git clone --depth 1 https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties.git \
+    && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
+    #&& git clone --depth 1 -b semantic_reference_template https://github.com/simontaurus/SemanticCite.git \ #needs update
+    #&& git clone --depth 1 -b patch-MW1.31-compatibility https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
+    ## SemanticActions
+    && git clone --depth 1 -b dev_en https://github.com/simontaurus/SemanticActions.git \
+    && git clone --depth 1 https://github.com/enterprisemediawiki/PageImporter.git \
     && cd $MW_HOME \
-    && jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    #&& jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    #&& jq '.extra."merge-plugin".include += ["extensions/SemanticCite/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Apply 
     && cd $MW_HOME \
     && composer update  --no-dev --prefer-source \

@@ -172,7 +172,6 @@ wfLoadExtension( 'CiteThisPage' );
 wfLoadExtension( 'CodeEditor' );
 $wgDefaultUserOptions['usebetatoolbar'] = 1; // user option provided by WikiEditor extension
 #wfLoadExtension( 'ConfirmEdit' ); //not needed for private wiki
-#wfLoadExtension( 'ApprovedRevs' ); //not bundled
 wfLoadExtension( 'Gadgets' );
 wfLoadExtension( 'ImageMap' );
 wfLoadExtension( 'InputBox' );
@@ -187,18 +186,11 @@ wfLoadExtension( 'Nuke' );
 wfLoadExtension( 'PageImages' );
 wfLoadExtension( 'ParserFunctions' );
 $wgPFEnableStringFunctions = true;
-#require_once( "$IP/extensions/Arrays/Arrays.php" ); //not bundled
-#wfLoadExtension( 'WSArrays' );  //not bundled
-#wfLoadExtension( 'Loops' );  //not bundled
 wfLoadExtension( 'PdfHandler' );
 wfLoadExtension( 'Poem' );
 wfLoadExtension( 'Renameuser' );
 wfLoadExtension( 'ReplaceText' );
 $wgGroupPermissions['bureaucrat']['replacetext'] = true;
-wfLoadExtension( 'Scribunto' );
-$wgScribuntoDefaultEngine = 'luastandalone';
-$wgScribuntoUseGeSHi = true;
-$wgScribuntoUseCodeEditor = true;
 wfLoadExtension( 'SecureLinkFixer' );
 #wfLoadExtension( 'SpamBlacklist' ); //not needed for private wiki
 wfLoadExtension( 'SyntaxHighlight_GeSHi' );
@@ -207,6 +199,25 @@ wfLoadExtension( 'TemplateData' );
 wfLoadExtension( 'TextExtracts' );
 wfLoadExtension( 'TitleBlacklist' );
 wfLoadExtension( 'WikiEditor' );
+
+
+##### Non-bundled Core Extensions ####
+wfLoadExtension( 'Variables' ); #requirement for SemanticActions
+wfLoadExtension( 'Arrays' );
+wfLoadExtension( 'WSArrays' );  
+wfLoadExtension( 'Loops' );  
+#wfLoadExtension( 'ApprovedRevs' );
+wfLoadExtension( 'Thanks' );
+wfLoadExtension( 'Echo' );
+wfLoadExtension( 'BetaFeatures' );
+wfLoadExtension( 'CookieWarning' );
+$wgCookieWarningEnabled = true;
+$wgCookieWarningMoreUrl = '/wiki/Site:Privacy_policy#Cookies';
+#wfLoadExtension( 'CleanChanges' ); //no effect visible - already included
+#$wgCCTrailerFilter = true;
+#$wgCCUserFilter = false;
+#$wgDefaultUserOptions['usenewrc'] = 1;
+wfLoadExtension( 'UniversalLanguageSelector' );
 
 ########### External Data ###############
 wfLoadExtension( 'ExternalData' );
@@ -244,6 +255,15 @@ $smwgShowFactbox = SMW_FACTBOX_NONEMPTY; #Show factboxes only if they have some 
 
 wfLoadExtension( 'SemanticResultFormats' );
 $srfgFormats[] = 'process';
+
+############# Scribunto #############
+wfLoadExtension( 'Scribunto' ); //bundled
+$wgScribuntoDefaultEngine = 'luastandalone';
+$wgScribuntoUseGeSHi = true;
+$wgScribuntoUseCodeEditor = true;
+wfLoadExtension( 'SemanticScribunto' );
+wfLoadExtension( 'Capiunto' );
+wfLoadExtension( 'VariablesLua' );
 
 
 ########### Flow (AFTER SMW!!!) ###############

@@ -91,6 +91,22 @@ RUN set -x; \
     #&& cd $MW_HOME/skins \
     #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector \
     && cd ..
+
+##### Non-bundled Core Extensions ####
+RUN set -x; \
+    cd $MW_HOME/extensions \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Variables.git Variables \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Arrays.git Arrays \
+    && git clone --depth 1  https://github.com/WikibaseSolutions/WSArrays.git WSArrays \
+    && git clone --depth 1  https://github.com/wikimedia/mediawiki-extensions-Loops.git Loops \
+    && git clone --depth 1  https://github.com/simontaurus/mediawiki-extensions-ApprovedRevs.git ApprovedRevs \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Echo \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Thanks \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/BetaFeatures \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/CookieWarning \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/CleanChanges \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/UniversalLanguageSelector \
+    && cd ..
     
 ##### ElasticSearch extensions
 RUN set -x; \
@@ -136,6 +152,16 @@ RUN set -x; \
     && touch extensions/SemanticMediaWiki/.smw.json \
     && chown $WWW_USER:$WWW_GROUP extensions/SemanticMediaWiki/.smw.json
 
+#### Scribunto / Lua ####
+RUN set -x; \
+    cd $MW_HOME/extensions \
+    && git clone --depth 1 https://github.com/Liquipedia/VariablesLua.git \
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-Capiunto.git Capiunto \
+    && cd $MW_HOME \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:~2.1 \
+    && composer update  --no-dev --prefer-source \
+    && cd ..
+
 ##### Multimedia and Editor extension
 RUN set -x; \
     cd $MW_HOME/extensions \
@@ -175,6 +201,8 @@ RUN set -x; \
 #### TEMP ####
 RUN set -x; \
     cd $MW_HOME/extensions \
+    && cd $MW_HOME \
+    && composer update  --no-dev --prefer-source \
     && cd ..
 
 #### Run maintenance sripts

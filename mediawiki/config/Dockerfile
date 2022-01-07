@@ -92,6 +92,23 @@ RUN set -x; \
     #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector \
     && cd ..
 
+##### Skins ####
+RUN set -x; \
+    cd $MW_HOME/skins \
+    ## bundled
+    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector \
+    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MonoBook \
+    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Timeless \
+    ## non-bundled
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Modern \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MinervaNeue \
+    && git clone --depth 1  https://github.com/thingles/foreground.git \
+    && cd $MW_HOME/extensions \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/MobileFrontend \
+    && cd $MW_HOME \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/chameleon-skin:~3.0 \
+    && composer update  --no-dev --prefer-source
+
 ##### Non-bundled Core Extensions ####
 RUN set -x; \
     cd $MW_HOME/extensions \
@@ -100,6 +117,7 @@ RUN set -x; \
     && git clone --depth 1  https://github.com/WikibaseSolutions/WSArrays.git WSArrays \
     && git clone --depth 1  https://github.com/wikimedia/mediawiki-extensions-Loops.git Loops \
     && git clone --depth 1  https://github.com/simontaurus/mediawiki-extensions-ApprovedRevs.git ApprovedRevs \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/UserMerge.git \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Echo \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Thanks \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/BetaFeatures \
@@ -130,7 +148,16 @@ RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/mediawiki-extensions-ExternalData.git ExternalData \
     #https://www.mediawiki.org/wiki/Extension:External_Data/Local_programs
-    && apt-get -y install graphviz
+    && apt-get -y install graphviz \
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-UrlGetParameters.git UrlGetParameters \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Push.git Push \
+    && git clone --depth 1 https://github.com/BorderCloud/PushAll.git PushAll \
+    && cd $MW_HOME \
+    ## Extension:Sync
+    # && COMPOSER=composer.local.json composer require --no-update "nischayn22/mediawiki-api:dev-master" \
+    && git clone --depth 1 https://github.com/nischayn22/Sync.git extensions/Sync \
+    && jq '.extra."merge-plugin".include += ["extensions/Sync/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && composer update  --no-dev --prefer-source
 
 ##### SEMANTIC MEDIAWIKI
 RUN set -x; \
@@ -182,20 +209,27 @@ RUN set -x; \
     cd $MW_HOME/extensions \
     ## File formats
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-NativeSvgHandler.git NativeSvgHandler \
-    #for PdfHandler (bundled)
+    #  for PdfHandler (bundled)
     && apt-get update &&  apt-get install -y --no-install-recommends poppler-utils ghostscript \
+    # Videos
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler.git \
+    && apt-get update && apt-get install -y --no-install-recommends ffmpeg \
+    && cd TimedMediaHandler && composer install --no-dev && cd .. \
     ## Visual Editor
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Math.git \
     && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm librsvg2-dev build-essential \
     && mkdir -p /usr/local/nodejs/mathoid/ && cd /usr/local/nodejs/mathoid/ \
     && npm install mathoid \
-    ## https://github.com/wikimedia/mathoid/commit/8aa71deeb28d4b039d421bee011342aaf5cc124a
+    #  https://github.com/wikimedia/mathoid/commit/8aa71deeb28d4b039d421bee011342aaf5cc124a
     && npm install commander@6.2.1 \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-VEForAll.git VEForAll \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CodeMirror.git CodeMirror \
     ## Other Editors
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DrawioEditor.git DrawioEditor \
+    #  apply patch for private wikis, see: https://phabricator.wikimedia.org/T271347
+    && sed -i -e "s/static \$validNamespaces = \[/static \$validNamespaces = \['http:\/\/www.w3.org\/1999\/xhtml',/g" $MW_HOME/includes/upload/UploadBase.php \
+    && sed -i -e "s/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' );/\/\/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' ); /g" $MW_HOME/extensions/DrawioEditor/resources/ext.drawioeditor.js \
     && cd .. 
 
 ##### UI extensions
@@ -205,30 +239,36 @@ RUN set -x; \
     #&& COMPOSER=composer.local.json composer require --no-update hallowelt/cognitiveprocessdesigner "dev-REL1_31" \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CognitiveProcessDesigner.git extensions/CognitiveProcessDesigner \
     && jq '.extra."merge-plugin".include += ["extensions/CognitiveProcessDesigner/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && COMPOSER=composer.local.json composer require --no-update "mediawiki/simple-batch-upload:^1.0" \
     && composer update  --no-dev --prefer-source \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-JSBreadCrumbs.git JSBreadCrumbs \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DisplayTitle.git DisplayTitle \
     && git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-PageForms.git PageForms \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-MagicNoCache.git MagicNoCache \
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-HeaderTabs.git HeaderTabs \ 
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-UploadWizard.git UploadWizard \
     && cd ..
 
-##### Skins ####
+##### Auth extensions ####
 RUN set -x; \
-    cd $MW_HOME/skins \
-    ## bundled
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector \
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MonoBook \
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Timeless \
-    ## non-bundled
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Modern \
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MinervaNeue \
-    && git clone --depth 1  https://github.com/thingles/foreground.git \
+    cd $MW_HOME/extensions \
+    #OAUTH
     && cd $MW_HOME/extensions \
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/MobileFrontend \
+    ## Manual Account request and confirmation
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/ConfirmAccount.git \
     && cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/chameleon-skin:~3.0 \
-    && composer update  --no-dev --prefer-source
+    ## Wiki as auth provider for other services (e.g. jupyterhub)
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-OAuth.git extensions/OAuth \
+    && jq '.extra."merge-plugin".include += ["extensions/OAuth/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    ## Account management e. g. via Keycloak
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-PluggableAuth.git extensions/PluggableAuth \
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
+    && jq '.extra."merge-plugin".include += ["extensions/OpenIDConnect/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && composer update --no-dev \
+    # install latetest for fix https://github.com/jumbojett/OpenID-Connect-PHP/issues/199
+    && cd $MW_HOME/vendor/jumbojett && rm -R openid-connect-php && git clone https://github.com/jumbojett/OpenID-Connect-PHP.git openid-connect-php
 
 #### TEMP ####
 RUN set -x; \

@@ -111,8 +111,8 @@ $wgDefaultUserOptions['visualeditor-enable-experimental'] = 1;
 //Whether to enable VisualEditor for every new account. 
 $wgVisualEditorAutoAccountEnable = true;
 //Whether to enable the wikitext source mode inside VisualEditor. 
-#$wgVisualEditorEnableWikitext = true;
-#$wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
+$wgVisualEditorEnableWikitext = true;
+$wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
 //Whether to enable the visual diff function on the history special page. 
 $wgVisualEditorEnableDiffPage = true;
 
@@ -134,6 +134,10 @@ wfLoadExtension( 'NativeSvgHandler' );
 wfLoadExtension( 'DrawioEditor' );
 $wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER' );
 wfLoadExtension( 'CognitiveProcessDesigner' );
+wfLoadExtension( 'TimedMediaHandler' );
+$wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
+#$wgMaxShellMemory *= 4; //already increased by Extension:Math
+#require_once("$IP/extensions/mw-slidy/slidy.php");
 
 ######################### Page Forms ###################
 wfLoadExtension( 'PageForms' );
@@ -186,6 +190,9 @@ $wgWhitelistRead[] = "Special:OAuth/identify";
 ############## Uploads #####################
 $wgEnableUploads  = getenv( 'MW_ENABLE_UPLOADS' );
 $wgGroupPermissions['user']['reupload'] = true;
+$wgGroupPermissions['user']['upload_by_url'] = true;
+$wgAllowCopyUploads = true;
+$wgCopyUploadsFromSpecialUpload = true;
 
 $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
     'xls', 'csv', 'txt', 'mpp', 'pdf', 'ppt', 'tiff', 'bmp', 'docx', 'xlsx',
@@ -238,6 +245,9 @@ wfLoadExtension( 'Arrays' );
 wfLoadExtension( 'WSArrays' );  
 wfLoadExtension( 'Loops' );  
 #wfLoadExtension( 'ApprovedRevs' );
+wfLoadExtension( 'UserMerge' ); //to merge and delete users
+// By default nobody can use this function, enable for bureaucrat?
+$wgGroupPermissions['bureaucrat']['usermerge'] = true;
 wfLoadExtension( 'Thanks' );
 wfLoadExtension( 'Echo' );
 wfLoadExtension( 'BetaFeatures' );
@@ -265,6 +275,18 @@ $wgExternalDataSources['graphviz'] = [
    'min cache seconds' => 30 * 24 * 60 * 60,
    'tag'               => 'graphviz'
 ];
+
+
+wfLoadExtension( 'UrlGetParameters' );
+#require_once("$IP/extensions/UrlGetParameters/UrlGetParameters.php");
+
+wfLoadExtension( 'PushAll' );
+$egPushAllAttachedNamespaces[] = "Data";
+$egPushAllAttachedNamespaces[] = "Discussion";
+#wfLoadExtension( 'Push' );
+wfLoadExtension( 'Sync' ); #private config needed
+#require_once("$IP/extensions/Sync/Sync.php");
+
 
 ########### Semantic Mediawiki ###############
 #strip protocol from MW_SITE_SERVER
@@ -322,18 +344,6 @@ $smwgNamespacesWithSemanticLinks[SMW_NS_CONCEPT] = true;
 $smwgNamespacesWithSemanticLinks[690] = true; #Action
 $smwgNamespacesWithSemanticLinks[692] = true; #Label
 
-####################### Admin Tools ####################
-
-#wfLoadExtension( 'OAuth' );
-$wgGroupPermissions['sysop']['mwoauthproposeconsumer'] = true;
-$wgGroupPermissions['sysop']['mwoauthupdateownconsumer'] = true;
-$wgGroupPermissions['sysop']['mwoauthmanageconsumer'] = true;
-$wgGroupPermissions['sysop']['mwoauthsuppress'] = true;
-$wgGroupPermissions['sysop']['mwoauthviewsuppressed'] = true;
-$wgGroupPermissions['sysop']['mwoauthviewprivate'] = true;
-$wgGroupPermissions['sysop']['mwoauthmanagemygrants'] = true;
-$wgWhitelistRead[] = "Special:OAuth";
-$wgMWOAuthSecureTokenTransfer = false; #redirect loop bug
 
 ############# Scribunto #############
 wfLoadExtension( 'Scribunto' ); //bundled
@@ -365,9 +375,35 @@ wfLoadExtension( 'JSBreadCrumbs' );
 wfLoadExtension( 'DisplayTitle' );
 $wgAllowDisplayTitle = true;
 $wgRestrictDisplayTitle = false;
-
-#wfLoadExtension( 'HeaderTabs' );
+wfLoadExtension( 'HeaderTabs' );
 #require_once("$IP/extensions/HeaderTabs/HeaderTabs.php");
-#wfLoadExtension( 'MagicNoCache' );
-#wfLoadExtension( 'UrlGetParameters' );
-#require_once("$IP/extensions/UrlGetParameters/UrlGetParameters.php");
+wfLoadExtension( 'MagicNoCache' );
+wfLoadExtension( 'SimpleBatchUpload' );
+wfLoadExtension( 'UploadWizard' );
+
+
+####################### Auth ####################
+## Manual Account request and confirmation
+#require_once "$IP/extensions/ConfirmAccount/ConfirmAccount.php";
+wfLoadExtension( 'ConfirmAccount.php' );
+
+## Wiki as auth provider for other services (e.g. jupyterhub)
+wfLoadExtension( 'OAuth' );
+$wgGroupPermissions['sysop']['mwoauthproposeconsumer'] = true;
+$wgGroupPermissions['sysop']['mwoauthupdateownconsumer'] = true;
+$wgGroupPermissions['sysop']['mwoauthmanageconsumer'] = true;
+$wgGroupPermissions['sysop']['mwoauthsuppress'] = true;
+$wgGroupPermissions['sysop']['mwoauthviewsuppressed'] = true;
+$wgGroupPermissions['sysop']['mwoauthviewprivate'] = true;
+$wgGroupPermissions['sysop']['mwoauthmanagemygrants'] = true;
+$wgWhitelistRead[] = "Special:OAuth";
+$wgMWOAuthSecureTokenTransfer = false; #redirect loop bug
+
+## Account management e. g. via Keycloak
+wfLoadExtension( 'PluggableAuth' );
+$wgPluggableAuth_EnableAutoLogin = false; #Should login occur automatically when a user visits the wiki?
+$wgPluggableAuth_EnableLocalLogin = false; #Should user also be presented with username/password fields on the login page to allow local passw>
+$wgPluggableAuth_EnableLocalProperties = false; #If true, users can edit their email address and real name on the wiki.
+#$wgPluggableAuth_ButtonLabelMessage = "Msg"; #If set, the name of a message that will be used for the label of the login button on the Specia>
+$wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage is not set and $wgPluggableAuth_ButtonLabel is set to a string>
+wfLoadExtension( 'OpenIDConnect' );

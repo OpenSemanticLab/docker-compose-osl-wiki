@@ -213,6 +213,23 @@ RUN set -x; \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
     && cd ..
 
+##### Skins ####
+RUN set -x; \
+    cd $MW_HOME/skins \
+    ## bundled
+    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector \
+    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MonoBook \
+    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Timeless \
+    ## non-bundled
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Modern \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MinervaNeue \
+    && git clone --depth 1  https://github.com/thingles/foreground.git \
+    && cd $MW_HOME/extensions \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/MobileFrontend \
+    && cd $MW_HOME \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/chameleon-skin:~3.0 \
+    && composer update  --no-dev --prefer-source
+
 #### TEMP ####
 RUN set -x; \
     cd $MW_HOME/extensions \

@@ -25,7 +25,15 @@ $wgSitename  = getenv( 'MW_SITE_NAME' );
 
 # Default skin: you can change the default skin. Use the internal symbolic
 # names, ie 'standard', 'nostalgia', 'cologneblue', 'monobook', 'vector', 'chameleon':
+wfLoadSkin( 'Modern' );
+wfLoadSkin( 'MinervaNeue' );
+wfLoadExtension( 'Bootstrap' );
+wfLoadSkin( 'chameleon' );
+wfLoadSkin( 'foreground' );
 $wgDefaultSkin = getenv( 'MW_DEFAULT_SKIN' );
+wfLoadExtension( 'MobileFrontend' );
+#$wgMFAutodetectMobileView = true;
+#$wgMFDefaultSkinClass = 'SkinMinerva';
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
 $wgUseInstantCommons  = getenv( 'MW_USE_INSTANT_COMMONS' );

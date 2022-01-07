@@ -128,7 +128,7 @@ RUN set -x; \
 #### Data ####
 RUN set -x; \
     cd $MW_HOME/extensions \
-    && git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/ExternalData ExternalData \
+    && git clone --depth 1 -b dev-REL1_35 https://github.com/simontaurus/mediawiki-extensions-ExternalData.git ExternalData \
     #https://www.mediawiki.org/wiki/Extension:External_Data/Local_programs
     && apt-get -y install graphviz
 

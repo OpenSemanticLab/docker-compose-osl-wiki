@@ -116,7 +116,7 @@ wfLoadExtension( 'Math' );
 $wgMathoidCli = ['/usr/local/nodejs/mathoid/node_modules/mathoid/cli.js', '-c', '/usr/local/nodejs/mathoid/node_modules/mathoid/config.dev.yaml'];
 // Raise MediaWiki's memory limit to 1.2G for mathoid.
 $wgMaxShellMemory = 1228800;
-#wfLoadExtension( 'CodeMirror' );
+wfLoadExtension( 'CodeMirror' );
 
 ############ Multimedia & Editors ############
 ## File formats
@@ -125,7 +125,15 @@ wfLoadExtension( 'NativeSvgHandler' );
 ## Other Editors
 wfLoadExtension( 'DrawioEditor' );
 $wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER' );
+wfLoadExtension( 'CognitiveProcessDesigner' );
 
+######################### Page Forms ###################
+wfLoadExtension( 'PageForms' );
+#bsgPermissionConfig["multipageedit"] = ["type" => "global", "roles" => ["editor"]];
+#$bsgPermissionConfig["viewedittab"] = ["type" => "global", "roles" => ["editor"]];
+$wgPageFormsUseDisplayTitle = true;
+#$wgPageFormsSimpleUpload = true; #upload with copyright failed in pageforms
+$smwgNamespacesWithSemanticLinks[106] = true; #PF_NS_FORM
 
 ############### Private Wiki ######################################
 $wgGroupPermissions['*']['createaccount'] = false;
@@ -248,3 +256,19 @@ if ( $flowNamespaces ) {
         $wgNamespaceContentModels[ constant( $ns ) ] = 'flow-board';
     }
 }
+
+######################## UI  #############################
+$wgNamespacesWithSubpages[NS_MAIN] = true;
+#wfLoadExtension( 'SemanticBreadcrumbLinks' );
+$wgNamespacesWithSubpages[NS_TEMPLATE] = true; //NS Template
+$smwgNamespacesWithSemanticLinks[NS_TEMPLATE] = true; //Needed for Subpage Navbar
+wfLoadExtension( 'JSBreadCrumbs' );
+wfLoadExtension( 'DisplayTitle' );
+$wgAllowDisplayTitle = true;
+$wgRestrictDisplayTitle = false;
+
+#wfLoadExtension( 'HeaderTabs' );
+#require_once("$IP/extensions/HeaderTabs/HeaderTabs.php");
+#wfLoadExtension( 'MagicNoCache' );
+#wfLoadExtension( 'UrlGetParameters' );
+#require_once("$IP/extensions/UrlGetParameters/UrlGetParameters.php");

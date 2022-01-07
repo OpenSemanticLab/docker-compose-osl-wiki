@@ -34,7 +34,6 @@ RUN set -x; \
         php$PHP_VERSION-zip \
         php$PHP_VERSION-memcached \
         php-pear \
-        python-pygments \
         imagemagick \
         netcat \
         git \
@@ -80,13 +79,18 @@ RUN set -x; \
         https://gerrit.wikimedia.org/r/p/mediawiki/core.git \
         $MW_HOME \
     && cd $MW_HOME \
+    ## Bundled extensions
     && git submodule update --init --recursive \
     && composer install --no-dev \
     && chown -R $WWW_USER:$WWW_GROUP images \
-    && chown -R $WWW_USER:$WWW_GROUP cache 
-    #\
+    && chown -R $WWW_USER:$WWW_GROUP cache \
+    ## for PdfHandler (bundled)
+    && apt-get update && apt-get install -y --no-install-recommends poppler-utils ghostscript \
+    ## for SyntaxHighlight (bundled), alternativ: apt-get install python-pygments & set $wgPygmentizePath = '/usr/bin/pygmentize';
+    && chmod a+x  $MW_HOME/extensions/SyntaxHighlight_GeSHi/pygments/pygmentize \
     #&& cd $MW_HOME/skins \
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector
+    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector \
+    && cd ..
     
 ##### ElasticSearch extensions
 RUN set -x; \
@@ -119,10 +123,11 @@ RUN set -x; \
     #&& COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:3.2 \
     #SRF
     && cd $MW_HOME/extensions \
-    && git clone --depth 1 -b use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git SemanticResultFormats \
-    #&& git clone --depth 1 https://github.com/SemanticMediaWiki/Mermaid.git Mermaid \
+    #&& git clone --depth 1 -b use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git SemanticResultFormats \
+    && git clone --depth 1 -b REL1.35_use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git \
+    && git clone --depth 1 https://github.com/SemanticMediaWiki/Mermaid.git Mermaid \
     && cd $MW_HOME \
-    #&& jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Apply 
     && cd $MW_HOME \
@@ -136,18 +141,41 @@ RUN set -x; \
     cd $MW_HOME/extensions \
     ## File formats
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-NativeSvgHandler.git NativeSvgHandler \
+    #for PdfHandler (bundled)
+    && apt-get update &&  apt-get install -y --no-install-recommends poppler-utils ghostscript \
     ## Visual Editor
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Math.git \
-    && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm librsvg2-dev build-essential \
+    && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm librsvg2-dev build-essential \
     && mkdir -p /usr/local/nodejs/mathoid/ && cd /usr/local/nodejs/mathoid/ \
     && npm install mathoid \
     ## https://github.com/wikimedia/mathoid/commit/8aa71deeb28d4b039d421bee011342aaf5cc124a
     && npm install commander@6.2.1 \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-VEForAll.git VEForAll \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CodeMirror.git CodeMirror \
     ## Other Editors
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DrawioEditor.git DrawioEditor \
     && cd .. 
+
+##### UI extensions
+RUN set -x; \
+    cd $MW_HOME \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/sub-page-list "~1.5" \
+    #&& COMPOSER=composer.local.json composer require --no-update hallowelt/cognitiveprocessdesigner "dev-REL1_31" \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CognitiveProcessDesigner.git extensions/CognitiveProcessDesigner \
+    && jq '.extra."merge-plugin".include += ["extensions/CognitiveProcessDesigner/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && composer update  --no-dev --prefer-source \
+    && cd $MW_HOME/extensions \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-JSBreadCrumbs.git JSBreadCrumbs \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DisplayTitle.git DisplayTitle \
+    && git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-PageForms.git PageForms \
+    #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
+    && cd ..
+
+#### TEMP ####
+RUN set -x; \
+    cd $MW_HOME/extensions \
+    && cd ..
 
 #### Run maintenance sripts
 # Increase value for run maintenance script before web service started

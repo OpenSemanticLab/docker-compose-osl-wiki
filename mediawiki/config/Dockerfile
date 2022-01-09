@@ -274,6 +274,7 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME/extensions \
     && cd $MW_HOME \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:~9.0 \
     && composer update  --no-dev --prefer-source \
     && cd ..
 

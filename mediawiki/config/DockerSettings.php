@@ -284,7 +284,7 @@ wfLoadExtension( 'PushAll' );
 $egPushAllAttachedNamespaces[] = "Data";
 $egPushAllAttachedNamespaces[] = "Discussion";
 #wfLoadExtension( 'Push' );
-wfLoadExtension( 'Sync' ); #private config needed
+#wfLoadExtension( 'Sync' ); #private config needed, breaks VE
 #require_once("$IP/extensions/Sync/Sync.php");
 
 
@@ -318,6 +318,8 @@ wfLoadExtension( 'Mermaid' );
 $mermaidgDefaultTheme = 'dark';
 $srfgFormats[] = 'gantt';
 wfLoadExtension( 'ModernTimeline' );
+wfLoadExtension( 'Maps' );
+$egMapsDefaultService = 'leaflet';
 
 wfLoadExtension( 'SemanticFormsSelect' );
 wfLoadExtension( 'SemanticExtraSpecialProperties' );
@@ -385,7 +387,7 @@ wfLoadExtension( 'UploadWizard' );
 ####################### Auth ####################
 ## Manual Account request and confirmation
 #require_once "$IP/extensions/ConfirmAccount/ConfirmAccount.php";
-wfLoadExtension( 'ConfirmAccount.php' );
+wfLoadExtension( 'ConfirmAccount' );
 
 ## Wiki as auth provider for other services (e.g. jupyterhub)
 wfLoadExtension( 'OAuth' );
@@ -401,9 +403,9 @@ $wgMWOAuthSecureTokenTransfer = false; #redirect loop bug
 
 ## Account management e. g. via Keycloak
 wfLoadExtension( 'PluggableAuth' );
-$wgPluggableAuth_EnableAutoLogin = false; #Should login occur automatically when a user visits the wiki?
-$wgPluggableAuth_EnableLocalLogin = false; #Should user also be presented with username/password fields on the login page to allow local passw>
-$wgPluggableAuth_EnableLocalProperties = false; #If true, users can edit their email address and real name on the wiki.
+$wgPluggableAuth_EnableAutoLogin = false;e #Should login occur automatically when a user visits the wiki?
+$wgPluggableAuth_EnableLocalLogin = true; #Should user also be presented with username/password fields on the login page to allow local passw>
+$wgPluggableAuth_EnableLocalProperties = true; #If true, users can edit their email address and real name on the wiki.
 #$wgPluggableAuth_ButtonLabelMessage = "Msg"; #If set, the name of a message that will be used for the label of the login button on the Specia>
 $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage is not set and $wgPluggableAuth_ButtonLabel is set to a string>
 wfLoadExtension( 'OpenIDConnect' );

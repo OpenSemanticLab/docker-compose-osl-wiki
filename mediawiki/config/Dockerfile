@@ -265,10 +265,13 @@ RUN set -x; \
     ## Account management e. g. via Keycloak
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-PluggableAuth.git extensions/PluggableAuth \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
+    #patch https://www.mediawiki.org/wiki/Topic:Vhct95ynxd8fwf7i not merged yet, manual apply patch
+    #&& cd  extensions/OpenIDConnect && git fetch https://gerrit.wikimedia.org/r/mediawiki/extensions/OpenIDConnect refs/changes/99/572199/6 && git checkout -b change-572199 FETCH_HEAD && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/OpenIDConnect/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update --no-dev \
     # install latetest for fix https://github.com/jumbojett/OpenID-Connect-PHP/issues/199
-    && cd $MW_HOME/vendor/jumbojett && rm -R openid-connect-php && git clone https://github.com/jumbojett/OpenID-Connect-PHP.git openid-connect-php
+    #&& cd $MW_HOME/vendor/jumbojett && rm -R openid-connect-php && git clone https://github.com/jumbojett/OpenID-Connect-PHP.git openid-connect-php \
+    && cd ..
 
 #### TEMP ####
 RUN set -x; \
@@ -318,6 +321,10 @@ COPY CustomSettings.php $MW_HOME/CustomSettings.php
 
 #dir for public files, e. g. main page images
 COPY pub $MW_HOME/pub
+
+#dir for certs
+COPY ca-certificates /usr/local/share/ca-certificates
+RUN update-ca-certificates
 
 CMD ["/run.sh"]
 

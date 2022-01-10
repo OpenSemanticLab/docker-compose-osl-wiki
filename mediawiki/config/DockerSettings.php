@@ -403,9 +403,11 @@ $wgMWOAuthSecureTokenTransfer = false; #redirect loop bug
 
 ## Account management e. g. via Keycloak
 wfLoadExtension( 'PluggableAuth' );
-$wgPluggableAuth_EnableAutoLogin = false;e #Should login occur automatically when a user visits the wiki?
-$wgPluggableAuth_EnableLocalLogin = true; #Should user also be presented with username/password fields on the login page to allow local passw>
-$wgPluggableAuth_EnableLocalProperties = true; #If true, users can edit their email address and real name on the wiki.
-#$wgPluggableAuth_ButtonLabelMessage = "Msg"; #If set, the name of a message that will be used for the label of the login button on the Specia>
-$wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage is not set and $wgPluggableAuth_ButtonLabel is set to a string>
+$wgPluggableAuth_EnableAutoLogin = false; #Should login occur automatically when a user visits the wiki? 
+$wgPluggableAuth_EnableLocalLogin = false; #Should user also be presented with username/password fields on the login page to allow local password-based login to the wiki? 
+$wgPluggableAuth_EnableLocalProperties = false; #If true, users can edit their email address and real name on the wiki.
+#$wgPluggableAuth_ButtonLabelMessage = "Msg"; #If set, the name of a message that will be used for the label of the login button on the Special:UserLogin form
+$wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage is not set and $wgPluggableAuth_ButtonLabel is set to a string value, this string value will be used as the label of the login button on the Special:UserLogin form.
 wfLoadExtension( 'OpenIDConnect' );
+$wgGroupPermissions['*']['createaccount'] = true; #for PluggableAuth
+$wgGroupPermissions['*']['autcreateaccount'] = true; #for PluggableAuth

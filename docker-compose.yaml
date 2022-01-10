@@ -94,30 +94,11 @@ services:
            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
            - "discovery.type=single-node"
 
-    #parsoid:
-    #    image: thenets/parsoid:0.10
-    #    restart: unless-stopped
-    #    environment:
-    #        - PARSOID_NUM_WORKERS=0
-    #        - PARSOID_DOMAIN_web=http://mediawiki/w/api.php
-
-    #pdf:
-    #    image: msokk/electron-render-service
-    #    restart: unless-stopped
-    #    environment:
-    #        RENDERER_ACCESS_KEY: secret
-
     drawio:
         image: jgraph/drawio
         restart: unless-stopped
         ports:
             - "${DRAWIO_HOST_PORT}:8080"
-
-    mathoid:
-        image: nlpub/mathoid
-        restart: unless-stopped
-        ports:
-            - "${MATHOID_HOST_PORT}:10044"
 
 #for internal connections, e. g. non public dockered email server
 #networks:

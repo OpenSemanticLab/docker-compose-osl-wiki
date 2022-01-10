@@ -119,7 +119,6 @@ $wgVisualEditorEnableDiffPage = true;
 wfLoadExtension( 'Math' );
 #$wgMathValidModes[] = 'mathml';
 #$wgDefaultUserOptions['math'] = 'mathml';
-#$wgMathMathMLUrl = getenv( 'MATHOID_SERVER' ); //  IP of Mathoid server. RestBase is still required (only possible for public wikis)
 //use local cli. disable speech (config.prod.yaml) may improve performance
 $wgMathoidCli = ['/usr/local/nodejs/mathoid/node_modules/mathoid/cli.js', '-c', '/usr/local/nodejs/mathoid/node_modules/mathoid/config.dev.yaml'];
 // Raise MediaWiki's memory limit to 1.2G for mathoid.

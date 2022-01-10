@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# Copyright (C) 2017-2020 Pavel Astakhov (pastakhov@yandex.ru), MIT Licence
+# Copyright (C) 2021-2022 Simon Stier (simon.stier@gmx.de), AGPL Licence
+#
 
 set -e
 

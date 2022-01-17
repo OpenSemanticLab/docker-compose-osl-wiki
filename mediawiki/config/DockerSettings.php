@@ -136,7 +136,6 @@ wfLoadExtension( 'CognitiveProcessDesigner' );
 wfLoadExtension( 'TimedMediaHandler' );
 $wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
 #$wgMaxShellMemory *= 4; //already increased by Extension:Math
-#require_once("$IP/extensions/mw-slidy/slidy.php");
 
 ######################### Page Forms ###################
 wfLoadExtension( 'PageForms' );
@@ -258,6 +257,10 @@ $wgCookieWarningMoreUrl = '/wiki/Site:Privacy_policy#Cookies';
 #$wgCCUserFilter = false;
 #$wgDefaultUserOptions['usenewrc'] = 1;
 wfLoadExtension( 'UniversalLanguageSelector' );
+wfLoadExtension( 'PDFEmbed' );
+$wgPdfEmbed['width'] = 800; // Default width for the PDF object container.
+$wgPdfEmbed['height'] = 1090; // Default height for the PDF object container.
+$wgGroupPermissions['user']['embed_pdf'] = true; //Allow user the usage of the pdf tag (default
 
 ########### External Data ###############
 wfLoadExtension( 'ExternalData' );
@@ -369,7 +372,7 @@ if ( $flowNamespaces ) {
 
 ######################## UI  #############################
 $wgNamespacesWithSubpages[NS_MAIN] = true;
-#wfLoadExtension( 'SemanticBreadcrumbLinks' );
+wfLoadExtension( 'SemanticBreadcrumbLinks' );
 $wgNamespacesWithSubpages[NS_TEMPLATE] = true; //NS Template
 $smwgNamespacesWithSemanticLinks[NS_TEMPLATE] = true; //Needed for Subpage Navbar
 wfLoadExtension( 'JSBreadCrumbs' );
@@ -377,11 +380,17 @@ wfLoadExtension( 'DisplayTitle' );
 $wgAllowDisplayTitle = true;
 $wgRestrictDisplayTitle = false;
 wfLoadExtension( 'HeaderTabs' );
-#require_once("$IP/extensions/HeaderTabs/HeaderTabs.php");
 wfLoadExtension( 'MagicNoCache' );
 wfLoadExtension( 'SimpleBatchUpload' );
 wfLoadExtension( 'UploadWizard' );
-
+#GuidedTours
+wfLoadExtension( 'EventStreamConfig' );
+wfLoadExtension( 'EventLogging' );
+$wgEventLoggingBaseUri = '/beacon/event';
+$wgEventLoggingSchemaApiUri = $wgServer . '/w/api.php';
+$wgEventLoggingDBname = $wgDBname;
+wfLoadExtension( 'GuidedTour' );
+wfLoadExtension( 'GettingStarted' );
 
 ####################### Auth ####################
 ## Manual Account request and confirmation
@@ -401,12 +410,13 @@ $wgWhitelistRead[] = "Special:OAuth";
 $wgMWOAuthSecureTokenTransfer = false; #redirect loop bug
 
 ## Account management e. g. via Keycloak
-wfLoadExtension( 'PluggableAuth' );
+#wfLoadExtension( 'PluggableAuth' );
 $wgPluggableAuth_EnableAutoLogin = false; #Should login occur automatically when a user visits the wiki? 
-$wgPluggableAuth_EnableLocalLogin = false; #Should user also be presented with username/password fields on the login page to allow local password-based login to the wiki? 
-$wgPluggableAuth_EnableLocalProperties = false; #If true, users can edit their email address and real name on the wiki.
+$wgPluggableAuth_EnableLocalLogin = true; #Should user also be presented with username/password fields on the login page to allow local password-based login to the wiki? 
+$wgPluggableAuth_EnableLocalProperties = true; #If true, users can edit their email address and real name on the wiki.
 #$wgPluggableAuth_ButtonLabelMessage = "Msg"; #If set, the name of a message that will be used for the label of the login button on the Special:UserLogin form
 $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage is not set and $wgPluggableAuth_ButtonLabel is set to a string value, this string value will be used as the label of the login button on the Special:UserLogin form.
-wfLoadExtension( 'OpenIDConnect' );
-$wgGroupPermissions['*']['createaccount'] = true; #for PluggableAuth
-$wgGroupPermissions['*']['autcreateaccount'] = true; #for PluggableAuth
+#wfLoadExtension( 'OpenIDConnect' );
+#$wgGroupPermissions['*']['createaccount'] = true; #for PluggableAuth
+#$wgGroupPermissions['*']['autcreateaccount'] = true; #for PluggableAuth
+

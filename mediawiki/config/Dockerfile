@@ -170,6 +170,7 @@ RUN set -x; \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:2.1.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-interlanguage-links:2.1 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-breadcrumb-links "~2.0" \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:~9.0 \
     ## SRF
     && cd $MW_HOME/extensions \
     #&& git clone --depth 1 -b use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git SemanticResultFormats \
@@ -211,6 +212,7 @@ RUN set -x; \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-NativeSvgHandler.git NativeSvgHandler \
     #  for PdfHandler (bundled)
     && apt-get update &&  apt-get install -y --no-install-recommends poppler-utils ghostscript \
+    && git clone --depth 1 https://github.com/WolfgangFahl/PDFEmbed.git PDFEmbed \
     # Videos
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler.git \
     && apt-get update && apt-get install -y --no-install-recommends ffmpeg \
@@ -249,6 +251,12 @@ RUN set -x; \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-MagicNoCache.git MagicNoCache \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-HeaderTabs.git HeaderTabs \ 
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-UploadWizard.git UploadWizard \
+    ## Guilded Tours
+    && cd $MW_HOME \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-EventStreamConfig.git extensions/EventStreamConfig \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-EventLogging.git extensions/EventLogging \
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-GuidedTour.git  extensions/GuidedTour \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-GettingStarted.git extensions/GettingStarted \
     && cd ..
 
 ##### Auth extensions ####
@@ -276,8 +284,10 @@ RUN set -x; \
 #### TEMP ####
 RUN set -x; \
     cd $MW_HOME/extensions \
+    && git clone --depth 1 https://github.com/simontaurus/PageTools.git \
+    && git clone --depth 1 https://github.com/simontaurus/WellplateEditor.git \
+    && git clone --depth 1 https://github.com/simontaurus/LabWiki.git \
     && cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:~9.0 \
     && composer update  --no-dev --prefer-source \
     && cd ..
 

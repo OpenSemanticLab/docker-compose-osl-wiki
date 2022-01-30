@@ -32,7 +32,7 @@ wfLoadSkin( 'chameleon' );
 wfLoadSkin( 'foreground' );
 $wgDefaultSkin = getenv( 'MW_DEFAULT_SKIN' );
 wfLoadExtension( 'MobileFrontend' );
-#$wgMFAutodetectMobileView = true;
+$wgMFAutodetectMobileView = false;
 #$wgMFDefaultSkinClass = 'SkinMinerva';
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
@@ -142,7 +142,7 @@ wfLoadExtension( 'PageForms' );
 #bsgPermissionConfig["multipageedit"] = ["type" => "global", "roles" => ["editor"]];
 #$bsgPermissionConfig["viewedittab"] = ["type" => "global", "roles" => ["editor"]];
 $wgPageFormsUseDisplayTitle = true;
-#$wgPageFormsSimpleUpload = true; #upload with copyright failed in pageforms
+$wgPageFormsSimpleUpload = true; #skip upload form
 $smwgNamespacesWithSemanticLinks[106] = true; #PF_NS_FORM
 
 ############### Private Wiki ######################################

@@ -113,6 +113,7 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Variables.git Variables \
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-MyVariables.git MyVariables \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Arrays.git Arrays \
     && git clone --depth 1  https://github.com/WikibaseSolutions/WSArrays.git WSArrays \
     && git clone --depth 1  https://github.com/wikimedia/mediawiki-extensions-Loops.git Loops \
@@ -286,7 +287,7 @@ RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/simontaurus/PageTools.git \
     && git clone --depth 1 https://github.com/simontaurus/WellplateEditor.git \
-    && git clone --depth 1 https://github.com/simontaurus/LabWiki.git \
+    && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab\
     && cd $MW_HOME \
     && composer update  --no-dev --prefer-source \
     && cd ..

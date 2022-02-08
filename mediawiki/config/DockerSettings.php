@@ -239,6 +239,7 @@ wfLoadExtension( 'WikiEditor' );
 
 ##### Non-bundled Core Extensions ####
 wfLoadExtension( 'Variables' ); #requirement for SemanticActions
+wfLoadExtension( 'MyVariables' ); #additional variables like USERLANGUAGECODE 
 wfLoadExtension( 'Arrays' );
 wfLoadExtension( 'WSArrays' );  
 wfLoadExtension( 'Loops' );  

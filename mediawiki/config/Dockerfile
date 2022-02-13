@@ -287,6 +287,7 @@ RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/simontaurus/PageTools.git \
     && git clone --depth 1 https://github.com/simontaurus/WellplateEditor.git \
+    && git clone --depth 1 -b no-storage-prompt https://github.com/OpenSemanticLab/mediawiki-extensions-SvgEditor.git SvgEditor\
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab\
     && cd $MW_HOME \
     && composer update  --no-dev --prefer-source \

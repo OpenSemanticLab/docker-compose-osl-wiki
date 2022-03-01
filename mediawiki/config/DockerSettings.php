@@ -197,7 +197,7 @@ $wgAllowCopyUploads = true;
 $wgCopyUploadsFromSpecialUpload = true;
 
 $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
-    'xls', 'csv', 'txt', 'mpp', 'pdf', 'ppt', 'tiff', 'bmp', 'docx', 'xlsx',
+    'xls', 'csv', 'txt', 'json', 'mpp', 'pdf', 'ppt', 'tiff', 'bmp', 'docx', 'xlsx',
     'pptx', 'ps', 'odt', 'ods', 'odp', 'odg', 'svg', 'mp4', 'mp3'
 );
 

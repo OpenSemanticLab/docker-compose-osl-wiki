@@ -183,7 +183,7 @@ RUN set -x; \
     && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
     #&& git clone --depth 1 -b semantic_reference_template https://github.com/simontaurus/SemanticCite.git \ #needs update
     && git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
-    #&& git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
+    #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
     ## SemanticActions
     && git clone --depth 1 -b dev_en https://github.com/simontaurus/SemanticActions.git \
     && git clone --depth 1 https://github.com/enterprisemediawiki/PageImporter.git \
@@ -252,7 +252,7 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DisplayTitle.git DisplayTitle \
     && git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-PageForms.git PageForms \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
-    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-MagicNoCache.git MagicNoCache \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-MagicNoCache.git MagicNoCache \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-HeaderTabs.git HeaderTabs \ 
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-UploadWizard.git UploadWizard \
     ## Guilded Tours

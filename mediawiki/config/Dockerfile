@@ -182,8 +182,8 @@ RUN set -x; \
     && git clone --depth 1 https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties.git \
     && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
     #&& git clone --depth 1 -b semantic_reference_template https://github.com/simontaurus/SemanticCite.git \ #needs update
-    #&& git clone --depth 1 -b patch-MW1.31-compatibility https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
-    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
+    #&& git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
     ## SemanticActions
     && git clone --depth 1 -b dev_en https://github.com/simontaurus/SemanticActions.git \
     && git clone --depth 1 https://github.com/enterprisemediawiki/PageImporter.git \
@@ -231,7 +231,8 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-VEForAll.git VEForAll \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CodeMirror.git CodeMirror \
     ## Other Editors
-    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DrawioEditor.git DrawioEditor \
+    #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DrawioEditor.git DrawioEditor \
+    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-DrawioEditor DrawioEditor \
     #  apply patch for private wikis, see: https://phabricator.wikimedia.org/T271347
     && sed -i -e "s/static \$validNamespaces = \[/static \$validNamespaces = \['http:\/\/www.w3.org\/1999\/xhtml',/g" $MW_HOME/includes/upload/UploadBase.php \
     && sed -i -e "s/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' );/\/\/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' ); /g" $MW_HOME/extensions/DrawioEditor/resources/ext.drawioeditor.js \

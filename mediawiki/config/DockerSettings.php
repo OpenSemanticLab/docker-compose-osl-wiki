@@ -111,7 +111,7 @@ $wgHiddenPrefs[] = 'visualeditor-enable';
 // OPTIONAL: Enable VisualEditor's experimental code features
 $wgDefaultUserOptions['visualeditor-enable-experimental'] = 1;    
 //Whether to allow users to enable the section editing. 
-#$wgVisualEditorEnableVisualSectionEditing = true;
+$wgVisualEditorEnableVisualSectionEditing = true;
 //Whether to enable VisualEditor for every new account. 
 $wgVisualEditorAutoAccountEnable = true;
 //Whether to enable the wikitext source mode inside VisualEditor. 
@@ -203,7 +203,7 @@ $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
 
 $wgUseImageMagick = true;
 $wgImageMagickConvertCommand = "/usr/bin/convert";
-
+$wgMaxImageArea = 100e6; //Creates thumbnails of images up to 100 Megapixels
 
 ####################### Bundled extensions #########################
 wfLoadExtension( 'CategoryTree' );

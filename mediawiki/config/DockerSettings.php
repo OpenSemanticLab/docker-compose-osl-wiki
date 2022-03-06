@@ -381,6 +381,7 @@ wfLoadExtension( 'SemanticBreadcrumbLinks' );
 $wgNamespacesWithSubpages[NS_TEMPLATE] = true; //NS Template
 $smwgNamespacesWithSemanticLinks[NS_TEMPLATE] = true; //Needed for Subpage Navbar
 wfLoadExtension( 'JSBreadCrumbs' );
+wfLoadExtension( 'TreeAndMenu' );
 wfLoadExtension( 'DisplayTitle' );
 $wgAllowDisplayTitle = true;
 $wgRestrictDisplayTitle = false;

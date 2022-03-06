@@ -249,6 +249,7 @@ RUN set -x; \
     && composer update  --no-dev --prefer-source \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-JSBreadCrumbs.git JSBreadCrumbs \
+    && git clone --depth 1 https://gitlab.com/organicdesign/TreeAndMenu.git TreeAndMenu \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DisplayTitle.git DisplayTitle \
     && git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-PageForms.git PageForms \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
@@ -294,7 +295,7 @@ RUN set -x; \
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab\
     && cd $MW_HOME \
     && composer update  --no-dev --prefer-source \
-    && cd ..
+    && cd .. && cd ..
 
 #### Run maintenance sripts
 # Increase value for run maintenance script before web service started

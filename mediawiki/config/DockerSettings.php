@@ -221,6 +221,7 @@ $wgGroupPermissions['sysop']['interwiki'] = true; // To grant sysops permissions
 #wfLoadExtension( 'LocalisationUpdate' );
 #$wgLocalisationUpdateDirectory = "$IP/cache";
 wfLoadExtension( 'MultimediaViewer' );
+$wgMediaViewerEnableByDefault = false; //to enable direct download of files
 wfLoadExtension( 'Nuke' );
 #wfLoadExtension( 'OATHAuth' );
 wfLoadExtension( 'PageImages' );

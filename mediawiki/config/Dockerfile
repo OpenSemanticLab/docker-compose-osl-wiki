@@ -295,7 +295,8 @@ RUN set -x; \
     && git clone --depth 1 -b no-storage-prompt https://github.com/OpenSemanticLab/mediawiki-extensions-SvgEditor.git SvgEditor\
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab\
     ## patch VisualEditor
-    && cd VisualEditor && git remote add fork https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git && git fetch fork && git switch -c REL1_35-dev fork/REL1_35-dev && cd .. \
+    && rm -r VisualEditor && git clone -b REL1_35-dev https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git VisualEditor && cd VisualEditor && git submodule update --init && cd .. \
+    #&& cd VisualEditor && git remote add fork https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git && git fetch fork && git switch -c REL1_35-dev fork/REL1_35-dev && cd .. \
     #manual patch of external submodule VisualEditor (lib/ve)
     #&& sed -i -e "s/surface.getModel().setLinearSelection( startNode.getOuterRange() );/if (startNode.length != 0) surface.getModel().setLinearSelection( startNode.getOuterRange() );/g" VisualEditor/lib/ve/src/ce/keydownhandlers/ve.ce.LinearDeleteKeyDownHandler.js \
     && cd $MW_HOME \

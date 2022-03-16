@@ -213,6 +213,7 @@ RUN set -x; \
     cd $MW_HOME/extensions \
     ## File formats
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-NativeSvgHandler.git NativeSvgHandler \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PagedTiffHandler PagedTiffHandler \
     #  for PdfHandler (bundled)
     && apt-get update &&  apt-get install -y --no-install-recommends poppler-utils ghostscript \
     && git clone --depth 1 https://github.com/WolfgangFahl/PDFEmbed.git PDFEmbed \

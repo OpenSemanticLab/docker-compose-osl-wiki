@@ -132,6 +132,7 @@ wfLoadExtension( 'CodeMirror' );
 ############ Multimedia & Editors ############
 ## File formats
 wfLoadExtension( 'NativeSvgHandler' );
+wfLoadExtension( 'PagedTiffHandler' );
 ## Visual Editor
 ## Other Editors
 wfLoadExtension( 'DrawioEditor' );
@@ -197,13 +198,14 @@ $wgAllowCopyUploads = true;
 $wgCopyUploadsFromSpecialUpload = true;
 
 $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
-    'xls', 'csv', 'txt', 'json', 'mpp', 'pdf', 'ppt', 'tiff', 'bmp', 'docx', 'xlsx',
+    'xls', 'csv', 'txt', 'json', 'mpp', 'pdf', 'ppt', 'tif', 'tiff', 'bmp', 'docx', 'xlsx',
     'pptx', 'ps', 'odt', 'ods', 'odp', 'odg', 'svg', 'mp4', 'mp3'
 );
 
 $wgUseImageMagick = true;
 $wgImageMagickConvertCommand = "/usr/bin/convert";
 $wgMaxImageArea = 100e6; //Creates thumbnails of images up to 100 Megapixels
+$wgMaxShellFileSize = 102400*10;
 
 ####################### Bundled extensions #########################
 wfLoadExtension( 'CategoryTree' );

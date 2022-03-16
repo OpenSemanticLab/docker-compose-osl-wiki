@@ -1,5 +1,15 @@
 # docker-compose-smw-35
 
+## Install
+```
+git clone https://github.com/simontaurus/docker-compose-smw-35 docker-compose-smw
+cd docker-compose-smw
+chown -R www-data:www-data mediawiki/data
+nano .env
+docker-compose build
+docker-compose up
+```
+
 ## Maintenance
 
 missing semantic properties after backup restore

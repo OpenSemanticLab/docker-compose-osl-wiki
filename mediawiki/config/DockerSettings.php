@@ -125,8 +125,8 @@ wfLoadExtension( 'Math' );
 #$wgDefaultUserOptions['math'] = 'mathml';
 //use local cli. disable speech (config.prod.yaml) may improve performance
 $wgMathoidCli = ['/usr/local/nodejs/mathoid/node_modules/mathoid/cli.js', '-c', '/usr/local/nodejs/mathoid/node_modules/mathoid/config.dev.yaml'];
-// Raise MediaWiki's memory limit to 1.2G for mathoid.
-$wgMaxShellMemory = 1228800;
+// Raise MediaWiki's memory limit to 2*1.2G for mathoid.
+$wgMaxShellMemory = 2*1228800;
 wfLoadExtension( 'CodeMirror' );
 
 ############ Multimedia & Editors ############
@@ -196,6 +196,8 @@ $wgGroupPermissions['user']['reupload'] = true;
 $wgGroupPermissions['user']['upload_by_url'] = true;
 $wgAllowCopyUploads = true;
 $wgCopyUploadsFromSpecialUpload = true;
+$wgUploadSizeWarning = 2147483647; 
+$wgMaxUploadSize = 2147483647; //allow max 2GB uploads
 
 $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
     'xls', 'csv', 'txt', 'json', 'mpp', 'pdf', 'ppt', 'tif', 'tiff', 'bmp', 'docx', 'xlsx',

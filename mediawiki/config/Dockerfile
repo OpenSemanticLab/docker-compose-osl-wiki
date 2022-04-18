@@ -102,7 +102,7 @@ RUN set -x; \
     ## non-bundled
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Modern \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MinervaNeue \
-    && git clone --depth 1  https://github.com/thingles/foreground.git \
+    && git clone --depth 1 https://github.com/jthingelstad/foreground \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/MobileFrontend \
     && cd $MW_HOME \

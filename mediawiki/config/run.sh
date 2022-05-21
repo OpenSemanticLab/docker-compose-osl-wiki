@@ -186,7 +186,10 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
     run_maintenance_script_if_needed 'maintenance_rebuildImages' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/rebuildImages.php'
     #run_script_if_needed 'maintenance_rebuildImages' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/rebuildImages.php'
 
-
+    ### page imports
+    if [ "$MW_AUTO_IMPORT_PAGES" == 'true' ]; then
+        php /var/www/html/w/extensions/PageImporter/importPages.php
+    fi
 
     ### CirrusSearch
     if [ "$MW_SEARCH_TYPE" == 'CirrusSearch' ]; then

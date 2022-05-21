@@ -91,6 +91,12 @@ switch ( getenv( 'MW_MAIN_CACHE_TYPE' ) ) {
         $wgMainCacheType = CACHE_NONE;
 }
 
+#Agressive cache for anon users, https://www.mediawiki.org/wiki/Manual:File_cache
+#purge page or run maintenance/rebuildFileCache.php to refresh
+#Extensions like SemanticACL may disable caching, so this setting might not bring any advantage
+$wgUseFileCache = true; // default: false
+$wgFileCacheDirectory = "$IP/images/cache";
+
 ########################### Search ############################
 wfLoadExtension( 'Elastica' );
 wfLoadExtension( 'CirrusSearch' );
@@ -169,12 +175,13 @@ $wgUploadPath = "$wgScriptPath/img_auth.php";
 ####################### Semantic Access Control ####################
 wfLoadExtension( 'SemanticACL' );
 ###Partial Public Wiki ##
-## https://github.com/simontaurus/mediawiki-extensions-SemanticACL/tree/feature_default_policy_only_users #
-#$wgGroupPermissions['*']['read'] = true;
-##cp /extensions/SemanticACL/img_auth_patched.php img_auth.php
-#$wgImgAuthForceAuth = true; #force user validation also in 'public' wiki
-#$wgPublicPagesCategory = 'PublicPages';
-#$wgPublicImagesCategory = 'PublicFiles';
+# https://github.com/simontaurus/mediawiki-extensions-SemanticACL/tree/feature_default_policy_only_users #
+$wgGroupPermissions['*']['read'] = true;
+#cp /extensions/SemanticACL/img_auth_patched.php img_auth.php
+$wgImgAuthForceAuth = true; #force user validation also in 'public' wiki
+$wgSaclForceCaching = true; #force caching to speed up page loading, testing for data leaks
+$wgPublicPagesCategory = 'PublicPages';
+$wgPublicImagesCategory = 'PublicFiles';
 $wgGroupPermissions['user']['view-non-categorized-pages'] = true;
 $wgGroupPermissions['user']['view-non-categorized-media'] = true;
 #flow-bot is active during semantic data build (??) - therefore we need to grant him all rights
@@ -308,6 +315,8 @@ enableSemantics( preg_replace( "#^[^:/.]*[:/]+#i", "", getenv( 'MW_SITE_SERVER' 
 $smwgQMaxSize = 50; #increase max query conditions, default 12
 $smwgQMaxDepth = 20; #increase property chain query limit, default 4
 $maxRecursionDepth = 5; #increase limit of nested templates in query results, default 2
+$smwgQMaxInlineLimit = 10000; #increment inline query size, default: 500
+$smwgEnabledQueryDependencyLinksStore = true; #see https://www.semantic-mediawiki.org/wiki/Query_dependency
 
 $smwgDefaultStore = 'SMWSparqlStore';
 $smwgSparqlRepositoryConnector = 'blazegraph';
@@ -430,4 +439,13 @@ $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage 
 #wfLoadExtension( 'OpenIDConnect' );
 #$wgGroupPermissions['*']['createaccount'] = true; #for PluggableAuth
 #$wgGroupPermissions['*']['autcreateaccount'] = true; #for PluggableAuth
+
+### OpenSemanticLab ###
+wfLoadExtension( 'OpenSemanticLab' );
+$wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
+wfLoadExtension( 'SemanticProperties' );
+wfLoadExtension( 'InteractiveSemanticGraph' );
+#wfLoadExtension( 'MwJson' );
+wfLoadExtension( 'WellplateEditor' );
+wfLoadExtension( 'SvgEditor' );
 

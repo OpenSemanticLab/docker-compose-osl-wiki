@@ -182,7 +182,8 @@ RUN set -x; \
     && git clone --depth 1 https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties.git \
     && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
     #&& git clone --depth 1 -b semantic_reference_template https://github.com/simontaurus/SemanticCite.git \ #needs update
-    && git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && cp $MW_HOME/extensions/SemanticACL/img_auth_patched.php $MW_HOME/img_auth.php \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
     ## SemanticActions
     && git clone --depth 1 -b dev_en https://github.com/simontaurus/SemanticActions.git \
@@ -196,7 +197,8 @@ RUN set -x; \
     && composer update  --no-dev --prefer-source \
     #https://www.semantic-mediawiki.org/wiki/Help:Setup_information_file
     && touch extensions/SemanticMediaWiki/.smw.json \
-    && chown $WWW_USER:$WWW_GROUP extensions/SemanticMediaWiki/.smw.json
+    && chown $WWW_USER:$WWW_GROUP extensions/SemanticMediaWiki/.smw.json \
+    && cd ..
 
 #### Scribunto / Lua ####
 RUN set -x; \
@@ -287,13 +289,15 @@ RUN set -x; \
     #&& cd $MW_HOME/vendor/jumbojett && rm -R openid-connect-php && git clone https://github.com/jumbojett/OpenID-Connect-PHP.git openid-connect-php \
     && cd ..
 
-#### TEMP ####
+#### OpenSemanticLab ####
 RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/simontaurus/PageTools.git \
     && git clone --depth 1 https://github.com/simontaurus/WellplateEditor.git \
-    && git clone --depth 1 -b no-storage-prompt https://github.com/OpenSemanticLab/mediawiki-extensions-SvgEditor.git SvgEditor\
-    && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab\
+    && git clone --depth 1 -b no-storage-prompt https://github.com/OpenSemanticLab/mediawiki-extensions-SvgEditor.git SvgEditor \
+    && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab \
+    && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticProperties.git SemanticProperties \
+    && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-InteractiveSemanticGraph.git InteractiveSemanticGraph \
     ## patch VisualEditor
     && rm -r VisualEditor && git clone -b REL1_35-dev https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git VisualEditor && cd VisualEditor && git submodule update --init && cd .. \
     #&& cd VisualEditor && git remote add fork https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git && git fetch fork && git switch -c REL1_35-dev fork/REL1_35-dev && cd .. \

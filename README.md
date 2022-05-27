@@ -32,6 +32,27 @@ missing thumbnails for tif images
 php /var/www/html/w/maintenance/refreshImageMetadata.php --force
 ```
 
+## Backup
+```
+mkdir backup
+docker-compose exec db /bin/bash -c 'mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD" 2>/dev/null | gzip | base64 -w 0' | base64 -d > backup/db_backup_$(date +"%Y%m%d_%H%M%S").sql.gz
+tar -zcf backup/file_backup_$(date +"%Y%m%d_%H%M%S").tar mediawiki/data
+```
+
+## Restore
+cleanup old data
+```
+rm -r mediawiki/data
+rm -r mysql/data
+rm -r blazegraph/data
+```
+import
+```
+zcat backup/db_backup_<date>.sql.gz | docker exec -i docker-compose-osl-wiki_db_1 sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
+tar -xf backup/file_backup_<date>.tar
+chown -R www-data:www-data mediawiki/data
+```
+
 ## DEV
 check for modificated extensions
 ```

@@ -206,7 +206,7 @@ $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
 
 $wgUseImageMagick = true;
 $wgImageMagickConvertCommand = "/usr/bin/convert";
-$wgMaxImageArea = 100e6; //Creates thumbnails of images up to 100 Megapixels
+$wgMaxImageArea = 200e6; //Creates thumbnails of images up to 100 Megapixels
 $wgMaxShellFileSize = 102400*10;
 
 ####################### Bundled extensions #########################
@@ -251,7 +251,7 @@ wfLoadExtension( 'Variables' ); #requirement for SemanticActions
 wfLoadExtension( 'MyVariables' ); #additional variables like USERLANGUAGECODE 
 wfLoadExtension( 'Arrays' );
 wfLoadExtension( 'WSArrays' );  
-wfLoadExtension( 'Loops' );  
+wfLoadExtension( 'Loops' );
 #wfLoadExtension( 'ApprovedRevs' );
 wfLoadExtension( 'UserMerge' ); //to merge and delete users
 // By default nobody can use this function, enable for bureaucrat?

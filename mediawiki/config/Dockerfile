@@ -246,7 +246,9 @@ RUN set -x; \
     #&& COMPOSER=composer.local.json composer require --no-update hallowelt/cognitiveprocessdesigner "dev-REL1_31" \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CognitiveProcessDesigner.git extensions/CognitiveProcessDesigner \
     && jq '.extra."merge-plugin".include += ["extensions/CognitiveProcessDesigner/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
-    && COMPOSER=composer.local.json composer require --no-update "mediawiki/simple-batch-upload:^1.0" \
+    #&& COMPOSER=composer.local.json composer require --no-update "mediawiki/simple-batch-upload:^1.0" \
+    && git clone -b $MW_VERSION https://github.com/OpenSemanticLab/mediawiki-extensions-SimpleBatchUpload.git extensions/SimpleBatchUpload \
+    && jq '.extra."merge-plugin".include += ["extensions/SimpleBatchUpload/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-JSBreadCrumbs.git JSBreadCrumbs \

@@ -431,3 +431,9 @@ $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage 
 #$wgGroupPermissions['*']['createaccount'] = true; #for PluggableAuth
 #$wgGroupPermissions['*']['autcreateaccount'] = true; #for PluggableAuth
 
+####################### Custom Extensions ####################
+wfLoadExtension( 'OpenSemanticLab' );
+$wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
+wfLoadExtension( 'MwJson' );
+wfLoadExtension( 'WellplateEditor' );
+wfLoadExtension( 'SvgEditor' );

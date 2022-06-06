@@ -54,8 +54,33 @@ chown -R www-data:www-data mediawiki/data
 ```
 
 ## DEV
+
+### Version Control
 check for modificated extensions
 ```
 cd /var/www/html/w/extensions/
 find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '(echo {} && cd {} && git status -s && echo)' \;
+```
+
+### Debug
+create debug file
+touch /var/www/html/w/my-custom-debug.log
+chown www-data:www-data /var/www/html/w/my-custom-debug.log
+
+in LocalSettings.php:
+```
+$wgDebugLogFile = "/var/www/html/w/my-custom-debug.log";
+```
+in PHP source code:
+```
+wfDebug( "\n[tag] some debug message: $somevar.\n" );
+```
+remove and recreate logfile
+```
+rm /var/www/html/w/my-custom-debug.log && touch /var/www/html/w/my-custom-debug.log && chown www-data:www-data /var/www/html/w/my-custom-debug.log
+```
+
+copy files
+```
+docker cp mediawiki/config/pub/* osl-wiki_mediawiki_1:/var/www/html/w/pub/
 ```

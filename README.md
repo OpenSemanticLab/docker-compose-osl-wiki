@@ -31,3 +31,10 @@ missing thumbnails for tif images
 ```
 php /var/www/html/w/maintenance/refreshImageMetadata.php --force
 ```
+
+## DEV
+check for modificated extensions
+```
+cd /var/www/html/w/extensions/
+find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '(echo {} && cd {} && git status -s && echo)' \;
+```

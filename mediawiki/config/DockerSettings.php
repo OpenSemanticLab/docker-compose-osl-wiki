@@ -288,6 +288,10 @@ $wgExternalDataSources['graphviz'] = [
    'tag'               => 'graphviz'
 ];
 
+########## Linked Wiki ############
+wfLoadExtension( 'LinkedWiki' );
+#$wgLinkedWikiOSMAccessToken = ""; // => CustomSettings.php
+#$wgLinkedWikiConfigSPARQLServices = .. // => CustomSettings.php
 
 wfLoadExtension( 'UrlGetParameters' );
 #require_once("$IP/extensions/UrlGetParameters/UrlGetParameters.php");
@@ -437,8 +441,3 @@ $wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
 wfLoadExtension( 'MwJson' );
 wfLoadExtension( 'WellplateEditor' );
 wfLoadExtension( 'SvgEditor' );
-
-
-wfLoadExtension( 'LinkedWiki' );
-#$wgLinkedWikiOSMAccessToken = ""; // => CustomSettings.php 
-#$wgLinkedWikiConfigSPARQLServices = .. // => CustomSettings.php

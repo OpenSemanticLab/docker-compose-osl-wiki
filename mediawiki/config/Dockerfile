@@ -270,6 +270,8 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-EventLogging.git extensions/EventLogging \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-GuidedTour.git  extensions/GuidedTour \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-GettingStarted.git extensions/GettingStarted \
+    ## Iframes
+    && git clone --depth 1 https://github.com/sigbertklinke/Iframe extensions/Iframe \
     && cd ..
 
 ##### Auth extensions ####

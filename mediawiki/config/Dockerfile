@@ -160,6 +160,10 @@ RUN set -x; \
     # && COMPOSER=composer.local.json composer require --no-update "nischayn22/mediawiki-api:dev-master" \
     && git clone --depth 1 https://github.com/nischayn22/Sync.git extensions/Sync \
     && jq '.extra."merge-plugin".include += ["extensions/Sync/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    ## LinkedWiki
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-LinkedWiki.git extensions/LinkedWiki \
+    && cd extensions/LinkedWiki && npm install --production && cd $MW_HOME \
+    && jq '.extra."merge-plugin".include += ["extensions/LinkedWiki/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source
 
 ##### SEMANTIC MEDIAWIKI
@@ -247,7 +251,7 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CognitiveProcessDesigner.git extensions/CognitiveProcessDesigner \
     && jq '.extra."merge-plugin".include += ["extensions/CognitiveProcessDesigner/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #&& COMPOSER=composer.local.json composer require --no-update "mediawiki/simple-batch-upload:^1.0" \
-    && git clone -b $MW_VERSION https://github.com/OpenSemanticLab/mediawiki-extensions-SimpleBatchUpload.git extensions/SimpleBatchUpload \
+    && git clone -b mobile-camera-upload https://github.com/OpenSemanticLab/mediawiki-extensions-SimpleBatchUpload.git extensions/SimpleBatchUpload \
     && jq '.extra."merge-plugin".include += ["extensions/SimpleBatchUpload/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source \
     && cd $MW_HOME/extensions \
@@ -293,9 +297,10 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/simontaurus/PageTools.git \
-    && git clone --depth 1 https://github.com/simontaurus/WellplateEditor.git \
-    && git clone --depth 1 -b no-storage-prompt https://github.com/OpenSemanticLab/mediawiki-extensions-SvgEditor.git SvgEditor\
-    && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab\
+    && git clone https://github.com/simontaurus/WellplateEditor.git \
+    && git clone -b no-storage-prompt https://github.com/OpenSemanticLab/mediawiki-extensions-SvgEditor.git SvgEditor \
+    && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-MwJson.git MwJson \
+    && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab \
     ## patch VisualEditor
     && rm -r VisualEditor && git clone -b REL1_35-dev https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git VisualEditor && cd VisualEditor && git submodule update --init && cd .. \
     #&& cd VisualEditor && git remote add fork https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git && git fetch fork && git switch -c REL1_35-dev fork/REL1_35-dev && cd .. \

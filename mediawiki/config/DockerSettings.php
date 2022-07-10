@@ -443,3 +443,4 @@ $wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
 wfLoadExtension( 'MwJson' );
 wfLoadExtension( 'WellplateEditor' );
 wfLoadExtension( 'SvgEditor' );
+wfLoadExtension( 'InteractiveSemanticGraph' );

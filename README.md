@@ -2,13 +2,20 @@
 
 ## Install
 ```
-git clone https://github.com/simontaurus/docker-compose-smw-35 docker-compose-smw
-cd docker-compose-smw
+git clone https://github.com/OpenSemanticLab/docker-compose-osl-wiki
+cd docker-compose-osl-wiki
 chown -R www-data:www-data mediawiki/data
 nano .env
 docker-compose build
 docker-compose up
 ```
+
+## Config
+```
+sudo cp misc/reverse_proxy_nginx.conf /etc/nginx/sites-enabled/default
+sudo nano batterie-digital.open-semantic-lab.org
+```
+set domain and cert paths
 
 ## Maintenance
 

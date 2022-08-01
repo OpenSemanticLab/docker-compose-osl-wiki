@@ -13,9 +13,9 @@ docker-compose up
 ## Config
 ```
 sudo cp misc/reverse_proxy_nginx.conf /etc/nginx/sites-enabled/default
-sudo nano batterie-digital.open-semantic-lab.org
+sudo nano /etc/nginx/sites-enabled/default
 ```
-set domain and cert paths
+-> set domain and cert paths
 
 ## Maintenance
 

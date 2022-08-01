@@ -55,6 +55,7 @@ services:
         volumes:
             - ./mediawiki/data:/var/www/html/w/images
         environment:
+            - TZ=${MW_TIME_ZONE}
             - MW_SITE_SERVER=${MW_SITE_SERVER}
             - MW_SITE_NAME=${MW_SITE_NAME}
             - MW_SITE_LANG=${MW_SITE_LANG}

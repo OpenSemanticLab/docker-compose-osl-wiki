@@ -137,7 +137,7 @@ wfLoadExtension( 'PagedTiffHandler' );
 ## Other Editors
 wfLoadExtension( 'DrawioEditor' );
 $wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER' );
-wfLoadExtension( 'CognitiveProcessDesigner' );
+#wfLoadExtension( 'CognitiveProcessDesigner' );
 wfLoadExtension( 'TimedMediaHandler' );
 $wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
 #$wgMaxShellMemory *= 4; //already increased by Extension:Math
@@ -206,7 +206,7 @@ $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
 
 $wgUseImageMagick = true;
 $wgImageMagickConvertCommand = "/usr/bin/convert";
-$wgMaxImageArea = 100e6; //Creates thumbnails of images up to 100 Megapixels
+$wgMaxImageArea = 200e6; //Creates thumbnails of images up to 100 Megapixels
 $wgMaxShellFileSize = 102400*10;
 
 ####################### Bundled extensions #########################
@@ -251,7 +251,7 @@ wfLoadExtension( 'Variables' ); #requirement for SemanticActions
 wfLoadExtension( 'MyVariables' ); #additional variables like USERLANGUAGECODE 
 wfLoadExtension( 'Arrays' );
 wfLoadExtension( 'WSArrays' );  
-wfLoadExtension( 'Loops' );  
+wfLoadExtension( 'Loops' );
 #wfLoadExtension( 'ApprovedRevs' );
 wfLoadExtension( 'UserMerge' ); //to merge and delete users
 // By default nobody can use this function, enable for bureaucrat?
@@ -288,6 +288,10 @@ $wgExternalDataSources['graphviz'] = [
    'tag'               => 'graphviz'
 ];
 
+########## Linked Wiki ############
+wfLoadExtension( 'LinkedWiki' );
+#$wgLinkedWikiOSMAccessToken = ""; // => CustomSettings.php
+#$wgLinkedWikiConfigSPARQLServices = .. // => CustomSettings.php
 
 wfLoadExtension( 'UrlGetParameters' );
 #require_once("$IP/extensions/UrlGetParameters/UrlGetParameters.php");
@@ -400,8 +404,10 @@ wfLoadExtension( 'EventLogging' );
 $wgEventLoggingBaseUri = '/beacon/event';
 $wgEventLoggingSchemaApiUri = $wgServer . '/w/api.php';
 $wgEventLoggingDBname = $wgDBname;
-wfLoadExtension( 'GuidedTour' );
-wfLoadExtension( 'GettingStarted' );
+#wfLoadExtension( 'GuidedTour' );
+#wfLoadExtension( 'GettingStarted' );
+wfLoadExtension( 'Iframe' );
+
 
 ####################### Auth ####################
 ## Manual Account request and confirmation
@@ -431,3 +437,10 @@ $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage 
 #$wgGroupPermissions['*']['createaccount'] = true; #for PluggableAuth
 #$wgGroupPermissions['*']['autcreateaccount'] = true; #for PluggableAuth
 
+####################### Custom Extensions ####################
+wfLoadExtension( 'OpenSemanticLab' );
+$wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
+wfLoadExtension( 'MwJson' );
+wfLoadExtension( 'WellplateEditor' );
+wfLoadExtension( 'SvgEditor' );
+wfLoadExtension( 'InteractiveSemanticGraph' );

@@ -303,7 +303,7 @@ RUN set -x; \
     && git clone https://github.com/simontaurus/WellplateEditor.git \
     && git clone -b no-storage-prompt https://github.com/OpenSemanticLab/mediawiki-extensions-SvgEditor.git SvgEditor \
     && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-MwJson.git MwJson \
-    && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-InteractiveSemanticGraph InteractiveSemanticGraph \
+    && git clone -b refactoring https://github.com/OpenSemanticLab/mediawiki-extensions-InteractiveSemanticGraph InteractiveSemanticGraph \
     && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab \
     ## patch VisualEditor
     && rm -r VisualEditor && git clone -b REL1_35-dev https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git VisualEditor && cd VisualEditor && git submodule update --init && cd .. \

@@ -163,6 +163,7 @@ RUN set -x; \
     && jq '.extra."merge-plugin".include += ["extensions/Sync/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## LinkedWiki
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-LinkedWiki.git extensions/LinkedWiki \
+    && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm \
     && cd extensions/LinkedWiki && npm install --production && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/LinkedWiki/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source

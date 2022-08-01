@@ -137,7 +137,7 @@ wfLoadExtension( 'PagedTiffHandler' );
 ## Other Editors
 wfLoadExtension( 'DrawioEditor' );
 $wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER' );
-wfLoadExtension( 'CognitiveProcessDesigner' );
+#wfLoadExtension( 'CognitiveProcessDesigner' );
 wfLoadExtension( 'TimedMediaHandler' );
 $wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
 #$wgMaxShellMemory *= 4; //already increased by Extension:Math
@@ -404,8 +404,8 @@ wfLoadExtension( 'EventLogging' );
 $wgEventLoggingBaseUri = '/beacon/event';
 $wgEventLoggingSchemaApiUri = $wgServer . '/w/api.php';
 $wgEventLoggingDBname = $wgDBname;
-wfLoadExtension( 'GuidedTour' );
-wfLoadExtension( 'GettingStarted' );
+#wfLoadExtension( 'GuidedTour' );
+#wfLoadExtension( 'GettingStarted' );
 wfLoadExtension( 'Iframe' );
 
 

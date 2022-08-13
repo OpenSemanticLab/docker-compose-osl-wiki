@@ -288,13 +288,13 @@ RUN set -x; \
     && jq '.extra."merge-plugin".include += ["extensions/OAuth/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Account management e. g. via Keycloak
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-PluggableAuth.git extensions/PluggableAuth \
-    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
-    #patch https://www.mediawiki.org/wiki/Topic:Vhct95ynxd8fwf7i not merged yet, manual apply patch
-    #&& cd  extensions/OpenIDConnect && git fetch https://gerrit.wikimedia.org/r/mediawiki/extensions/OpenIDConnect refs/changes/99/572199/6 && git checkout -b change-572199 FETCH_HEAD && cd $MW_HOME \
+    #&& git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
+    #patched version allowing custom name attributes
+    && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
     && jq '.extra."merge-plugin".include += ["extensions/OpenIDConnect/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    #display realname beside userids
+    && git clone --depth 1 https://github.com/ofbeaton/mediawiki-realnames.git extensions/Realnames \
     && composer update --no-dev \
-    # install latetest for fix https://github.com/jumbojett/OpenID-Connect-PHP/issues/199
-    #&& cd $MW_HOME/vendor/jumbojett && rm -R openid-connect-php && git clone https://github.com/jumbojett/OpenID-Connect-PHP.git openid-connect-php \
     && cd ..
 
 #### TEMP ####

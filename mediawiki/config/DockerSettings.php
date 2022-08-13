@@ -436,6 +436,10 @@ $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage 
 #wfLoadExtension( 'OpenIDConnect' );
 #$wgGroupPermissions['*']['createaccount'] = true; #for PluggableAuth
 #$wgGroupPermissions['*']['autcreateaccount'] = true; #for PluggableAuth
+#$wgHooks['BeforePageDisplay'][] = function( OutputPage &$out, Skin &$skin ) {
+#  $out->addInlineStyle("#pt-createaccount { display: none;}"); #hides enables misleading "Create Account" link
+#};
+#wfLoadExtension( 'Realnames' );
 
 ####################### Custom Extensions ####################
 wfLoadExtension( 'OpenSemanticLab' );

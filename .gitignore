@@ -2,5 +2,7 @@
 .directory
 backup/*
 blazegraph/data/*
-container/favicon.ico
-container/logo.png
+mediawiki/config/favicon.ico
+mediawiki/config/logo.png
+mediawiki/data/*
+mysql/data/*

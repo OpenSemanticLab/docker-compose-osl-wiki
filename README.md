@@ -17,6 +17,11 @@ sudo nano /etc/nginx/sites-enabled/default
 ```
 -> set domain and cert paths
 
+## First Steps
+
+If your instance is public, make sure to add a privacy policy to `/wiki/Project:Privacy_policy` and legal informations to `/wiki/Project:General_disclaimer`.
+You may also create a single page with all necessary informations and point with a redirect from other pages to it: `#REDIRECT [[Project:General_disclaimer]]`
+
 ## Maintenance
 
 missing semantic properties after backup restore

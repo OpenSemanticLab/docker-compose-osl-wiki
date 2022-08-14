@@ -48,7 +48,8 @@ $wgMetaNamespaceTalk = 'Site_talk';
 $wgLogos = [
         '1x' => "$wgScriptPath/logo.png",
         '1.5x' => "$wgScriptPath/logo.png",
-        '2x' => "$wgScriptPath/logo.png"
+        '2x' => "$wgScriptPath/logo.png",
+        'svg' => "$wgScriptPath/logo.svg"
 ];
 
 

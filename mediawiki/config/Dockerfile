@@ -350,7 +350,7 @@ RUN chmod -v +x /mwjobrunner.sh
 COPY DockerSettings.php $MW_HOME/DockerSettings.php
 
 COPY favicon.ico $MW_HOME/favicon.ico
-COPY logo.png $MW_HOME/logo.png
+COPY logo.* $MW_HOME/
 COPY CustomSettings.php $MW_HOME/CustomSettings.php
 
 #dir for public files, e. g. main page images

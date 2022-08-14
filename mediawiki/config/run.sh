@@ -6,6 +6,28 @@
 
 set -e
 
+print_logo ()
+{
+echo "\
+                                   
+                                   
+              O   C                
+              |   |                
+              P   I                
+             /     \               
+            E - N   T              
+           / \     /               
+          S   M   N                
+               \ /                 
+          L - - A - - B            
+                                   
+                                   
+         OpenSemanticLab        
+                                   
+                                   
+"
+}
+
 wait_database_started ()
 {
     if [ -n "$db_started" ]; then
@@ -252,4 +274,5 @@ rm -rf /run/apache2/*
 su -s /bin/bash -c '/mwjobrunner.sh &' www-data  #run in the background as www-data, fixes https://www.mediawiki.org/wiki/Topic:Tn0u0v07qa9cb9v8 
 #/mwjobrunner.sh -D FOREGROUND
 
+print_logo
 exec apachectl -e info -D FOREGROUND

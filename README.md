@@ -19,8 +19,12 @@ sudo nano /etc/nginx/sites-enabled/default
 
 ## First Steps
 
-If your instance is public, make sure to add a privacy policy to `/wiki/Project:Privacy_policy` and legal informations to `/wiki/Project:General_disclaimer`.
-You may also create a single page with all necessary informations and point with a redirect from other pages to it: `#REDIRECT [[Project:General_disclaimer]]`
+### Important page content
+If your instance is public, make sure to add a privacy policy to `/wiki/Site:Privacy_policy` and legal informations to `/wiki/Site:General_disclaimer`.
+You may also create a single page with all necessary informations and point with a redirect from other pages to it: `#REDIRECT [[Site:General_disclaimer]]`
+
+### Email service
+If you don't have an email server yet (optional, but necessary for notification and password resets, etc.), you can use [docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)
 
 ## Maintenance
 

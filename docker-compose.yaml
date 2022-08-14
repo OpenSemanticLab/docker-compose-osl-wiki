@@ -18,9 +18,6 @@ services:
             - ./mysql/data:/var/lib/mysql
 
     graphdb:
-        #image: lyrasis/blazegraph
-        #ports:
-        #    - "9999:8080"
         image: nawer/blazegraph
         restart: unless-stopped
         environment:
@@ -33,7 +30,7 @@ services:
             - "${GRAPHDB_HOST_PORT}:9999"
 
     mediawiki:
-        build: 
+        build:
             context: ./mediawiki/config
             dockerfile: Dockerfile
             args:
@@ -43,7 +40,6 @@ services:
             - db
             - elasticsearch
             - memcached
-        #    - parsoid
             - graphdb
             - drawio
         #networks:
@@ -76,13 +72,10 @@ services:
             - MW_SEARCH_TYPE=CirrusSearch
             - MW_CIRRUS_SEARCH_SERVERS=elasticsearch
             - MW_REST_DOMAIN=mediawiki
-     #       - MW_REST_PARSOID_URL=http://parsoid:8000
             - MW_FLOW_NAMESPACES=NS_TALK,NS_USER_TALK
             - PHP_LOG_ERRORS=On
             - PHP_ERROR_REPORTING=E_ALL #Production Value: E_ALL & ~E_DEPRECATED & ~E_STRICT
-            - MATHOID_SERVER=${MATHOID_SERVER} #public url
             - DRAWIO_SERVER=${DRAWIO_SERVER} #public url
-            #- =${}
 
     memcached:
         image: memcached

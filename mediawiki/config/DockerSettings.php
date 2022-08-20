@@ -407,7 +407,7 @@ $wgEventLoggingSchemaApiUri = $wgServer . '/w/api.php';
 $wgEventLoggingDBname = $wgDBname;
 #wfLoadExtension( 'GuidedTour' );
 #wfLoadExtension( 'GettingStarted' );
-wfLoadExtension( 'Iframe' );
+#wfLoadExtension( 'Iframe' );
 
 
 ####################### Auth ####################

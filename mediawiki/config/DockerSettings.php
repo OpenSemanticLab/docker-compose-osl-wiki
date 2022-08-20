@@ -39,8 +39,8 @@ $wgMFAutodetectMobileView = false;
 $wgUseInstantCommons  = getenv( 'MW_USE_INSTANT_COMMONS' );
 
 # Name used for the project namespace. The name of the meta namespace (also known as the project namespace), used for pages regarding the wiki itself.
-$wgMetaNamespace = 'Site';
-$wgMetaNamespaceTalk = 'Site_talk';
+#$wgMetaNamespace = 'Site'; #just an alias. does not work at all of canonical namespace 'project' is created / used by an extension
+#$wgMetaNamespaceTalk = 'Site_talk';
 
 # The relative URL path to the logo.  Make sure you change this from the default,
 # or else you'll overwrite your logo when you upgrade!
@@ -157,10 +157,10 @@ $wgGroupPermissions['*']['edit'] = false;
 $wgGroupPermissions['*']['read'] = false;
 $wgGroupPermissions['user']['writeapi'] = true;
 $wgWhitelistRead[] = 'Main Page';
-$wgWhitelistRead[] = 'Site:About';
-$wgWhitelistRead[] = 'Site:Privacy_policy';
-$wgWhitelistRead[] = 'Site:General_disclaimer';
-$wgWhitelistRead[] = 'Site:Terms_of_Service'; #redirect to Project:Privacy_policy needed
+$wgWhitelistRead[] = 'Project:About';
+$wgWhitelistRead[] = 'Project:Privacy_policy';
+$wgWhitelistRead[] = 'Project:General_disclaimer';
+$wgWhitelistRead[] = 'Project:Terms_of_Service'; #redirect to Project:Privacy_policy needed
 $wgAllowExternalImages = true; #to use images on public main page
 $wgAllowImageTag = true;
 ## access images over img_auth.php
@@ -262,7 +262,7 @@ wfLoadExtension( 'Echo' );
 wfLoadExtension( 'BetaFeatures' );
 wfLoadExtension( 'CookieWarning' );
 $wgCookieWarningEnabled = true;
-$wgCookieWarningMoreUrl = '/wiki/Site:Privacy_policy#Cookies';
+$wgCookieWarningMoreUrl = '/wiki/Project:Privacy_policy#Cookies';
 #wfLoadExtension( 'CleanChanges' ); //no effect visible - already included
 #$wgCCTrailerFilter = true;
 #$wgCCUserFilter = false;

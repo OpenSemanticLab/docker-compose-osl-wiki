@@ -360,6 +360,9 @@ $wgExternalDataSources['graphviz'] = [
 wfLoadExtension( 'LinkedWiki' );
 #$wgLinkedWikiOSMAccessToken = ""; // => CustomSettings.php
 #$wgLinkedWikiConfigSPARQLServices = .. // => CustomSettings.php
+$wgHooks['BeforePageDisplay'][] = function( OutputPage &$out, Skin &$skin ) {
+  $out->addInlineStyle("#ca-linkedwiki-purge { display: none;}"); #hide second "Purge" button next to "Refresh"
+};
 
 wfLoadExtension( 'UrlGetParameters' );
 #require_once("$IP/extensions/UrlGetParameters/UrlGetParameters.php");

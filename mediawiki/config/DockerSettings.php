@@ -98,6 +98,74 @@ wfLoadExtension( 'CirrusSearch' );
 $wgCirrusSearchServers =  explode( ',', getenv( 'MW_CIRRUS_SEARCH_SERVERS' ) );
 $wgSearchType = 'CirrusSearch';
 
+//manual fetch a property from the db and index it (does not work as expected)
+/*$wgHooks['CirrusSearchBuildDocumentParse'][] = function( \Elastica\Document $doc, Title $title, Content $content, ParserOutput $parserOutput ) {
+        //fetch displaytitle from db
+        $dbr = wfGetDB( DB_REPLICA );
+        $displayTitle = $dbr->selectField(
+                'page_props',
+                'pp_value',
+                array( 'pp_propname' => 'displaytitle', 'pp_page' => $title->getArticleId() ),
+                __METHOD__
+        );
+        if ( $displayTitle === null || trim($displayTitle) === '' )$doc_title = $title->getText();
+        else $doc_title = $displayTitle . ' ' . $title->getText();
+        //echo $doc_title . "\n";
+        //store displaytitle as title in elastic search document
+        $doc->set( 'display_title', $doc_title );
+        //$doc->set( 'title', $doc_title );
+};*/
+//$wgCirrusSearchPrefixSearchStartsWithAnyWord = true; //Is it ok if the prefix starts on any word in the title or just the first word?
+//only in recent version of cirrus MW>1.35
+#$wgCirrusSearchCustomPageFields = [
+#    'display_title' => 'short_text'
+#];
+
+//Register display_title as index
+$wgHooks['SearchIndexFields'][] = function( array &$fields, SearchEngine $engine ) {
+        #$engine->Xtes();
+        if ( !( $engine instanceof CirrusSearch\CirrusSearch ) ) {
+                return;
+        }
+        $fields['display_title'] = $engine->makeSearchFieldMapping(  'display_title', 'short_text' );
+};
+
+//rank display_title higher than title
+$wgCirrusSearchWeights = [
+        'title' => 20,
+        'display_title' => 50,
+        'redirect' => 15,
+        'category' => 8,
+        'heading' => 5,
+        'opening_text' => 3,
+        'text' => 1,
+        'auxiliary_text' => 0.5,
+        'file_text' => 0.5,
+];
+$wgCirrusSearchPrefixWeights = [
+        'title' => 10,
+        'display_title' => 30,
+        'redirect' => 1,
+        'title_asciifolding' => 7,
+        'redirect_asciifolding' => 0.7,
+];
+
+//rebuild index with
+/*
+php /var/www/html/w/extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php --startOver
+php /var/www/html/w/extensions/CirrusSearch/maintenance/ForceSearchIndex.php
+php /var/www/html/w/maintenance/runJobs.php
+*/
+
+//alternative SMWSearch
+#$wgSearchType = 'SMWSearch';
+#$smwgFallbackSearchType = function() {
+#       return new CirrusSearch\CirrusSearch();
+#};
+// The two next parameters are recommended to highlight excerpts
+#$smwgElasticsearchConfig['query']['highlight.fragment']['type'] = 'plain'; // or 'unified' or 'fvh'
+#$smwgElasticsearchConfig['indexer']['raw.text'] = true;
+
 ########################### VisualEditor ###########################
 wfLoadExtension( 'VisualEditor' );
 // Enable by default for everybody
@@ -293,6 +361,9 @@ $wgExternalDataSources['graphviz'] = [
 wfLoadExtension( 'LinkedWiki' );
 #$wgLinkedWikiOSMAccessToken = ""; // => CustomSettings.php
 #$wgLinkedWikiConfigSPARQLServices = .. // => CustomSettings.php
+$wgHooks['BeforePageDisplay'][] = function( OutputPage &$out, Skin &$skin ) {
+  $out->addInlineStyle("#ca-linkedwiki-purge { display: none;}"); #hide second "Purge" button next to "Refresh"
+};
 
 wfLoadExtension( 'UrlGetParameters' );
 #require_once("$IP/extensions/UrlGetParameters/UrlGetParameters.php");

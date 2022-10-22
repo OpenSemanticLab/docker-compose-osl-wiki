@@ -149,10 +149,15 @@ RUN set -x; \
 
 #### Data ####
 RUN set -x; \
-    cd $MW_HOME/extensions \
-    && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/mediawiki-extensions-ExternalData.git ExternalData \
+    cd $MW_HOME \
+    #ExternalData (with optional mongodb support)
+    && apt-get -y update && apt-get -y install php-mongodb && phpenmod mongodb \
+    && COMPOSER=composer.local.json composer require --no-update mongodb/mongodb "^1.6.0" \
+    && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/mediawiki-extensions-ExternalData.git extensions/ExternalData \
+    && jq '.extra."merge-plugin".include += ["extensions/ExternalData/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #https://www.mediawiki.org/wiki/Extension:External_Data/Local_programs
     && apt-get -y install graphviz \
+    && cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-UrlGetParameters.git UrlGetParameters \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Push.git Push \
     && git clone --depth 1 https://github.com/BorderCloud/PushAll.git PushAll \

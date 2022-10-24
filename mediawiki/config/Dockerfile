@@ -203,7 +203,7 @@ RUN set -x; \
     && git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
     ## SemanticActions
-    && git clone --depth 1 -b dev_en https://github.com/simontaurus/SemanticActions.git \
+    && git clone --depth 1 -b dev_en https://github.com/OpenSemanticLab/SemanticActions.git \
     && git clone --depth 1 https://github.com/enterprisemediawiki/PageImporter.git \
     && cd $MW_HOME \
     #&& jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \

@@ -55,7 +55,7 @@ RUN set -x; \
     && rm /var/www/html/index.html \
     && rm -rf /etc/apache2/sites-enabled/* \
     && wget -qO composer-setup.php https://getcomposer.org/installer \
-    && php composer-setup.php --1 --install-dir=/usr/local/bin --filename=composer
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
 # logs should go to stdout / stderr
 RUN set -ex \
@@ -89,8 +89,12 @@ RUN set -x; \
     && apt-get update && apt-get install -y --no-install-recommends poppler-utils ghostscript \
     ## for SyntaxHighlight (bundled), alternativ: apt-get install python-pygments & set $wgPygmentizePath = '/usr/bin/pygmentize';
     && chmod a+x  $MW_HOME/extensions/SyntaxHighlight_GeSHi/pygments/pygmentize \
-    #&& cd $MW_HOME/skins \
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector \
+    ## create empty config
+    && touch composer.local.json && echo "{}" >> composer.local.json \
+    ## allow plugin
+    && COMPOSER=composer.local.json composer config --no-plugins allow-plugins.wikimedia/composer-merge-plugin true \
+    ## alternative way to allow plugin
+    #&& jq '.config."allow-plugins" += {"wikimedia/composer-merge-plugin": true}' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && cd ..
 
 ##### Skins ####
@@ -107,7 +111,7 @@ RUN set -x; \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/MobileFrontend \
     && cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/chameleon-skin:~3.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/chameleon-skin:~4.0 \
     && composer update  --no-dev --prefer-source
 
 ##### Non-bundled Core Extensions ####
@@ -149,10 +153,17 @@ RUN set -x; \
 
 #### Data ####
 RUN set -x; \
-    cd $MW_HOME/extensions \
-    && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/mediawiki-extensions-ExternalData.git ExternalData \
+    cd $MW_HOME \
+    #ExternalData (with optional mongodb support)
+    && apt-get -y update && apt-get -y install php$PHP_VERSION-mongodb && phpenmod mongodb \
+    ## allow plugin
+    && COMPOSER=composer.local.json composer config --no-plugins allow-plugins.composer/installers true \
+    && COMPOSER=composer.local.json composer require --no-update mongodb/mongodb "^1.6.0" \
+    && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/mediawiki-extensions-ExternalData.git extensions/ExternalData \
+    && jq '.extra."merge-plugin".include += ["extensions/ExternalData/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #https://www.mediawiki.org/wiki/Extension:External_Data/Local_programs
     && apt-get -y install graphviz \
+    && cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-UrlGetParameters.git UrlGetParameters \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Push.git Push \
     && git clone --depth 1 https://github.com/BorderCloud/PushAll.git PushAll \
@@ -166,7 +177,8 @@ RUN set -x; \
     && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm \
     && cd extensions/LinkedWiki && npm install --production && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/LinkedWiki/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
-    && composer update  --no-dev --prefer-source
+    && composer update  --no-dev --prefer-source \
+    && cd ..
 
 ##### SEMANTIC MEDIAWIKI
 RUN set -x; \
@@ -191,7 +203,7 @@ RUN set -x; \
     && git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
     ## SemanticActions
-    && git clone --depth 1 -b dev_en https://github.com/simontaurus/SemanticActions.git \
+    && git clone --depth 1 -b dev_en https://github.com/OpenSemanticLab/SemanticActions.git \
     && git clone --depth 1 https://github.com/enterprisemediawiki/PageImporter.git \
     && cd $MW_HOME \
     #&& jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \

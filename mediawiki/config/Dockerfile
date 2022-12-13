@@ -76,8 +76,8 @@ RUN set -x; \
     mkdir -p $MW_HOME \
     && git clone \
         --depth 1 \
-        -b $MW_VERSION \
-        https://gerrit.wikimedia.org/r/p/mediawiki/core.git \
+        -b $MW_VERSION-dev \
+        https://github.com/OpenSemanticLab/mediawiki.git \
         $MW_HOME \
     && cd $MW_HOME \
     ## Bundled extensions

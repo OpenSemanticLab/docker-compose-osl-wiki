@@ -177,6 +177,10 @@ RUN set -x; \
     && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm \
     && cd extensions/LinkedWiki && npm install --production && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/LinkedWiki/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    ## WSSlots
+    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/WSSlots.git extensions/WSSlots \
+    && jq '.extra."merge-plugin".include += ["extensions/WSSlots/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    ## Update composer
     && composer update  --no-dev --prefer-source \
     && cd ..
 

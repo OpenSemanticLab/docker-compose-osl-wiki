@@ -434,6 +434,41 @@ $smwgNamespacesWithSemanticLinks[690] = true; #Action
 $smwgNamespacesWithSemanticLinks[692] = true; #Label
 
 
+############# Slots ############
+wfLoadExtension( 'WSSlots' );
+$wgWSSlotsDefaultSlotRoleLayout = [
+        "display" => "none",
+        "region" => "center",
+        "placement" => "append"
+];
+$wgWSSlotsDefinedSlots = [
+    "jsonschema"      => ["content_model" => "json", "slot_role_layout" => [ "display" => "section"]],
+    "jsondata"        => ["content_model" => "json", "slot_role_layout" => [ "display" => "section"]],
+    "data-template"   => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],
+    "header-template" => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],
+    "template"        => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],
+    "footer-template" => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],
+    "header" => [
+        "content_model" => "wikitext",
+        "slot_role_layout" => [
+            "display" => "plain",
+            "region" => "header",
+            "placement" => "prepend"
+        ]
+    ],
+    "footer" => [
+        "content_model" => "wikitext",
+        "slot_role_layout" => [
+            "display" => "plain",
+            "region" => "footer",
+            "placement" => "prepend"
+        ]
+    ],
+];
+$wgWSSlotsSemanticSlots = [ "data-template" ];
+$wgWSSlotsDoPurge = true;
+$wgWSSlotsOverrideRawAction = false;
+
 ############# Scribunto #############
 wfLoadExtension( 'Scribunto' ); //bundled
 $wgScribuntoDefaultEngine = 'luastandalone';

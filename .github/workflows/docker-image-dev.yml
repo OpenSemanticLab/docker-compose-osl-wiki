@@ -17,5 +17,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        ref: dev
     - name: Build the Docker image
       run: docker build mediawiki/config/ --tag osl-dev:$(date +%s)

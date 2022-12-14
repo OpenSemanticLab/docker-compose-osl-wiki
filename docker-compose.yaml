@@ -30,6 +30,7 @@ services:
             - "${GRAPHDB_HOST_PORT}:9999"
 
     mediawiki:
+        image: opensemanticlab/osl-mw
         build:
             context: ./mediawiki/config
             dockerfile: Dockerfile

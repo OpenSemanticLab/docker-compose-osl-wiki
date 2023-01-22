@@ -76,8 +76,8 @@ RUN set -x; \
     mkdir -p $MW_HOME \
     && git clone \
         --depth 1 \
-        -b $MW_VERSION \
-        https://gerrit.wikimedia.org/r/p/mediawiki/core.git \
+        -b $MW_VERSION-dev \
+        https://github.com/OpenSemanticLab/mediawiki.git \
         $MW_HOME \
     && cd $MW_HOME \
     ## Bundled extensions
@@ -177,6 +177,10 @@ RUN set -x; \
     && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm \
     && cd extensions/LinkedWiki && npm install --production && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/LinkedWiki/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    ## WSSlots
+    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/WSSlots.git extensions/WSSlots \
+    && jq '.extra."merge-plugin".include += ["extensions/WSSlots/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    ## Update composer
     && composer update  --no-dev --prefer-source \
     && cd ..
 
@@ -271,7 +275,7 @@ RUN set -x; \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-JSBreadCrumbs.git JSBreadCrumbs \
     && git clone --depth 1 https://gitlab.com/organicdesign/TreeAndMenu.git TreeAndMenu \
-    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DisplayTitle.git DisplayTitle \
+    && git clone --depth 1 -b $MW_VERSION-dev https://github.com/OpenSemanticLab/mediawiki-extensions-DisplayTitle.git DisplayTitle \
     && git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-PageForms.git PageForms \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-MagicNoCache.git MagicNoCache \

@@ -397,7 +397,8 @@ $smwgSparqlDefaultGraph = getenv( 'MW_SITE_SERVER' ) . '/id/';
 $smwgNamespace =  getenv( 'MW_SITE_SERVER' ) . '/id/';
 #needs rebuild: php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 
-$smwgShowFactbox = SMW_FACTBOX_NONEMPTY; #Show factboxes only if they have some content 
+#$smwgShowFactbox = SMW_FACTBOX_NONEMPTY; #Show factboxes only if they have some content
+$smwgShowFactbox = SMW_FACTBOX_SHOWN; #Enable the factbox to be always shown - has no effect?
 
 wfLoadExtension( 'SemanticResultFormats' );
 $srfgFormats[] = 'graph';
@@ -434,6 +435,40 @@ $smwgNamespacesWithSemanticLinks[SMW_NS_CONCEPT] = true;
 $smwgNamespacesWithSemanticLinks[690] = true; #Action
 $smwgNamespacesWithSemanticLinks[692] = true; #Label
 
+
+############# Slots ############
+wfLoadExtension( 'WSSlots' );
+$wgWSSlotsDefaultSlotRoleLayout = [ 
+	"display" => "none",
+	"region" => "center",
+	"placement" => "append"
+];
+$wgWSSlotsDefinedSlots = [
+    "jsonschema"      => ["content_model" => "json", "slot_role_layout" => [ "region" => "footer", "display" => "details"]],
+    "jsondata"        => ["content_model" => "json", "slot_role_layout" => [ "region" => "footer", "display" => "details"]],
+    "data_template"   => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],
+    "header_template" => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],
+    "footer_template" => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],
+    "header" => [
+        "content_model" => "wikitext",
+        "slot_role_layout" => [
+            "display" => "plain",
+            "region" => "header",
+            "placement" => "prepend"
+        ]
+    ],
+    "footer" => [
+        "content_model" => "wikitext",
+        "slot_role_layout" => [
+            "display" => "plain",
+            "region" => "footer",
+            "placement" => "prepend"
+        ]
+    ],
+];
+$wgWSSlotsSemanticSlots = [ "data_template", "header" ];
+$wgWSSlotsDoPurge = true;
+$wgWSSlotsOverrideActions = false;
 
 ############# Scribunto #############
 wfLoadExtension( 'Scribunto' ); //bundled

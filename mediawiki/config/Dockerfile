@@ -166,7 +166,7 @@ RUN set -x; \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-UrlGetParameters.git UrlGetParameters \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Push.git Push \
-    && git clone --depth 1 https://github.com/BorderCloud/PushAll.git PushAll \
+    && git clone --depth 1 -b 2.0.1 https://github.com/BorderCloud/PushAll.git PushAll \
     && cd $MW_HOME \
     ## Extension:Sync
     # && COMPOSER=composer.local.json composer require --no-update "nischayn22/mediawiki-api:dev-master" \
@@ -364,7 +364,6 @@ COPY DockerSettings.php $MW_HOME/DockerSettings.php
 
 COPY favicon.ico $MW_HOME/favicon.ico
 COPY logo.* $MW_HOME/
-COPY CustomSettings.php $MW_HOME/CustomSettings.php
 
 #dir for public files, e. g. main page images
 COPY pub $MW_HOME/pub

@@ -50,6 +50,7 @@ services:
             - "${MW_HOST_PORT}:80"
             - "${SSH_HOST_PORT}:22"
         volumes:
+            - ./mediawiki/config/CustomSettings.php:/var/www/html/w/CustomSettings.php
             - ./mediawiki/data:/var/www/html/w/images
         environment:
             - TZ=${MW_TIME_ZONE}
@@ -68,6 +69,7 @@ services:
             - MW_DB_INSTALLDB_USER=root
             - MW_DB_INSTALLDB_PASS=${MYSQL_ROOT_PASSWORD}
             - MW_AUTOUPDATE=true
+            - MW_REINSTALL=true
             - MW_MAIN_CACHE_TYPE=CACHE_MEMCACHED
             - MW_MEMCACHED_SERVERS=memcached:11211
             - MW_SEARCH_TYPE=CirrusSearch

@@ -364,7 +364,6 @@ COPY DockerSettings.php $MW_HOME/DockerSettings.php
 
 COPY favicon.ico $MW_HOME/favicon.ico
 COPY logo.* $MW_HOME/
-COPY CustomSettings.php $MW_HOME/CustomSettings.php
 
 #dir for public files, e. g. main page images
 COPY pub $MW_HOME/pub

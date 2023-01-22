@@ -145,47 +145,75 @@ run_script_if_needed () {
 service ssh start
 
 cd $MW_HOME
-rm -f "$MW_VOLUME/LocalSettings.php"
 
-# If there is no LocalSettings.php, create one using maintenance/install.php
-if [ ! -e "$MW_VOLUME/LocalSettings.php" ]; then
-    echo "There is no LocalSettings.php, create one using maintenance/install.php"
+########## Create LocalSettings ##########
 
-    for x in MW_DB_INSTALLDB_USER MW_DB_INSTALLDB_PASS
-    do
-        if [ -z "${!x}" ]; then
-            echo >&2 "Variable $x must be defined";
-            exit 1;
+# If LocalSettings was not mounted: File does not exist (first run) or is a symlink (after first run) 
+if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ]; then
+
+    echo "There is no LocalSettings.php, create one"
+
+    # If there is no LocalSettings.php, create one using maintenance/install.php
+    if [ ! -e "$MW_HOME/InstallSettings.php" ] || [ $MW_REINSTALL == 'true' ]; then 
+
+        echo "There is no InstallSettings.php or reinstall was forced, create one using maintenance/install.php"
+
+        for x in MW_DB_INSTALLDB_USER MW_DB_INSTALLDB_PASS
+        do
+            if [ -z "${!x}" ]; then
+                echo >&2 "Variable $x must be defined";
+                exit 1;
+            fi
+        done
+
+        wait_database_started $MW_DB_INSTALLDB_USER $MW_DB_INSTALLDB_PASS $MW_DB_USER $MW_DB_PASS
+
+        # remove previous created file, otherwise install.php will fail
+        rm -f "$MW_VOLUME/LocalSettings.php"
+
+        # remove symlink if already created
+        if [ -e "$MW_HOME/LocalSettings.php" ]; then
+            rm -f "$MW_HOME/LocalSettings.php"
         fi
-    done
 
-    wait_database_started $MW_DB_INSTALLDB_USER $MW_DB_INSTALLDB_PASS $MW_DB_USER $MW_DB_PASS
+        php maintenance/install.php \
+            --confpath "$MW_VOLUME" \
+            --dbserver "db" \
+            --dbtype "mysql" \
+            --dbname "$MW_DB_NAME" \
+            --dbuser "$MW_DB_USER" \
+            --dbpass "$MW_DB_PASS" \
+            --installdbuser "$MW_DB_INSTALLDB_USER" \
+            --installdbpass "$MW_DB_INSTALLDB_PASS" \
+            --server "$MW_SITE_SERVER" \
+            --scriptpath "/w" \
+            --lang "$MW_SITE_LANG" \
+            --pass "$MW_ADMIN_PASS" \
+            "$MW_SITE_NAME" \
+            "$MW_ADMIN_USER"
 
-    php maintenance/install.php \
-        --confpath "$MW_VOLUME" \
-        --dbserver "db" \
-        --dbtype "mysql" \
-        --dbname "$MW_DB_NAME" \
-        --dbuser "$MW_DB_USER" \
-        --dbpass "$MW_DB_PASS" \
-        --installdbuser "$MW_DB_INSTALLDB_USER" \
-        --installdbpass "$MW_DB_INSTALLDB_PASS" \
-        --server "$MW_SITE_SERVER" \
-        --scriptpath "/w" \
-        --lang "$MW_SITE_LANG" \
-        --pass "$MW_ADMIN_PASS" \
-        "$MW_SITE_NAME" \
-        "$MW_ADMIN_USER"
+        # copy the freshly created LocalSettings.php to InstallSettings.php
+        cp "$MW_VOLUME/LocalSettings.php" "$MW_HOME/InstallSettings.php"
 
-    # Append inclusion of DockerSettings.php
-    #echo "include_once '$IP/DockerSettings.php';"  >> "$MW_VOLUME/LocalSettings.php"
-    cat  "$MW_HOME/CustomSettings.php" >> "$MW_VOLUME/LocalSettings.php" 
-    cat  "$MW_HOME/DockerSettings.php" >> "$MW_VOLUME/LocalSettings.php"
+    fi
 
-fi
+    ln -s "$MW_HOME/InstallSettings.php" "$MW_HOME/LocalSettings.php"
 
-if [ ! -e "$MW_HOME/LocalSettings.php" ]; then
-    ln -s "$MW_VOLUME/LocalSettings.php" "$MW_HOME/LocalSettings.php"
+    # Append inclusion of DockerSettings.php - unfortunately this leads to strange errors
+    #echo "require_once 'DockerSettings.php';"  >> "$MW_HOME/LocalSettings.php"
+
+    # merge DockerSettings.php to LocalSettings.php if existing
+    if [ -e "$MW_HOME/DockerSettings.php" ]; then
+        echo "Append DockerSettings.php"
+        cat  "$MW_HOME/DockerSettings.php" >> "$MW_HOME/LocalSettings.php"
+    fi
+
+    # merge CustomSettings.php to LocalSettings.php if existing
+    if [ -e "$MW_HOME/CustomSettings.php" ]; then
+        echo "Append CustomSettings.php"
+        cat  "$MW_HOME/CustomSettings.php" >> "$MW_HOME/LocalSettings.php"
+    fi
+
 fi
 
 ########## Run maintenance scripts ##########

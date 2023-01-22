@@ -137,3 +137,10 @@ copy files
 ```bash
 docker cp mediawiki/config/pub/* osl-wiki_mediawiki_1:/var/www/html/w/pub/
 ```
+
+### Push with tag
+triggers CI/CD workflow and pushes image with tags to docker registry
+```
+git tag <tag>
+git push origin --tags
+```

@@ -275,7 +275,7 @@ RUN set -x; \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-JSBreadCrumbs.git JSBreadCrumbs \
     && git clone --depth 1 https://gitlab.com/organicdesign/TreeAndMenu.git TreeAndMenu \
-    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DisplayTitle.git DisplayTitle \
+    && git clone --depth 1 -b $MW_VERSION-dev https://github.com/OpenSemanticLab/mediawiki-extensions-DisplayTitle.git DisplayTitle \
     && git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-PageForms.git PageForms \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-MagicNoCache.git MagicNoCache \

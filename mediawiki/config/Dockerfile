@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:20.04 AS base
 
 MAINTAINER simon.stier@gmx.de
 
@@ -150,6 +150,8 @@ RUN set -x; \
     && git fetch https://gerrit.wikimedia.org/r/mediawiki/extensions/Flow refs/changes/58/622258/7 && git checkout -b change-622258 FETCH_HEAD \
     && composer install --no-dev \
     && cd ..
+
+FROM base as extensions
 
 #### Data ####
 RUN set -x; \
@@ -309,6 +311,8 @@ RUN set -x; \
     && composer update --no-dev \
     && cd ..
 
+FROM extensions as custom
+
 #### TEMP ####
 RUN set -x; \
     cd $MW_HOME/extensions \
@@ -371,6 +375,11 @@ COPY pub $MW_HOME/pub
 #dir for certs
 COPY ca-certificates /usr/local/share/ca-certificates
 RUN update-ca-certificates
+
+FROM scratch
+COPY --from=custom / /
+ENV MW_HOME=/var/www/html/w \
+    MW_VOLUME=/mediawiki
 
 CMD ["/run.sh"]
 

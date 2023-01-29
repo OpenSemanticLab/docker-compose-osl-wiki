@@ -548,9 +548,13 @@ $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage 
 #wfLoadExtension( 'Realnames' );
 
 ####################### Custom Extensions ####################
+wfLoadExtension( 'MwJson' );
 wfLoadExtension( 'OpenSemanticLab' );
 $wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
-wfLoadExtension( 'MwJson' );
 wfLoadExtension( 'WellplateEditor' );
 wfLoadExtension( 'SvgEditor' );
 wfLoadExtension( 'InteractiveSemanticGraph' );
+
+####################### Custom Content #####################
+wfLoadExtension( 'PageExchange' );
+$wgPageExchangeFileDirectories[] = 'https://raw.githubusercontent.com/OpenSemanticLab/PagePackages/main/package_index.txt';

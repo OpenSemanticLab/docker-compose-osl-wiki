@@ -181,7 +181,7 @@ RUN set -x; \
     && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/WSSlots.git extensions/WSSlots \
     && jq '.extra."merge-plugin".include += ["extensions/WSSlots/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## PageExchange
-    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/PageExchange.git extensions/PageExchange \
+    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-PageExchange.git extensions/PageExchange \
     ## Update composer
     && composer update  --no-dev --prefer-source \
     && cd ..

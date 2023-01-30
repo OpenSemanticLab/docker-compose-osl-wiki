@@ -290,6 +290,17 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
     fi
 fi
 
+########## Install certs ##########
+if [ $MW_AUTOINSTALL_CA_CERTS == 'true' ]; then
+    update-ca-certificates
+fi
+
+########## Import pages ##########
+if [ $MW_AUTOIMPORT_PAGES == 'true' ]; then
+    #php /var/www/html/w/extensions/PageImporter/importPages.php 
+    php /var/www/html/w/extensions/PageExchange/maintenance/maintainPackage.php --packageid org.open-semantic-lab.core --update
+fi
+
 # Make sure we're not confused by old, incompletely-shutdown httpd
 # context after restarting the container.  httpd won't start correctly
 # if it thinks it is already running.

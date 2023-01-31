@@ -240,7 +240,11 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
 
     ### CirrusSearch
     if [ "$MW_SEARCH_TYPE" == 'CirrusSearch' ]; then
-        run_maintenance_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
+
+        #always update config due to changes in LocalSettings.php
+        php extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php
+
+        #run_maintenance_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
         #run_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
 
         run_maintenance_script_if_needed 'maintenance_CirrusSearch_forceIndex' "$MW_MAINTENANCE_CIRRUSSEARCH_FORCEINDEX" \

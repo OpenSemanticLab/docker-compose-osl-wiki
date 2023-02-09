@@ -71,7 +71,8 @@ services:
             - MW_AUTOUPDATE=true
             - MW_REINSTALL=true
             - MW_AUTOINSTALL_CA_CERTS=true
-            - MW_AUTOIMPORT_PAGES=true
+            - MW_PAGE_PACKAGES=${MW_PAGE_PACKAGES}
+            - MW_AUTOIMPORT_PAGES=${MW_AUTOIMPORT_PAGES}
             - MW_MAIN_CACHE_TYPE=CACHE_MEMCACHED
             - MW_MEMCACHED_SERVERS=memcached:11211
             - MW_SEARCH_TYPE=CirrusSearch

@@ -302,7 +302,12 @@ fi
 ########## Import pages ##########
 if [ $MW_AUTOIMPORT_PAGES == 'true' ]; then
     #php /var/www/html/w/extensions/PageImporter/importPages.php 
-    php /var/www/html/w/extensions/PageExchange/maintenance/maintainPackage.php --packageid org.open-semantic-lab.core --update
+    #php /var/www/html/w/extensions/PageExchange/maintenance/maintainPackage.php --packageid org.open-semantic-lab.core --update
+    while IFS=';' read -ra PACKAGES; do #split package list by ';'
+        for i in "${PACKAGES[@]}"; do #interate over packages
+            php /var/www/html/w/extensions/PageExchange/maintenance/maintainPackage.php --packageid "$i" --update
+        done
+    done <<< "$MW_PAGE_PACKAGES"
 fi
 
 # Make sure we're not confused by old, incompletely-shutdown httpd

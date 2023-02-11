@@ -369,6 +369,8 @@ RUN chmod -v +x /run.sh
 
 COPY mwjobrunner.sh /mwjobrunner.sh
 RUN chmod -v +x /mwjobrunner.sh
+COPY mwsitemapbuilder.sh /mwsitemapbuilder.sh
+RUN chmod -v +x /mwsitemapbuilder.sh
 
 COPY DockerSettings.php $MW_HOME/DockerSettings.php
 

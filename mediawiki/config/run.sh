@@ -320,7 +320,9 @@ rm -rf /run/apache2/*
 #apachectl -e info & #run in the background
 
 su -s /bin/bash -c '/mwjobrunner.sh &' www-data  #run in the background as www-data, fixes https://www.mediawiki.org/wiki/Topic:Tn0u0v07qa9cb9v8 
-#/mwjobrunner.sh -D FOREGROUND
+if [ $MW_AUTOBUILD_SITEMAP == 'true' ]; then
+    su -s /bin/bash -c '/mwsitemapbuilder.sh "$MW_SITE_SERVER" &'  #updates the sitemap in the background
+fi
 
 print_logo
 exec apachectl -e info -D FOREGROUND

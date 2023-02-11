@@ -17,8 +17,8 @@ while true; do
 		ln -s $MW_INSTALL_PATH/sitemap/sitemap-index-mediawiki.xml $MW_INSTALL_PATH/sitemap.xml
 	fi
 	# Wait some seconds to let the CPU do other things, like handling web requests, etc
-	echo Waiting for 1m...
-	sleep 1m
+	echo Waiting for 6h...
+	sleep 6h
 done
 
 

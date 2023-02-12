@@ -7,8 +7,8 @@ if [ ! -d "$MW_INSTALL_PATH/sitemap" ]; then
 	echo "sitemap dir not existing, create it"
 	mkdir "$MW_INSTALL_PATH/sitemap"
 fi
-# Wait a minute after the server starts up to give other processes time to get started
-sleep 60
+# Wait 30m after the server starts up to give other processes time to get started
+sleep 30m
 echo Started.
 while true; do
 	# This will create a sitemap index. See https://www.mediawiki.org/wiki/Manual:GenerateSitemap.php

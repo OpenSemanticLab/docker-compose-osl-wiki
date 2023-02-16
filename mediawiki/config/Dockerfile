@@ -293,6 +293,8 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-GettingStarted.git extensions/GettingStarted \
     ## Iframes
     && git clone --depth 1 https://github.com/sigbertklinke/Iframe extensions/Iframe \
+    ## Reveal Slides
+    && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-Reveal.git extensions/Reveal \
     && cd ..
 
 ##### Auth extensions ####

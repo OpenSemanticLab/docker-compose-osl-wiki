@@ -514,6 +514,7 @@ $wgEventLoggingDBname = $wgDBname;
 #wfLoadExtension( 'GuidedTour' );
 #wfLoadExtension( 'GettingStarted' );
 #wfLoadExtension( 'Iframe' );
+wfLoadExtension( 'Reveal' );
 
 
 ####################### Auth ####################

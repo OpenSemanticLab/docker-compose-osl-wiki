@@ -556,6 +556,8 @@ $wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
 wfLoadExtension( 'SemanticProperties' );
 wfLoadExtension( 'WellplateEditor' );
 wfLoadExtension( 'SvgEditor' );
+wfLoadExtension( 'SpreadsheetEditor' );
+wfLoadExtension( 'ChemEditor' );
 wfLoadExtension( 'InteractiveSemanticGraph' );
 
 ####################### Custom Content #####################

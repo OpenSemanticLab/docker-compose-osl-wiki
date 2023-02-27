@@ -328,6 +328,8 @@ RUN set -x; \
     && git clone https://github.com/simontaurus/WellplateEditor.git \
     && git clone -b no-storage-prompt https://github.com/OpenSemanticLab/mediawiki-extensions-SvgEditor.git SvgEditor \
     && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-MwJson.git MwJson \
+    && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-SpreadsheetEditor.git SpreadsheetEditor \
+    && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-ChemEditor.git ChemEditor \
     && git clone -b refactoring https://github.com/OpenSemanticLab/mediawiki-extensions-InteractiveSemanticGraph InteractiveSemanticGraph \
     && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab \
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticProperties.git SemanticProperties \

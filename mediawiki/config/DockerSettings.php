@@ -167,10 +167,8 @@ $wgWhitelistRead[] = 'Site:Privacy_policy';
 $wgWhitelistRead[] = 'Site:General_disclaimer';
 $wgWhitelistRead[] = 'Site:Terms_of_Service'; #redirect to Project:Privacy_policy needed
 $wgAllowExternalImages = true; #to use images on public main page
-$wgAllowImageTag = true;
 ## access images over img_auth.php
 $wgUploadPath = "$wgScriptPath/img_auth.php";
-
 
 ####################### Semantic Access Control ####################
 wfLoadExtension( 'SemanticACL' );
@@ -179,9 +177,14 @@ wfLoadExtension( 'SemanticACL' );
 $wgGroupPermissions['*']['read'] = true;
 #cp /extensions/SemanticACL/img_auth_patched.php img_auth.php
 $wgImgAuthForceAuth = true; #force user validation also in 'public' wiki
-$wgSaclForceCaching = true; #force caching to speed up page loading, testing for data leaks
+#$wgSaclForceCaching = true; #force caching to speed up page loading, testing for data leaks
 $wgPublicPagesCategory = 'PublicPages';
 $wgPublicImagesCategory = 'PublicFiles';
+$wgPublicNamespaces[NS_TEMPLATE] = true; //NS_TEMPLATE
+$wgPublicNamespaces[102] = true; //SMW_NS_PROPERTY
+$wgPublicNamespaces[7320] = true; //NS_STATEMENT
+$wgPublicNamespaces[8] = true; //MediaWiki
+$wgPrivateNamespaces[NS_USER] = true;
 $wgGroupPermissions['user']['view-non-categorized-pages'] = true;
 $wgGroupPermissions['user']['view-non-categorized-media'] = true;
 #flow-bot is active during semantic data build (??) - therefore we need to grant him all rights
@@ -189,6 +192,7 @@ $wgGroupPermissions['flow-bot']['sacl-exempt'] = true;
 $wgGroupPermissions['flow-bot']['view-non-categorized-pages'] = true;
 $wgGroupPermissions['flow-bot']['view-non-categorized-media'] = true;
 #in case of all pages default restricted we need explicite read permission for oauth
+$wgWhitelistRead[] = 'Special:Search';
 $wgWhitelistRead[] = 'Special:UserLogin';
 $wgWhitelistRead[] = 'Special:RequestAccount';
 $wgWhitelistRead[] = "Special:OAuth/initiate";
@@ -413,9 +417,9 @@ wfLoadExtension( 'EventLogging' );
 $wgEventLoggingBaseUri = '/beacon/event';
 $wgEventLoggingSchemaApiUri = $wgServer . '/w/api.php';
 $wgEventLoggingDBname = $wgDBname;
-wfLoadExtension( 'GuidedTour' );
-wfLoadExtension( 'GettingStarted' );
-wfLoadExtension( 'Iframe' );
+#wfLoadExtension( 'GuidedTour' ); //incompatible
+#wfLoadExtension( 'GettingStarted' );
+#wfLoadExtension( 'Iframe' ); //PHP Warning:  array_key_exists() expects parameter 2 to be array, null given in /var/www/html/w/extensions/Iframe/Iframe_body.php on line 138
 
 
 ####################### Auth ####################
@@ -454,3 +458,4 @@ wfLoadExtension( 'InteractiveSemanticGraph' );
 wfLoadExtension( 'MwJson' );
 wfLoadExtension( 'WellplateEditor' );
 wfLoadExtension( 'SvgEditor' );
+

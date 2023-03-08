@@ -208,7 +208,8 @@ RUN set -x; \
     && git clone --depth 1 https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties.git \
     && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
     #&& git clone --depth 1 -b semantic_reference_template https://github.com/simontaurus/SemanticCite.git \ #needs update
-    && git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && git clone --depth 1 -b fix-namespace-handling https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && cp $MW_HOME/extensions/SemanticACL/img_auth_patched.php $MW_HOME/img_auth.php \
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
     ## SemanticActions
     && git clone --depth 1 -b dev_en https://github.com/OpenSemanticLab/SemanticActions.git \

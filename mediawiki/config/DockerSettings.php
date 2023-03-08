@@ -241,9 +241,9 @@ wfLoadExtension( 'SemanticACL' );
 ## https://github.com/simontaurus/mediawiki-extensions-SemanticACL/tree/feature_default_policy_only_users #
 #$wgGroupPermissions['*']['read'] = true;
 ##cp /extensions/SemanticACL/img_auth_patched.php img_auth.php
-#$wgImgAuthForceAuth = true; #force user validation also in 'public' wiki
-#$wgPublicPagesCategory = 'PublicPages';
-#$wgPublicImagesCategory = 'PublicFiles';
+$wgImgAuthForceAuth = true; #force user validation also in 'public' wiki
+$wgPublicPagesCategory = 'PublicPages';
+$wgPublicImagesCategory = 'PublicFiles';
 $wgGroupPermissions['user']['view-non-categorized-pages'] = true;
 $wgGroupPermissions['user']['view-non-categorized-media'] = true;
 #flow-bot is active during semantic data build (??) - therefore we need to grant him all rights
@@ -251,6 +251,7 @@ $wgGroupPermissions['flow-bot']['sacl-exempt'] = true;
 $wgGroupPermissions['flow-bot']['view-non-categorized-pages'] = true;
 $wgGroupPermissions['flow-bot']['view-non-categorized-media'] = true;
 #in case of all pages default restricted we need explicite read permission for oauth
+$wgWhitelistRead[] = 'Special:Search';
 $wgWhitelistRead[] = 'Special:UserLogin';
 $wgWhitelistRead[] = 'Special:RequestAccount';
 $wgWhitelistRead[] = "Special:OAuth/initiate";

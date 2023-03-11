@@ -239,13 +239,11 @@ $wgUploadPath = "$wgScriptPath/img_auth.php";
 wfLoadExtension( 'SemanticACL' );
 ###Partial Public Wiki ##
 ## https://github.com/simontaurus/mediawiki-extensions-SemanticACL/tree/feature_default_policy_only_users #
-#$wgGroupPermissions['*']['read'] = true;
+$wgGroupPermissions['*']['read'] = true;
 ##cp /extensions/SemanticACL/img_auth_patched.php img_auth.php
 $wgImgAuthForceAuth = true; #force user validation also in 'public' wiki
-$wgPublicPagesCategory = 'PublicPages';
-$wgPublicImagesCategory = 'PublicFiles';
-$wgGroupPermissions['user']['view-non-categorized-pages'] = true;
-$wgGroupPermissions['user']['view-non-categorized-media'] = true;
+$wgGroupPermissions['*']['view-non-categorized-pages'] = true; //Use Semantic Properties instead of Category
+$wgGroupPermissions['*']['view-non-categorized-media'] = true; //Use Semantic Properties instead of Category
 #flow-bot is active during semantic data build (??) - therefore we need to grant him all rights
 $wgGroupPermissions['flow-bot']['sacl-exempt'] = true;
 $wgGroupPermissions['flow-bot']['view-non-categorized-pages'] = true;

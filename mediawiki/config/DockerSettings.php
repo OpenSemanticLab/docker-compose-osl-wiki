@@ -445,7 +445,8 @@ $wgWSSlotsDefaultSlotRoleLayout = [
 ];
 $wgWSSlotsDefinedSlots = [
     "jsonschema"      => ["content_model" => "json", "slot_role_layout" => [ "region" => "footer", "display" => "details"]],
-    "jsondata"        => ["content_model" => "json", "slot_role_layout" => [ "region" => "footer", "display" => "details"]],
+    "jsondata"        => ["content_model" => "json", "slot_role_layout" => [ "region" => "footer", "display" => "details"]],,
+    "schema_template" => ["content_model" => "text", "slot_role_layout" => [ "display" => "none"]],
     "data_template"   => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],
     "header_template" => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],
     "footer_template" => ["content_model" => "wikitext", "slot_role_layout" => [ "display" => "none"]],

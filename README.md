@@ -139,8 +139,8 @@ docker cp mediawiki/config/pub/* osl-wiki_mediawiki_1:/var/www/html/w/pub/
 ```
 
 ### Push with tag
-triggers CI/CD workflow and pushes image with tags to docker registry
+triggers CI/CD workflow and pushes image with tags to docker registry (see also [stackoverflow: push-git-commits-tags-simultaneously](https://stackoverflow.com/questions/3745135/push-git-commits-tags-simultaneously/57842917#57842917) )
 ```
 git tag <tag>
-git push origin --tags
+git push --atomic origin main --tags
 ```

@@ -61,6 +61,11 @@ You may also create a single page with all necessary informations and point with
 ### Email service
 If you don't have an email server yet (optional, but necessary for notification and password resets, etc.), you can use [docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)
 
+### Optional Extensions
+wfLoadExtension( 'Widgets' );
+wfLoadExtension( 'TwitterTag' ); #Not GDPR conform!
+
+
 ## Maintenance
 
 missing semantic properties after backup restore

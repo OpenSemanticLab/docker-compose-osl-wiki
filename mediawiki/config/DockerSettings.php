@@ -213,6 +213,8 @@ $wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER' );
 wfLoadExtension( 'TimedMediaHandler' );
 $wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
 #$wgMaxShellMemory *= 4; //already increased by Extension:Math
+wfLoadExtension( 'EmbedVideo' );
+$wgEmbedVideoFetchExternalThumbnails = false; #true will fetch external images before user consent
 
 ######################### Page Forms ###################
 wfLoadExtension( 'PageForms' );

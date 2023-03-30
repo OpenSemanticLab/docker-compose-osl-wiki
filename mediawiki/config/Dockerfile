@@ -247,6 +247,7 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler.git \
     && apt-get update && apt-get install -y --no-install-recommends ffmpeg \
     && cd TimedMediaHandler && composer install --no-dev && cd .. \
+    && git clone --depth 1 https://github.com/StarCitizenWiki/mediawiki-extensions-EmbedVideo EmbedVideo \
     ## Visual Editor
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Math.git \
     && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm librsvg2-dev build-essential \
@@ -275,6 +276,9 @@ RUN set -x; \
     #&& COMPOSER=composer.local.json composer require --no-update "mediawiki/simple-batch-upload:^1.0" \
     && git clone -b mobile-camera-upload https://github.com/OpenSemanticLab/mediawiki-extensions-SimpleBatchUpload.git extensions/SimpleBatchUpload \
     && jq '.extra."merge-plugin".include += ["extensions/SimpleBatchUpload/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Widgets.git extensions/Widgets \
+    && chown $WWW_USER:$WWW_GROUP extensions/Widgets/compiled_templates \
+    && jq '.extra."merge-plugin".include += ["extensions/Widgets/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-JSBreadCrumbs.git JSBreadCrumbs \
@@ -295,6 +299,8 @@ RUN set -x; \
     && git clone --depth 1 https://github.com/sigbertklinke/Iframe extensions/Iframe \
     ## Reveal Slides
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-Reveal.git extensions/Reveal \
+    ## TwitterTag: adds <twitter /> tag to allow embedding Twitter content on pages. Not GDPR conform!
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-TwitterTag.git extensions/TwitterTag \
     && cd ..
 
 ##### Auth extensions ####

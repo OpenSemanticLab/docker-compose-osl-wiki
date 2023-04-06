@@ -146,6 +146,13 @@ service ssh start
 
 cd $MW_HOME
 
+########## Create Temp Dir #########
+if [ ! -d "$MW_HOME/images/temp" ]; then
+	echo " temp dir not existing, create it"
+	mkdir "$MW_HOME/images/temp"
+    chown www-data:www-data "$MW_HOME/images/temp"
+fi    
+
 ########## Create LocalSettings ##########
 
 # If LocalSettings was not mounted: File does not exist (first run) or is a symlink (after first run) 

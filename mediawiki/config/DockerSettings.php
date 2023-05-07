@@ -5,9 +5,9 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 #Debug Settings
 if ( getenv( 'MW_SHOW_EXCEPTION_DETAILS' ) === 'true' ) {
-    error_reporting( -1 );
-    ini_set( 'display_errors', 1 );
-    $wgShowExceptionDetails = true;
+#    error_reporting( -1 );
+#    ini_set( 'display_errors', 1 );
+#    $wgShowExceptionDetails = true;
 }
 
 ########################### Core Settings ##########################
@@ -192,7 +192,7 @@ $wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
 //Whether to enable the visual diff function on the history special page. 
 $wgVisualEditorEnableDiffPage = true;
 
-wfLoadExtension( 'Math' );
+wfLoadExtension( 'Math' ); # bundled in REL1_39
 #$wgMathValidModes[] = 'mathml';
 #$wgDefaultUserOptions['math'] = 'mathml';
 //use local cli. disable speech (config.prod.yaml) may improve performance
@@ -235,7 +235,7 @@ $wgWhitelistRead[] = 'Project:Privacy_policy';
 $wgWhitelistRead[] = 'Project:General_disclaimer';
 $wgWhitelistRead[] = 'Project:Terms_of_Service'; #redirect to Project:Privacy_policy needed
 $wgAllowExternalImages = true; #to use images on public main page
-$wgAllowImageTag = true;
+# $wgAllowImageTag = true;
 ## access images over img_auth.php
 $wgUploadPath = "$wgScriptPath/img_auth.php";
 
@@ -284,6 +284,7 @@ $wgMaxImageArea = 200e6; //Creates thumbnails of images up to 100 Megapixels
 $wgMaxShellFileSize = 102400*10;
 
 ####################### Bundled extensions #########################
+#wfLoadExtension( 'AbuseFilter' );
 wfLoadExtension( 'CategoryTree' );
 wfLoadExtension( 'Cite' );
 wfLoadExtension( 'CiteThisPage' );
@@ -296,8 +297,7 @@ wfLoadExtension( 'InputBox' );
 wfLoadExtension( 'Interwiki' );
 $wgGroupPermissions['sysop']['interwiki'] = true; // To grant sysops permissions to edit interwiki data
 #$wgEnableScaryTranscluding = true; //To enable transclusion from other sites
-#wfLoadExtension( 'LocalisationUpdate' );
-#$wgLocalisationUpdateDirectory = "$IP/cache";
+#wfLoadExtension( 'Math' ); # bundled in REL1_39 but customized
 wfLoadExtension( 'MultimediaViewer' );
 $wgMediaViewerEnableByDefault = false; //to enable direct download of files
 wfLoadExtension( 'Nuke' );
@@ -310,6 +310,7 @@ wfLoadExtension( 'Poem' );
 wfLoadExtension( 'Renameuser' );
 wfLoadExtension( 'ReplaceText' );
 $wgGroupPermissions['bureaucrat']['replacetext'] = true;
+#wfLoadExtension( 'Scribunto' ); # bundled in REL1_39 but customized
 wfLoadExtension( 'SecureLinkFixer' );
 #wfLoadExtension( 'SpamBlacklist' ); //not needed for private wiki
 wfLoadExtension( 'SyntaxHighlight_GeSHi' );
@@ -317,6 +318,7 @@ wfLoadExtension( 'SyntaxHighlight_GeSHi' );
 wfLoadExtension( 'TemplateData' );
 wfLoadExtension( 'TextExtracts' );
 wfLoadExtension( 'TitleBlacklist' );
+#wfLoadExtension( 'VisualEditor' ); # bundled in REL1_39 but customized
 wfLoadExtension( 'WikiEditor' );
 
 
@@ -382,6 +384,7 @@ $egPushAllAttachedNamespaces[] = "Discussion";
 
 
 ########### Semantic Mediawiki ###############
+wfLoadExtension( 'SemanticMediaWiki' );
 #strip protocol from MW_SITE_SERVER
 enableSemantics( preg_replace( "#^[^:/.]*[:/]+#i", "", getenv( 'MW_SITE_SERVER' ) ) );
 
@@ -420,10 +423,10 @@ wfLoadExtension( 'SemanticExtraSpecialProperties' );
 wfLoadExtension( 'SemanticCompoundQueries' );
 #wfLoadExtension( 'SemanticCite' );
 ##$GLOBALS['wgGroupPermissions']['user']['sci-metasearch'] = false;
-wfLoadExtension( 'SemanticInterlanguageLinks' );
+#wfLoadExtension( 'SemanticInterlanguageLinks' );
 wfLoadExtension('PageImporter'); #import templates and forms for SemanticActions
 #run once: php extensions/PageImporter/importPages.php
-wfLoadExtension('SemanticActions');
+#wfLoadExtension('SemanticActions');
 $egSemanticActionsAssigneeValuesFrom = "User";
 
 #Enable Semantic NS

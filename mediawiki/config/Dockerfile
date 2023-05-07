@@ -1,8 +1,8 @@
 FROM ubuntu:20.04 AS base
 
-MAINTAINER simon.stier@gmx.de
+LABEL maintainers="simon.stier@gmx.de"
 
-ENV MW_VERSION=REL1_35 \
+ENV MW_VERSION=REL1_39 \
     MW_HOME=/var/www/html/w \
     MW_VOLUME=/mediawiki \
     WWW_USER=www-data \
@@ -104,13 +104,15 @@ RUN set -x; \
     #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector \
     #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MonoBook \
     #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Timeless \
+    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MinervaNeue \
     ## non-bundled
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Modern \
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MinervaNeue \
     && git clone --depth 1 https://github.com/jthingelstad/foreground \
+    && git clone --depth 1 https://github.com/StarCitizenTools/mediawiki-skins-Citizen Citizen \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/MobileFrontend \
     && cd $MW_HOME \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/bootstrap-components:~5.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/chameleon-skin:~4.0 \
     && composer update  --no-dev --prefer-source
 
@@ -118,11 +120,11 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Variables.git Variables \
-    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-MyVariables.git MyVariables \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-MyVariables.git MyVariables \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Arrays.git Arrays \
     && git clone --depth 1  https://github.com/WikibaseSolutions/WSArrays.git WSArrays \
-    && git clone --depth 1  https://github.com/wikimedia/mediawiki-extensions-Loops.git Loops \
-    && git clone --depth 1  https://github.com/simontaurus/mediawiki-extensions-ApprovedRevs.git ApprovedRevs \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Loops.git Loops \
+    && git clone --depth 1 -b master https://github.com/wikimedia/mediawiki-extensions-ApprovedRevs ApprovedRevs \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/UserMerge.git \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Echo \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Thanks \
@@ -147,7 +149,7 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Flow \
     && cd Flow \
     #patch for REL_1.35 with parsoid zeroconfig https://phabricator.wikimedia.org/T260648#6645078
-    && git fetch https://gerrit.wikimedia.org/r/mediawiki/extensions/Flow refs/changes/58/622258/7 && git checkout -b change-622258 FETCH_HEAD \
+    #&& git fetch https://gerrit.wikimedia.org/r/mediawiki/extensions/Flow refs/changes/58/622258/7 && git checkout -b change-622258 FETCH_HEAD \
     && composer install --no-dev \
     && cd ..
 
@@ -161,7 +163,7 @@ RUN set -x; \
     ## allow plugin
     && COMPOSER=composer.local.json composer config --no-plugins allow-plugins.composer/installers true \
     && COMPOSER=composer.local.json composer require --no-update mongodb/mongodb "^1.6.0" \
-    && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/mediawiki-extensions-ExternalData.git extensions/ExternalData \
+    && git clone --depth 1 -b dev-REL1_35 https://github.com/simontaurus/mediawiki-extensions-ExternalData.git extensions/ExternalData \
     && jq '.extra."merge-plugin".include += ["extensions/ExternalData/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #https://www.mediawiki.org/wiki/Extension:External_Data/Local_programs
     && apt-get -y install graphviz \
@@ -189,33 +191,36 @@ RUN set -x; \
     && cd ..
 
 ##### SEMANTIC MEDIAWIKI
+# versions form https://github.com/CanastaWiki/Canasta/blob/master/_sources/configs/composer.canasta.json
 RUN set -x; \
     cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:3.2.3 \
-    #&& COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:3.2 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:4.0.2 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:4.0.1 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.1 \
     && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:~1.0 \
-    #&& COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:2.1.0 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:2.1.0 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-interlanguage-links:2.1 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-breadcrumb-links "~2.0" \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:~9.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:3.0.1 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:~2.2 \
+    # && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-interlanguage-links:2.1 \ #not compatible with SMW > 4.0
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-breadcrumb-links:2.1.x-dev \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:10.0.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-forms-select:4.0.x-dev \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:~2.2 \
     ## SRF
     && cd $MW_HOME/extensions \
     #&& git clone --depth 1 -b use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git SemanticResultFormats \
-    && git clone --depth 1 -b REL1.35_use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git \
+    #&& git clone --depth 1 -b REL1.35_use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git \
     #&& git clone --depth 1 https://github.com/SemanticMediaWiki/Mermaid.git Mermaid \
-    && git clone --depth 1 https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties.git \
-    && git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
+    #&& git clone --depth 1 https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties.git \
+    #&& git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
     #&& git clone --depth 1 -b semantic_reference_template https://github.com/simontaurus/SemanticCite.git \ #needs update
-    && git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
-    #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
+    #&& git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
     ## SemanticActions
     && git clone --depth 1 -b dev_en https://github.com/OpenSemanticLab/SemanticActions.git \
     && git clone --depth 1 https://github.com/enterprisemediawiki/PageImporter.git \
     && cd $MW_HOME \
     #&& jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
-    && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    #&& jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #&& jq '.extra."merge-plugin".include += ["extensions/SemanticCite/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Apply 
     && cd $MW_HOME \
@@ -228,11 +233,7 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/Liquipedia/VariablesLua.git \
-    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-Capiunto.git Capiunto \
-    && cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:~2.1 \
-    && composer update  --no-dev --prefer-source \
-    && cd ..
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-Capiunto.git Capiunto
 
 ##### Multimedia and Editor extension
 RUN set -x; \
@@ -249,7 +250,7 @@ RUN set -x; \
     && cd TimedMediaHandler && composer install --no-dev && cd .. \
     && git clone --depth 1 https://github.com/StarCitizenWiki/mediawiki-extensions-EmbedVideo EmbedVideo \
     ## Visual Editor
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Math.git \
+    # && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Math.git \ # bundled in REL1_39
     && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm librsvg2-dev build-essential \
     && mkdir -p /usr/local/nodejs/mathoid/ && cd /usr/local/nodejs/mathoid/ \
     && npm install mathoid \
@@ -269,11 +270,11 @@ RUN set -x; \
 ##### UI extensions
 RUN set -x; \
     cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/sub-page-list "~1.5" \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/sub-page-list "2.0.2" \
     #&& COMPOSER=composer.local.json composer require --no-update hallowelt/cognitiveprocessdesigner "dev-REL1_31" \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CognitiveProcessDesigner.git extensions/CognitiveProcessDesigner \
     && jq '.extra."merge-plugin".include += ["extensions/CognitiveProcessDesigner/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
-    #&& COMPOSER=composer.local.json composer require --no-update "mediawiki/simple-batch-upload:^1.0" \
+    #&& COMPOSER=composer.local.json composer require --no-update "mediawiki/simple-batch-upload:1.8.2" \
     && git clone -b mobile-camera-upload https://github.com/OpenSemanticLab/mediawiki-extensions-SimpleBatchUpload.git extensions/SimpleBatchUpload \
     && jq '.extra."merge-plugin".include += ["extensions/SimpleBatchUpload/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Widgets.git extensions/Widgets \
@@ -283,9 +284,10 @@ RUN set -x; \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-JSBreadCrumbs.git JSBreadCrumbs \
     && git clone --depth 1 https://gitlab.com/organicdesign/TreeAndMenu.git TreeAndMenu \
-    && git clone --depth 1 -b $MW_VERSION-dev https://github.com/OpenSemanticLab/mediawiki-extensions-DisplayTitle.git DisplayTitle \
-    && git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-PageForms.git PageForms \
-    #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
+    && git clone --depth 1 -b REL1_35-dev https://github.com/OpenSemanticLab/mediawiki-extensions-DisplayTitle.git DisplayTitle \
+    #&& git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-PageForms.git PageForms \
+    ## installed with composer by SemanticFormsSelect
+    # && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \ 
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-MagicNoCache.git MagicNoCache \
     && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-HeaderTabs.git HeaderTabs \ 
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-UploadWizard.git UploadWizard \
@@ -340,7 +342,7 @@ RUN set -x; \
     && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab \
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticProperties.git SemanticProperties \
     ## patch VisualEditor
-    && rm -r VisualEditor && git clone -b REL1_35-dev https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git VisualEditor && cd VisualEditor && git submodule update --init && cd .. \
+    ## && rm -r VisualEditor && git clone -b REL1_35-dev https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git VisualEditor && cd VisualEditor && git submodule update --init && cd .. \
     #&& cd VisualEditor && git remote add fork https://github.com/simontaurus/mediawiki-extensions-VisualEditor.git && git fetch fork && git switch -c REL1_35-dev fork/REL1_35-dev && cd .. \
     #manual patch of external submodule VisualEditor (lib/ve)
     #&& sed -i -e "s/surface.getModel().setLinearSelection( startNode.getOuterRange() );/if (startNode.length != 0) surface.getModel().setLinearSelection( startNode.getOuterRange() );/g" VisualEditor/lib/ve/src/ce/keydownhandlers/ve.ce.LinearDeleteKeyDownHandler.js \

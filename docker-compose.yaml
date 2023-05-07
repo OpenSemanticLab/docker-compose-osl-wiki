@@ -58,7 +58,7 @@ services:
             - MW_SITE_NAME=${MW_SITE_NAME}
             - MW_SITE_LANG=${MW_SITE_LANG}
             - MW_TIME_ZONE=${MW_TIME_ZONE}
-            - MW_DEFAULT_SKIN=timeless
+            - MW_DEFAULT_SKIN=Citizen
             - MW_ENABLE_UPLOADS=1
             - MW_USE_INSTANT_COMMONS=0
             - MW_ADMIN_USER=admin

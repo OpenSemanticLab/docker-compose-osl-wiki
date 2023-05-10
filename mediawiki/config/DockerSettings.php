@@ -34,6 +34,7 @@ $wgDefaultSkin = getenv( 'MW_DEFAULT_SKIN' );
 wfLoadExtension( 'MobileFrontend' );
 $wgMFAutodetectMobileView = false;
 #$wgMFDefaultSkinClass = 'SkinMinerva';
+$wgCitizenTableNowrapClasses[] = 'info_box'; # disable wrapping of info_box tables
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
 $wgUseInstantCommons  = getenv( 'MW_USE_INSTANT_COMMONS' );

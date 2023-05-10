@@ -108,7 +108,7 @@ RUN set -x; \
     ## non-bundled
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Modern \
     && git clone --depth 1 https://github.com/jthingelstad/foreground \
-    && git clone --depth 1 https://github.com/StarCitizenTools/mediawiki-skins-Citizen Citizen \
+    && git clone --depth 1 -b osw https://github.com/OpenSemanticLab/mediawiki-skins-Citizen Citizen \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/MobileFrontend \
     && cd $MW_HOME \
@@ -182,7 +182,7 @@ RUN set -x; \
     && cd extensions/LinkedWiki && npm install --production && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/LinkedWiki/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## WSSlots
-    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/WSSlots.git extensions/WSSlots \
+    && git clone --depth 1 -b master https://github.com/OpenSemanticLab/WSSlots.git extensions/WSSlots \
     && jq '.extra."merge-plugin".include += ["extensions/WSSlots/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## PageExchange
     && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-PageExchange extensions/PageExchange \
@@ -194,8 +194,8 @@ RUN set -x; \
 # versions form https://github.com/CanastaWiki/Canasta/blob/master/_sources/configs/composer.canasta.json
 RUN set -x; \
     cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:4.0.2 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:4.0.1 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:4.1.1 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:4.0.2 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.1 \
     && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:~1.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:3.0.1 \
@@ -214,7 +214,7 @@ RUN set -x; \
     #&& git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
     #&& git clone --depth 1 -b semantic_reference_template https://github.com/simontaurus/SemanticCite.git \ #needs update
     #&& git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
-    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && git clone --depth 1 -b master https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
     ## SemanticActions
     && git clone --depth 1 -b dev_en https://github.com/OpenSemanticLab/SemanticActions.git \
     && git clone --depth 1 https://github.com/enterprisemediawiki/PageImporter.git \

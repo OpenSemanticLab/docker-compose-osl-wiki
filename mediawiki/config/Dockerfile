@@ -318,9 +318,9 @@ RUN set -x; \
     && jq '.extra."merge-plugin".include += ["extensions/OAuth/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Account management e. g. via Keycloak
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PluggableAuth.git extensions/PluggableAuth \
-    #&& git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
-    #patched version allowing custom name attributes
-    && git clone --depth 1 -b $MW_VERSION https://github.com/OpenSemanticLab/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
+    ##patched version allowing custom name attributes
+    #&& git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
     && jq '.extra."merge-plugin".include += ["extensions/OpenIDConnect/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #display realname beside userids
     && git clone --depth 1 https://github.com/ofbeaton/mediawiki-realnames.git extensions/Realnames \

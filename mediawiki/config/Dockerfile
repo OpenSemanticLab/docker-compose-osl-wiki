@@ -350,6 +350,14 @@ RUN set -x; \
     && composer update  --no-dev --prefer-source \
     && cd ..
 
+#### POSTGRES ####
+RUN set -x; \
+    cd $MW_HOME \
+    && apt-get -y install postgresql-client \
+    && curl https://github.com/OpenSemanticLab/mediawiki/commit/f4fb3caa87aeed3cbf9acace73ad1060a26a1f71.patch | git apply -v \
+    && cd $MW_HOME/extensions/ExternalData && curl https://github.com/simontaurus/mediawiki-extensions-ExternalData/commit/e883f92214449ace1873b7b1b6fde6da926c6dc4.patch  | git apply -v \
+    && cd $MW_HOME/extensions/PageExchange && curl https://github.com/OpenSemanticLab/mediawiki-extensions-PageExchange/commit/7ffd3ddaf41144771f7ce0320d5b87bc488535af.patch | git apply -v 
+
 #### Run maintenance sripts
 # Increase value for run maintenance script before web service started
 ENV MW_AUTOUPDATE=true \
@@ -398,8 +406,8 @@ COPY pub $MW_HOME/pub
 COPY ca-certificates /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
-FROM scratch
-COPY --from=custom / /
+#FROM scratch
+#COPY --from=custom / /
 ENV MW_HOME=/var/www/html/w \
     MW_VOLUME=/mediawiki
 

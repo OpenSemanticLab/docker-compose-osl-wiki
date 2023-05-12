@@ -37,8 +37,13 @@ wait_database_started ()
     echo "Waiting for database to start"
     mysql=( mysql -h db -u$1 -p$2 ) 
 
+    echo "db:5432:mediawiki:postgres:change_me123123" > ~/.pgpass
+    chmod 0600 ~/.pgpass
+    #psql postgresql://postgres@db:5432/mediawiki
+    psql=( psql postgresql://postgres@db:5432/mediawiki ) 
+
     for i in {300..0}; do
-        if echo 'SELECT 1' | "${mysql[@]}" &> /dev/null; then
+        if echo 'SELECT 1' | "${psql[@]}" &> /dev/null; then
                 break
         fi
         echo 'Waiting for database to start...'
@@ -186,7 +191,7 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
         php maintenance/install.php \
             --confpath "$MW_VOLUME" \
             --dbserver "db" \
-            --dbtype "mysql" \
+            --dbtype "postgres" \
             --dbname "$MW_DB_NAME" \
             --dbuser "$MW_DB_USER" \
             --dbpass "$MW_DB_PASS" \

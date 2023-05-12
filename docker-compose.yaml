@@ -5,17 +5,28 @@
 
 version: '3.8'
 services:
+    #db:
+    #    image: mysql:8.0.17
+    #    command: mysqld --default-authentication-plugin=mysql_native_password
+    #    restart: unless-stopped
+    #    ports:
+    #        - "${MYSQL_HOST_PORT}:3306"
+    #    environment:
+    #        - MYSQL_ROOT_HOST=%
+    #        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    #    volumes:
+    #        - ./mysql/data:/var/lib/mysql
+
     db:
-        image: mysql:8.0.17
-        command: mysqld --default-authentication-plugin=mysql_native_password
-        restart: unless-stopped
+        image: postgres:14
         ports:
-            - "${MYSQL_HOST_PORT}:3306"
-        environment:
-            - MYSQL_ROOT_HOST=%
-            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - "${MYSQL_HOST_PORT}:5432"
         volumes:
-            - ./mysql/data:/var/lib/mysql
+        - ./postgres/data:/var/lib/postgresql/data
+        environment:
+        - POSTGRES_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=mediawiki
 
     graphdb:
         image: nawer/blazegraph
@@ -66,7 +77,7 @@ services:
             - MW_DB_NAME=mediawiki
             - MW_DB_USER=mwuser
             - MW_DB_PASS=${MW_DB_PASS}
-            - MW_DB_INSTALLDB_USER=root
+            - MW_DB_INSTALLDB_USER=postgres
             - MW_DB_INSTALLDB_PASS=${MYSQL_ROOT_PASSWORD}
             - MW_AUTOUPDATE=true
             - MW_REINSTALL=true

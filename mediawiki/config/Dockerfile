@@ -194,7 +194,7 @@ RUN set -x; \
 # versions form https://github.com/CanastaWiki/Canasta/blob/master/_sources/configs/composer.canasta.json
 RUN set -x; \
     cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:^4.1.1 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:dev-master \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:4.0.2 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.1 \
     && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:~1.0 \

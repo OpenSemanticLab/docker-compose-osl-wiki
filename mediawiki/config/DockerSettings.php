@@ -35,6 +35,8 @@ wfLoadExtension( 'MobileFrontend' );
 $wgMFAutodetectMobileView = false;
 #$wgMFDefaultSkinClass = 'SkinMinerva';
 $wgCitizenTableNowrapClasses[] = 'info_box'; # disable wrapping of info_box tables
+$wgCitizenSearchGateway = "smwAskApi";
+$wgCitizenSearchSmwAskApiQueryTemplate = '[[HasLabel::~*${input}*]]|?HasLabel=displaytitle|?HasImage=thumbnail|?HasDescription=desc';
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
 $wgUseInstantCommons  = getenv( 'MW_USE_INSTANT_COMMONS' );
@@ -153,6 +155,11 @@ $wgCirrusSearchPrefixWeights = [
         'title_asciifolding' => 7,
         'redirect_asciifolding' => 0.7,
 ];
+
+//allow fuzzy search and "do you mean" suggestions
+//see also https://www.mediawiki.org/w/index.php?title=Topic:Wj3av65bti5a8v7o&topic_showPostId=wj6z0ty2ut72b3hw#flow-post-wj6z0ty2ut72b3hw
+$wgCirrusSearchPhraseSuggestUseText = true;
+
 
 //rebuild index with
 /*

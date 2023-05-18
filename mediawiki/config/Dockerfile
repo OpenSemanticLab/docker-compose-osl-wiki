@@ -201,7 +201,7 @@ RUN set -x; \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:3.0.1 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:~2.2 \
     # && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-interlanguage-links:2.1 \ #not compatible with SMW > 4.0
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-breadcrumb-links:2.1.x-dev \
+    # && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-breadcrumb-links:2.1.x-dev \ #installation problem with composer
     && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:10.0.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-forms-select:4.0.x-dev \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:~2.2 \

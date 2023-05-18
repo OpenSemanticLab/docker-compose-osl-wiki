@@ -503,7 +503,7 @@ if ( $flowNamespaces ) {
 
 ######################## UI  #############################
 $wgNamespacesWithSubpages[NS_MAIN] = true;
-wfLoadExtension( 'SemanticBreadcrumbLinks' );
+#wfLoadExtension( 'SemanticBreadcrumbLinks' ); //installation problem with composer
 $wgNamespacesWithSubpages[NS_TEMPLATE] = true; //NS Template
 $smwgNamespacesWithSemanticLinks[NS_TEMPLATE] = true; //Needed for Subpage Navbar
 wfLoadExtension( 'JSBreadCrumbs' );

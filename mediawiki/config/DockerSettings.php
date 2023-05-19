@@ -36,7 +36,8 @@ $wgMFAutodetectMobileView = false;
 #$wgMFDefaultSkinClass = 'SkinMinerva';
 $wgCitizenTableNowrapClasses[] = 'info_box'; # disable wrapping of info_box tables
 $wgCitizenSearchGateway = "smwAskApi";
-$wgCitizenSearchSmwAskApiQueryTemplate = '[[HasLabel::~*${input}*]]|?HasLabel=displaytitle|?HasImage=thumbnail|?HasDescription=desc';
+#$wgCitizenSearchSmwAskApiQueryTemplate = '[[HasLabel::~*${input}*]]|?HasLabel=displaytitle|?HasImage=thumbnail|?HasDescription=desc';
+$wgCitizenSearchSmwAskApiQueryTemplate = '[[Display_title_of::~*${input}*]]|?Display_title_of=displaytitle|?HasImage=thumbnail';
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
 $wgUseInstantCommons  = getenv( 'MW_USE_INSTANT_COMMONS' );
@@ -580,3 +581,11 @@ wfLoadExtension( 'InteractiveSemanticGraph' );
 ####################### Custom Content #####################
 wfLoadExtension( 'PageExchange' );
 $wgPageExchangeFileDirectories[] = 'https://raw.githubusercontent.com/OpenSemanticLab/PagePackages/main/package_index.txt';
+
+$wgPageImagesNamespaces[] = 7000;
+$wgPageImagesNamespaces[] = NS_CATEGORY;
+$sespgEnabledPropertyList = [
+    '_PAGEIMG',
+];
+
+$wgCitizenTableNowrapClasses[] = 'layout-table'; # disable wrapping of layout-table tables

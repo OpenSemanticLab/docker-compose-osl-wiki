@@ -5,9 +5,9 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 #Debug Settings
 if ( getenv( 'MW_SHOW_EXCEPTION_DETAILS' ) === 'true' ) {
-    error_reporting( -1 );
-    ini_set( 'display_errors', 1 );
-    $wgShowExceptionDetails = true;
+#    error_reporting( -1 );
+#    ini_set( 'display_errors', 1 );
+#    $wgShowExceptionDetails = true;
 }
 
 ########################### Core Settings ##########################
@@ -34,6 +34,10 @@ $wgDefaultSkin = getenv( 'MW_DEFAULT_SKIN' );
 wfLoadExtension( 'MobileFrontend' );
 $wgMFAutodetectMobileView = false;
 #$wgMFDefaultSkinClass = 'SkinMinerva';
+$wgCitizenTableNowrapClasses[] = 'info_box'; # disable wrapping of info_box tables
+$wgCitizenSearchGateway = "smwAskApi";
+#$wgCitizenSearchSmwAskApiQueryTemplate = '[[HasLabel::~*${input}*]]|?HasLabel=displaytitle|?HasImage=thumbnail|?HasDescription=desc';
+$wgCitizenSearchSmwAskApiQueryTemplate = '[[Display_title_of::~*${input}*]]|?Display_title_of=displaytitle|?HasImage=thumbnail';
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
 $wgUseInstantCommons  = getenv( 'MW_USE_INSTANT_COMMONS' );
@@ -153,6 +157,11 @@ $wgCirrusSearchPrefixWeights = [
         'redirect_asciifolding' => 0.7,
 ];
 
+//allow fuzzy search and "do you mean" suggestions
+//see also https://www.mediawiki.org/w/index.php?title=Topic:Wj3av65bti5a8v7o&topic_showPostId=wj6z0ty2ut72b3hw#flow-post-wj6z0ty2ut72b3hw
+$wgCirrusSearchPhraseSuggestUseText = true;
+
+
 //rebuild index with
 /*
 php /var/www/html/w/extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php --startOver
@@ -192,7 +201,7 @@ $wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
 //Whether to enable the visual diff function on the history special page. 
 $wgVisualEditorEnableDiffPage = true;
 
-wfLoadExtension( 'Math' );
+wfLoadExtension( 'Math' ); # bundled in REL1_39
 #$wgMathValidModes[] = 'mathml';
 #$wgDefaultUserOptions['math'] = 'mathml';
 //use local cli. disable speech (config.prod.yaml) may improve performance
@@ -235,7 +244,7 @@ $wgWhitelistRead[] = 'Project:Privacy_policy';
 $wgWhitelistRead[] = 'Project:General_disclaimer';
 $wgWhitelistRead[] = 'Project:Terms_of_Service'; #redirect to Project:Privacy_policy needed
 $wgAllowExternalImages = true; #to use images on public main page
-$wgAllowImageTag = true;
+# $wgAllowImageTag = true;
 ## access images over img_auth.php
 $wgUploadPath = "$wgScriptPath/img_auth.php";
 
@@ -284,6 +293,7 @@ $wgMaxImageArea = 200e6; //Creates thumbnails of images up to 100 Megapixels
 $wgMaxShellFileSize = 102400*10;
 
 ####################### Bundled extensions #########################
+#wfLoadExtension( 'AbuseFilter' );
 wfLoadExtension( 'CategoryTree' );
 wfLoadExtension( 'Cite' );
 wfLoadExtension( 'CiteThisPage' );
@@ -296,8 +306,7 @@ wfLoadExtension( 'InputBox' );
 wfLoadExtension( 'Interwiki' );
 $wgGroupPermissions['sysop']['interwiki'] = true; // To grant sysops permissions to edit interwiki data
 #$wgEnableScaryTranscluding = true; //To enable transclusion from other sites
-#wfLoadExtension( 'LocalisationUpdate' );
-#$wgLocalisationUpdateDirectory = "$IP/cache";
+#wfLoadExtension( 'Math' ); # bundled in REL1_39 but customized
 wfLoadExtension( 'MultimediaViewer' );
 $wgMediaViewerEnableByDefault = false; //to enable direct download of files
 wfLoadExtension( 'Nuke' );
@@ -310,6 +319,7 @@ wfLoadExtension( 'Poem' );
 wfLoadExtension( 'Renameuser' );
 wfLoadExtension( 'ReplaceText' );
 $wgGroupPermissions['bureaucrat']['replacetext'] = true;
+#wfLoadExtension( 'Scribunto' ); # bundled in REL1_39 but customized
 wfLoadExtension( 'SecureLinkFixer' );
 #wfLoadExtension( 'SpamBlacklist' ); //not needed for private wiki
 wfLoadExtension( 'SyntaxHighlight_GeSHi' );
@@ -317,6 +327,7 @@ wfLoadExtension( 'SyntaxHighlight_GeSHi' );
 wfLoadExtension( 'TemplateData' );
 wfLoadExtension( 'TextExtracts' );
 wfLoadExtension( 'TitleBlacklist' );
+#wfLoadExtension( 'VisualEditor' ); # bundled in REL1_39 but customized
 wfLoadExtension( 'WikiEditor' );
 
 
@@ -382,6 +393,7 @@ $egPushAllAttachedNamespaces[] = "Discussion";
 
 
 ########### Semantic Mediawiki ###############
+wfLoadExtension( 'SemanticMediaWiki' );
 #strip protocol from MW_SITE_SERVER
 enableSemantics( preg_replace( "#^[^:/.]*[:/]+#i", "", getenv( 'MW_SITE_SERVER' ) ) );
 
@@ -420,10 +432,10 @@ wfLoadExtension( 'SemanticExtraSpecialProperties' );
 wfLoadExtension( 'SemanticCompoundQueries' );
 #wfLoadExtension( 'SemanticCite' );
 ##$GLOBALS['wgGroupPermissions']['user']['sci-metasearch'] = false;
-wfLoadExtension( 'SemanticInterlanguageLinks' );
+#wfLoadExtension( 'SemanticInterlanguageLinks' );
 wfLoadExtension('PageImporter'); #import templates and forms for SemanticActions
 #run once: php extensions/PageImporter/importPages.php
-wfLoadExtension('SemanticActions');
+#wfLoadExtension('SemanticActions');
 $egSemanticActionsAssigneeValuesFrom = "User";
 
 #Enable Semantic NS
@@ -499,7 +511,7 @@ if ( $flowNamespaces ) {
 
 ######################## UI  #############################
 $wgNamespacesWithSubpages[NS_MAIN] = true;
-wfLoadExtension( 'SemanticBreadcrumbLinks' );
+#wfLoadExtension( 'SemanticBreadcrumbLinks' ); //installation problem with composer
 $wgNamespacesWithSubpages[NS_TEMPLATE] = true; //NS Template
 $smwgNamespacesWithSemanticLinks[NS_TEMPLATE] = true; //Needed for Subpage Navbar
 wfLoadExtension( 'JSBreadCrumbs' );
@@ -569,3 +581,11 @@ wfLoadExtension( 'InteractiveSemanticGraph' );
 ####################### Custom Content #####################
 wfLoadExtension( 'PageExchange' );
 $wgPageExchangeFileDirectories[] = 'https://raw.githubusercontent.com/OpenSemanticLab/PagePackages/main/package_index.txt';
+
+$wgPageImagesNamespaces[] = 7000;
+$wgPageImagesNamespaces[] = NS_CATEGORY;
+$sespgEnabledPropertyList = [
+    '_PAGEIMG',
+];
+
+$wgCitizenTableNowrapClasses[] = 'layout-table'; # disable wrapping of layout-table tables

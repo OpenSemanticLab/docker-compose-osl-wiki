@@ -182,7 +182,7 @@ RUN set -x; \
     && cd extensions/LinkedWiki && npm install --production && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/LinkedWiki/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## WSSlots
-    && git clone --depth 1 -b fix-slotrecord-class-name https://github.com/OpenSemanticLab/WSSlots.git extensions/WSSlots \
+    && git clone --depth 1 https://github.com/OpenSemanticLab/WSSlots.git extensions/WSSlots \
     && jq '.extra."merge-plugin".include += ["extensions/WSSlots/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## PageExchange
     && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-PageExchange extensions/PageExchange \
@@ -317,8 +317,8 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-OAuth.git extensions/OAuth \
     && jq '.extra."merge-plugin".include += ["extensions/OAuth/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Account management e. g. via Keycloak
-    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PluggableAuth.git extensions/PluggableAuth \
-    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
+    && git clone --depth 1 -b 6.3 https://github.com/wikimedia/mediawiki-extensions-PluggableAuth.git extensions/PluggableAuth \
+    && git clone --depth 1 -b 6.2 https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
     ##patched version allowing custom name attributes
     #&& git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-OpenIDConnect.git extensions/OpenIDConnect \
     && jq '.extra."merge-plugin".include += ["extensions/OpenIDConnect/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \

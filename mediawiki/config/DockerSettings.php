@@ -533,7 +533,9 @@ $wgEventLoggingDBname = $wgDBname;
 #wfLoadExtension( 'GettingStarted' );
 #wfLoadExtension( 'Iframe' );
 wfLoadExtension( 'Reveal' );
-
+wfLoadExtension( 'WikiMarkdown' );
+$wgAllowMarkdownExtra = true; // allows usage of Parsedown Extra
+$wgAllowMarkdownExtended = true; // allows usage of Parsedown Extended
 
 ####################### Auth ####################
 ## Manual Account request and confirmation

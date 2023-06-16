@@ -259,13 +259,16 @@ RUN set -x; \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-VEForAll.git VEForAll \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CodeMirror.git CodeMirror \
+    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/WikiMarkdown.git WikiMarkdown \
+    && cd $MW_HOME && jq '.extra."merge-plugin".include += ["extensions/WikiMarkdown/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json && cd $MW_HOME/extensions \
     ## Other Editors
     #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DrawioEditor.git DrawioEditor \
     && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-DrawioEditor DrawioEditor \
     #  apply patch for private wikis, see: https://phabricator.wikimedia.org/T271347
     && sed -i -e "s/static \$validNamespaces = \[/static \$validNamespaces = \['http:\/\/www.w3.org\/1999\/xhtml',/g" $MW_HOME/includes/upload/UploadBase.php \
     && sed -i -e "s/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' );/\/\/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' ); /g" $MW_HOME/extensions/DrawioEditor/resources/ext.drawioeditor.js \
-    && cd .. 
+    && cd $MW_HOME \
+    && composer update  --no-dev --prefer-source
 
 ##### UI extensions
 RUN set -x; \

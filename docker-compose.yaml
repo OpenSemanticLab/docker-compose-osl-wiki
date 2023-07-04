@@ -32,7 +32,7 @@ services:
     mediawiki:
         image: opensemanticlab/osl-mw
         build:
-            context: ./mediawiki/config
+            context: ./mediawiki/build
             dockerfile: Dockerfile
             args:
                SSH_PASS: ${SSH_PASS}

@@ -285,7 +285,8 @@ $wgMaxUploadSize = 2147483647; //allow max 2GB uploads
 
 $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
     'xls', 'csv', 'txt', 'json', 'mpp', 'pdf', 'ppt', 'tif', 'tiff', 'bmp', 'docx', 'xlsx',
-    'pptx', 'ps', 'odt', 'ods', 'odp', 'odg', 'svg', 'mp4', 'mp3'
+    'pptx', 'ps', 'odt', 'ods', 'odp', 'odg', 'svg', 'mp4', 'mp3',
+    'hdf', 'h4', 'hdf4', 'he2', 'h5', 'hdf5', 'he5', # HDF File format
 );
 
 $wgUseImageMagick = true;

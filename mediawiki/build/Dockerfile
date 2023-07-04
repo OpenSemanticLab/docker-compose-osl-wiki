@@ -207,7 +207,7 @@ RUN set -x; \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:~2.2 \
     # && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-interlanguage-links:2.1 \ #not compatible with SMW > 4.0
     # && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-breadcrumb-links:2.1.x-dev \ #installation problem with composer
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:10.0.0 \
+    # && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:10.0.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-forms-select:4.0.x-dev \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:~2.2 \
     ## SRF
@@ -218,8 +218,9 @@ RUN set -x; \
     #&& git clone --depth 1 https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties.git \
     #&& git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
     #&& git clone --depth 1 -b semantic_reference_template https://github.com/simontaurus/SemanticCite.git \ #needs update
-    #&& git clone --depth 1 -b fix-smw-hook-parameter-type-int https://github.com/simontaurus/mediawiki-extensions-SemanticACL.git SemanticACL \
-    && git clone --depth 1 -b master https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticACL.git SemanticACL \
+    #&& git clone --depth 1 -b master https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && git clone -b dev https://github.com/OpenSemanticLab/Maps \
     ## SemanticActions
     && git clone --depth 1 -b dev_en https://github.com/OpenSemanticLab/SemanticActions.git \
     && git clone --depth 1 https://github.com/enterprisemediawiki/PageImporter.git \
@@ -227,6 +228,7 @@ RUN set -x; \
     #&& jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #&& jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #&& jq '.extra."merge-plugin".include += ["extensions/SemanticCite/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && jq '.extra."merge-plugin".include += ["extensions/Maps/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Apply 
     && cd $MW_HOME \
     && composer update  --no-dev --prefer-source --optimize-autoloader \

@@ -98,6 +98,7 @@ switch ( getenv( 'MW_MAIN_CACHE_TYPE' ) ) {
 
 #The path of the temporary directory. see https://www.mediawiki.org/wiki/Manual:$wgTmpDirectory
 $wgTmpDirectory = $IP . '/images/temp';
+$wgCacheDirectory = $IP . '/cache';
 
 ########################### Search ############################
 wfLoadExtension( 'Elastica' );

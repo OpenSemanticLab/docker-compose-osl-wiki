@@ -582,6 +582,7 @@ wfLoadExtension( 'SpreadsheetEditor' );
 wfLoadExtension( 'ChemEditor' );
 wfLoadExtension( 'InteractiveSemanticGraph' );
 wfLoadExtension( 'InteractiveSemanticGraph2' );
+wfLoadExtension( 'HdfHandler' );
 
 ####################### Custom Content #####################
 wfLoadExtension( 'PageExchange' );

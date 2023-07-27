@@ -13,7 +13,7 @@ while true; do
 	# Everything else, limit the number of jobs on each batch
 	# The --wait parameter will pause the execution here until new jobs are added,
 	# to avoid running the loop without anything to do
-	php $RUNJOBS --wait --maxjobs=30
+	php $RUNJOBS --wait --maxjobs=500
 	# Wait some seconds to let the CPU do other things, like handling web requests, etc
 	echo Waiting for 3 seconds...
 	sleep 3

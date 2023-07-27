@@ -410,8 +410,6 @@ COPY pub $MW_HOME/pub
 COPY ca-certificates /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
-FROM scratch
-COPY --from=custom / /
 ENV MW_HOME=/var/www/html/w \
     MW_VOLUME=/mediawiki
 

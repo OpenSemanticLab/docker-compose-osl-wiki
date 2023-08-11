@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 AS base
+FROM ubuntu:22.04 AS base
 
 LABEL maintainers="simon.stier@gmx.de"
 
@@ -8,7 +8,8 @@ ENV MW_VERSION=REL1_39 \
     WWW_USER=www-data \
     WWW_GROUP=www-data \
     APACHE_LOG_DIR=/var/log/apache2 \
-    PHP_VERSION=7.4
+    PHP_VERSION=8.1 \
+    DEBIAN_FRONTEND=noninteractive
 
 # Install requered packages
 RUN set -x; \

@@ -1,4 +1,5 @@
-# docker-compose-smw-35
+# OSL Docker image
+This repos is currently used to build the [OSL Mediawiki Docker Image](https://hub.docker.com/r/opensemanticlab/osl-mw). If you just want to use the image, go to https://github.com/OpenSemanticLab/osl-mw-docker-compose. Both repos will soon be merged.
 
 ## Install
 ```bash

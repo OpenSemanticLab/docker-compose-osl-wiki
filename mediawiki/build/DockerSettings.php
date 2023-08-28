@@ -448,9 +448,10 @@ $smwgNamespacesWithSemanticLinks[NS_FILE] = true;
 $smwgNamespacesWithSemanticLinks[NS_TEMPLATE] = true;
 $smwgNamespacesWithSemanticLinks[NS_HELP] = true;
 $smwgNamespacesWithSemanticLinks[NS_CATEGORY] = true;
-$smwgNamespacesWithSemanticLinks[SMW_NS_PROPERTY] = true;
-$smwgNamespacesWithSemanticLinks[SMW_NS_SCHEMA] = true;
-$smwgNamespacesWithSemanticLinks[SMW_NS_CONCEPT] = true;
+#some NS need hardcoded IDs, see https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/5281
+$smwgNamespacesWithSemanticLinks[102] = true; # SMW_NS_PROPERTY
+$smwgNamespacesWithSemanticLinks[114] = true; # SMW_NS_SCHEMA
+$smwgNamespacesWithSemanticLinks[108] = true; # SMW_NS_CONCEPT
 $smwgNamespacesWithSemanticLinks[690] = true; #Action
 $smwgNamespacesWithSemanticLinks[692] = true; #Label
 

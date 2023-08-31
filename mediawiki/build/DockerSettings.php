@@ -511,6 +511,18 @@ if ( $flowNamespaces ) {
         $wgNamespaceContentModels[ constant( $ns ) ] = 'flow-board';
     }
 }
+# fix see https://www.mediawiki.org/wiki/Topic:X8mv19b4va26u8tz
+wfLoadExtension( 'Parsoid', "$IP/vendor/wikimedia/parsoid/extension.json" );
+# enable Flow in build-in & SMW namespaces
+# $wgNamespaceContentModels[NS_USER_TALK] = 'flow-board';
+# $wgNamespaceContentModels[NS_PROJECT_TALK] = 'flow-board';
+# $wgNamespaceContentModels[NS_FILE_TALK] = 'flow-board';
+# $wgNamespaceContentModels[NS_TEMPLATE_TALK] = 'flow-board';
+# $wgNamespaceContentModels[NS_HELP_TALK] = 'flow-board';
+# $wgNamespaceContentModels[NS_CATEGORY_TALK] = 'flow-board';
+# $wgNamespaceContentModels[103] = 'flow-board'; # SMW_NS_PROPERTY_TALK
+# $wgNamespaceContentModels[115] = 'flow-board'; # SMW_NS_SCHEMA_TALK
+# $wgNamespaceContentModels[109] = 'flow-board'; # SMW_NS_CONCEPT_TALK
 
 ######################## UI  #############################
 $wgNamespacesWithSubpages[NS_MAIN] = true;

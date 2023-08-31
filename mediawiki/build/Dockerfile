@@ -155,7 +155,8 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Flow \
     && cd Flow \
     #patch for REL_1.35 with parsoid zeroconfig https://phabricator.wikimedia.org/T260648#6645078
-    #&& git fetch https://gerrit.wikimedia.org/r/mediawiki/extensions/Flow refs/changes/58/622258/7 && git checkout -b change-622258 FETCH_HEAD \
+    #see also: https://www.mediawiki.org/wiki/Topic:X8mv19b4va26u8tz
+    && git fetch https://gerrit.wikimedia.org/r/mediawiki/extensions/Flow refs/changes/58/622258/14 && git format-patch -1 --stdout FETCH_HEAD \
     && composer install --no-dev \
     && cd ..
 

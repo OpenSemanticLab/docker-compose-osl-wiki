@@ -245,7 +245,7 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/Liquipedia/VariablesLua.git \
-    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-Capiunto.git Capiunto
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Capiunto.git Capiunto
 
 ##### Multimedia and Editor extension
 RUN set -x; \

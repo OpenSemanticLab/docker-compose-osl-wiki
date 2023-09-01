@@ -602,6 +602,7 @@ wfLoadExtension( 'ChemEditor' );
 wfLoadExtension( 'InteractiveSemanticGraph' );
 wfLoadExtension( 'InteractiveSemanticGraph2' );
 wfLoadExtension( 'HdfHandler' );
+#wfLoadExtension( 'Chatbot' );
 
 ####################### Custom Content #####################
 wfLoadExtension( 'PageExchange' );

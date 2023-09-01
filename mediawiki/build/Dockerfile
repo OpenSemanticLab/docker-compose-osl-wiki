@@ -158,7 +158,8 @@ RUN set -x; \
     #see also: https://www.mediawiki.org/wiki/Topic:X8mv19b4va26u8tz
     && git fetch https://gerrit.wikimedia.org/r/mediawiki/extensions/Flow refs/changes/58/622258/14 && git format-patch -1 --stdout FETCH_HEAD \
     && composer install --no-dev \
-    && cd ..
+    && cd $MW_HOME \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CommentStreams extensions/CommentStreams
 
 FROM base as extensions
 

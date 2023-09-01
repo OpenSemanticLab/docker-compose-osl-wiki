@@ -524,6 +524,12 @@ wfLoadExtension( 'Parsoid', "$IP/vendor/wikimedia/parsoid/extension.json" );
 # $wgNamespaceContentModels[115] = 'flow-board'; # SMW_NS_SCHEMA_TALK
 # $wgNamespaceContentModels[109] = 'flow-board'; # SMW_NS_CONCEPT_TALK
 
+########### CommentStreams ###############
+# wfLoadExtension( 'CommentStreams' ); # not enabled by default
+# $wgCommentStreamsEnableVoting = true;
+# $wgCommentStreamsSuppressLogsFromRCs = false;
+# $wgCommentStreamsAllowedNamespaces = []; # not enable by default in any namespace
+
 ######################## UI  #############################
 $wgNamespacesWithSubpages[NS_MAIN] = true;
 #wfLoadExtension( 'SemanticBreadcrumbLinks' ); //installation problem with composer

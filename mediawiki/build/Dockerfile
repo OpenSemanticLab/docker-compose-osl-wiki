@@ -355,7 +355,7 @@ RUN set -x; \
     && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-ChemEditor.git ChemEditor \
     && git clone -b refactoring https://github.com/OpenSemanticLab/mediawiki-extensions-InteractiveSemanticGraph InteractiveSemanticGraph \
     && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-InteractiveSemanticGraph2 InteractiveSemanticGraph2 \
-    && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-HdfHandler HdfHandler \    
+    && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-SciFileHandler SciFileHandler \    
     && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab \
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticProperties.git SemanticProperties \
     && git clone --depth 1 https://github.com/OpenSemanticWorld/mediawiki-extensions-Chatbot.git Chatbot \

@@ -601,7 +601,12 @@ wfLoadExtension( 'SpreadsheetEditor' );
 wfLoadExtension( 'ChemEditor' );
 wfLoadExtension( 'InteractiveSemanticGraph' );
 wfLoadExtension( 'InteractiveSemanticGraph2' );
-wfLoadExtension( 'HdfHandler' );
+wfLoadExtension( 'SciFileHandler' );
+$wgFileExtensions = array_merge($wgFileExtensions, array(
+    'hdf', 'h4', 'hdf4', 'he2', 'h5', 'hdf5', 'he5', # HDF File format
+    'dx', 'jdx', 'jcm', # JCAMP-DX
+    'mpr', 'mps', 'mpt', # Biologic
+));
 #wfLoadExtension( 'Chatbot' );
 
 ####################### Custom Content #####################

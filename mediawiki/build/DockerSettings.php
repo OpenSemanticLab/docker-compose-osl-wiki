@@ -225,6 +225,7 @@ $wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
 #$wgMaxShellMemory *= 4; //already increased by Extension:Math
 wfLoadExtension( 'EmbedVideo' );
 $wgEmbedVideoFetchExternalThumbnails = false; #true will fetch external images before user consent
+wfLoadExtension( '3DAlloy' ); #3D Files
 
 ######################### Page Forms ###################
 wfLoadExtension( 'PageForms' );
@@ -288,6 +289,13 @@ $wgFileExtensions = array( 'png', 'gif', 'jpg', 'jpeg', 'doc',
     'pptx', 'ps', 'odt', 'ods', 'odp', 'odg', 'svg', 'mp4', 'mp3',
     'hdf', 'h4', 'hdf4', 'he2', 'h5', 'hdf5', 'he5', # HDF File format
 );
+# 3D Files
+$wgFileExtensions = array_merge( $wgFileExtensions, array(
+      'json', '3dj', '3djson', 'three',
+      'buff', 'buffjson',
+      'obj',
+      'stl', 'stlb'
+) );
 
 $wgUseImageMagick = true;
 $wgImageMagickConvertCommand = "/usr/bin/convert";

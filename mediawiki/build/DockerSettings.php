@@ -226,6 +226,9 @@ $wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
 wfLoadExtension( 'EmbedVideo' );
 $wgEmbedVideoFetchExternalThumbnails = false; #true will fetch external images before user consent
 wfLoadExtension( '3DAlloy' ); #3D Files
+#wfLoadExtension( 'WebDAV' ); // not enabled by default
+$wgWebDAVAuthType = 'token';
+$wgWebDAVInvalidateTokenOnUnlock = false; // MS Excel does a lock-unlock cycle right at the beginning
 
 ######################### Page Forms ###################
 wfLoadExtension( 'PageForms' );

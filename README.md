@@ -65,7 +65,7 @@ If you don't have an email server yet (optional, but necessary for notification 
 ### Optional Extensions
 wfLoadExtension( 'Widgets' );
 wfLoadExtension( 'TwitterTag' ); #Not GDPR conform!
-
+wfLoadExtension( 'WebDAV' ); # Allows access to uploaded files via WebDAV (e. g. directly with MS Word)
 
 ## Maintenance
 

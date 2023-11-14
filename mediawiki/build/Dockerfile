@@ -281,7 +281,11 @@ RUN set -x; \
     #  apply patch for private wikis, see: https://phabricator.wikimedia.org/T271347
     && sed -i -e "s/static \$validNamespaces = \[/static \$validNamespaces = \['http:\/\/www.w3.org\/1999\/xhtml',/g" $MW_HOME/includes/upload/UploadBase.php \
     && sed -i -e "s/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' );/\/\/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' ); /g" $MW_HOME/extensions/DrawioEditor/resources/ext.drawioeditor.js \
+    # WebDAV
+    && git clone --depth 1 https://github.com/OpenSemanticWorld/mediawiki-extensions-WebDAV.git WebDAV \
     && cd $MW_HOME \
+    && ln -s extensions/WebDAV/entrypoints/webdav.php webdav.php \
+    && jq '.extra."merge-plugin".include += ["extensions/WebDAV/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source
 
 ##### UI extensions

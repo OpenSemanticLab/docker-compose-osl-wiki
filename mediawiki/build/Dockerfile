@@ -260,7 +260,7 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler.git \
     && apt-get update && apt-get install -y --no-install-recommends ffmpeg \
     && cd TimedMediaHandler && composer install --no-dev && cd .. \
-    && git clone --depth 1 https://github.com/StarCitizenWiki/mediawiki-extensions-EmbedVideo EmbedVideo \
+    && git clone --depth 1 -b v3.3.0 https://github.com/StarCitizenWiki/mediawiki-extensions-EmbedVideo EmbedVideo \
     # 3D Files
     && git clone --depth 1 https://github.com/dolfinus/3DAlloy 3DAlloy \
     ## Visual Editor

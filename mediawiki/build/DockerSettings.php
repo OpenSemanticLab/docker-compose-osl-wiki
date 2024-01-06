@@ -428,7 +428,8 @@ $smwgNamespace =  getenv( 'MW_SITE_SERVER' ) . '/id/';
 #needs rebuild: php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 
 #$smwgShowFactbox = SMW_FACTBOX_NONEMPTY; #Show factboxes only if they have some content
-$smwgShowFactbox = SMW_FACTBOX_SHOWN; #Enable the factbox to be always shown - has no effect?
+#$smwgShowFactbox = SMW_FACTBOX_SHOWN; #Enable the factbox to be always shown - has no effect?
+$smwgShowFactbox = SMW_FACTBOX_HIDDEN; #Never show it
 
 wfLoadExtension( 'SemanticResultFormats' );
 $srfgFormats[] = 'graph';

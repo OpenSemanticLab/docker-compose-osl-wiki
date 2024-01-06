@@ -7,7 +7,8 @@ version: '3.8'
 services:
     db:
         image: mysql:8.0.17
-        command: mysqld --default-authentication-plugin=mysql_native_password
+        # command starts mysql with passwort enabled and log expire (they build up to several GBs otherwise)
+        command: mysqld --default-authentication-plugin=mysql_native_password --expire_logs_days=3
         restart: unless-stopped
         ports:
             - "${MYSQL_HOST_PORT}:3306"

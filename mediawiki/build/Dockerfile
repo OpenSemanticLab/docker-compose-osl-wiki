@@ -203,7 +203,7 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:dev-master \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:4.0.2 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:4.2.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.1 \
     && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:~1.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:3.0.1 \

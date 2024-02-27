@@ -9,7 +9,9 @@ ENV MW_VERSION=REL1_39 \
     WWW_GROUP=www-data \
     APACHE_LOG_DIR=/var/log/apache2 \
     PHP_VERSION=8.1 \
-    DEBIAN_FRONTEND=noninteractive
+    DEBIAN_FRONTEND=noninteractive \
+    # allow plugins to run as root/super user
+    COMPOSER_ALLOW_SUPERUSER=1 
 
 # Install requered packages
 RUN set -x; \

@@ -230,8 +230,8 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
     
     #development: always run update.php for SMW
     php maintenance/update.php
-    #workaround for https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/4865
-    php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/updateEntityCountMap.php
+    #workaround for https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/4865 => fixed
+    # php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/updateEntityCountMap.php
 
     ### maintenance/update.php
     run_maintenance_script_if_needed 'maintenance_update' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/update.php --quick' 

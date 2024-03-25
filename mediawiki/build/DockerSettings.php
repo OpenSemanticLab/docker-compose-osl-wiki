@@ -36,8 +36,14 @@ $wgMFAutodetectMobileView = false;
 #$wgMFDefaultSkinClass = 'SkinMinerva';
 $wgCitizenTableNowrapClasses[] = 'info_box'; # disable wrapping of info_box tables
 $wgCitizenSearchGateway = "smwAskApi";
-$wgCitizenSearchSmwAskApiQueryTemplate = '[[HasLabel::~*${input}*]]|?HasLabel=displaytitle|?HasImage=thumbnail|?HasDescription=desc';
+#$wgCitizenSearchSmwAskApiQueryTemplate = '[[HasLabel::~*${input}*]]|?HasLabel=displaytitle|?HasImage=thumbnail|?HasDescription=desc';
 #$wgCitizenSearchSmwAskApiQueryTemplate = '[[Display_title_of::~*${input}*]]|?Display_title_of=displaytitle|?HasImage=thumbnail';
+#$wgCitizenSearchSmwAskApiQueryTemplate = '[[HasNormalizedLabel::~*${input_normalized_tokenized}*]]|?HasLabel=displaytitle|?HasImage=thumbnail|?HasDescription=desc';
+$wgCitizenSearchSmwApiAction = "compoundquery";
+$wgCitizenSearchSmwAskApiQueryTemplate = "
+[[HasNormalizedLabel::\${input_normalized}]][[HasOswId::!~*#*]];?HasLabel=displaytitle;?HasImage=thumbnail;?HasDescription=desc;limit=1
+|[[HasNormalizedLabel::~*\${input_normalized_tokenized}*]][[HasOswId::!~*#*]];?HasLabel=displaytitle;?HasImage=thumbnail;?HasDescription=desc;limit=7
+";
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
 $wgUseInstantCommons  = getenv( 'MW_USE_INSTANT_COMMONS' );

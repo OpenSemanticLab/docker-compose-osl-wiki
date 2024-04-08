@@ -12,16 +12,67 @@ if ( getenv( 'MW_SHOW_EXCEPTION_DETAILS' ) === 'true' ) {
 
 ########################### Core Settings ##########################
 #local time zone
-$wgLocaltimezone = getenv( 'MW_TIME_ZONE' );
+# we have to use "UTC" here, otherwise SMW stores time values with reference to the local time zone
+# see also: https://www.semantic-mediawiki.org/wiki/Help:Type_Date
+$wgLocaltimezone = "UTC";
+#$wgLocaltimezone = getenv( 'MW_TIME_ZONE' );
+# instead we store the timezone param as default user timezone setting
+# the offset is dynamically calculated, e.g. 'ZoneInfo|120|Europe/Berlin';
+date_default_timezone_set('UTC');
+$wgDefaultUserOptions['timecorrection'] = 'ZoneInfo|' 
+    . timezone_offset_get(
+        new DateTimeZone( getenv( 'MW_TIME_ZONE' ) ), 
+        new DateTime( 'now', new DateTimeZone( getenv( 'MW_TIME_ZONE' ) ) )
+    ) / 60
+    . '|' . getenv( 'MW_TIME_ZONE' );
 
 # Site language code, should be one of the list in ./languages/Names.php
-$wgLanguageCode = getenv( 'MW_SITE_LANG' );
+# we have to use 'en' here for technical reasons (namespace and smw property names)
+$wgLanguageCode = 'en';
+# instead, we set the lang param as default user interface lang
+# see also: https://www.mediawiki.org/wiki/Manual:$wgDefaultUserOptions
+$wgDefaultUserOptions['language'] = getenv( 'MW_SITE_LANG' );
+
+# we have to override the options loading to apply our defaults
+# https://www.mediawiki.org/wiki/Manual_talk:$wgDefaultUserOptions#Setting_$wgDefaultUserOptions['language']_=_'de';_fails
+$wgHooks['LoadUserOptions'][] = function( $user, array &$options ) use ($wgDefaultUserOptions) {
+    # lookup explicite user settings
+    $dbr = wfGetDB( DB_MASTER );
+    $res = $dbr->select(
+        'user_properties',
+        [ 'up_property', 'up_value' ],
+        [ 'up_user' => $user->getId() ],
+    );
+    $data = [];
+    foreach ( $res as $row ) {
+        if ( $row->up_value === '0' ) {
+            $row->up_value = 0;
+        }
+        $data[$row->up_property] = $row->up_value;
+    }
+
+    # apply default timezone if not set
+    if (!array_key_exists('timecorrection', $data)) $options['timecorrection'] = $wgDefaultUserOptions['timecorrection'];
+
+    # apply default language if not set
+    #if (!array_key_exists('language', $data)) $options['language'] = $wgDefaultUserOptions['language']; // does not work with Extension:ULS
+    #if (!array_key_exists('uls-preferences', $data)) $options['uls-preferences'] = '{"ime":{"language":"' . 'de' . '"}}'; // does not work
+    if (!array_key_exists('uls-preferences', $data)) { // ins
+        $options['language'] = $wgDefaultUserOptions['language'];
+        // no need to set the uls option
+        #$options['uls-preferences'] = '{"ime":{"language":"de","previousLanguages":["de"],"previousInputMethods":[],"imes":{"de":"system"}}}';
+    }
+};
+
+#$wgHooks['UserGetLanguageObject'][] = function( $user, &$code ) {
+#    $code =  $user->getOption( 'language' );
+#};
 
 ## The protocol and server name to use in fully-qualified URLs => set in Custom settings
 $wgServer = getenv( 'MW_SITE_SERVER' );
 
 # The name of the site. This is the name of the site as displayed throughout the site.
-$wgSitename  = getenv( 'MW_SITE_NAME' );
+$wgSitename = getenv( 'MW_SITE_NAME' );
 
 # Default skin: you can change the default skin. Use the internal symbolic
 # names, ie 'standard', 'nostalgia', 'cologneblue', 'monobook', 'vector', 'chameleon':
@@ -46,13 +97,13 @@ $wgCitizenSearchSmwAskApiQueryTemplate = "
 ";
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
-$wgUseInstantCommons  = getenv( 'MW_USE_INSTANT_COMMONS' );
+$wgUseInstantCommons = getenv( 'MW_USE_INSTANT_COMMONS' );
 
 # Name used for the project namespace. The name of the meta namespace (also known as the project namespace), used for pages regarding the wiki itself.
 #$wgMetaNamespace = 'Site'; #just an alias. does not work at all of canonical namespace 'project' is created / used by an extension
 #$wgMetaNamespaceTalk = 'Site_talk';
 
-# The relative URL path to the logo.  Make sure you change this from the default,
+# The relative URL path to the logo. Make sure you change this from the default,
 # or else you'll overwrite your logo when you upgrade!
 # logos should actually have different sizes, see https://www.mediawiki.org/wiki/Manual:$wgLogos
 $wgLogos = [

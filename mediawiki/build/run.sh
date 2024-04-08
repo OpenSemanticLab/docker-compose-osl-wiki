@@ -194,7 +194,7 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
             --installdbpass "$MW_DB_INSTALLDB_PASS" \
             --server "$MW_SITE_SERVER" \
             --scriptpath "/w" \
-            --lang "$MW_SITE_LANG" \
+            --lang "en" \
             --pass "$MW_ADMIN_PASS" \
             "$MW_SITE_NAME" \
             "$MW_ADMIN_USER"

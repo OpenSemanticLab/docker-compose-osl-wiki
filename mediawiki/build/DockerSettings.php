@@ -55,13 +55,7 @@ $wgHooks['LoadUserOptions'][] = function( $user, array &$options ) use ($wgDefau
     if (!array_key_exists('timecorrection', $data)) $options['timecorrection'] = $wgDefaultUserOptions['timecorrection'];
 
     # apply default language if not set
-    #if (!array_key_exists('language', $data)) $options['language'] = $wgDefaultUserOptions['language']; // does not work with Extension:ULS
-    #if (!array_key_exists('uls-preferences', $data)) $options['uls-preferences'] = '{"ime":{"language":"' . 'de' . '"}}'; // does not work
-    if (!array_key_exists('uls-preferences', $data)) { // ins
-        $options['language'] = $wgDefaultUserOptions['language'];
-        // no need to set the uls option
-        #$options['uls-preferences'] = '{"ime":{"language":"de","previousLanguages":["de"],"previousInputMethods":[],"imes":{"de":"system"}}}';
-    }
+    //if (!array_key_exists('language', $data)) $options['language'] = $wgDefaultUserOptions['language']; // does not work with Extension:ULS, prevents changing the language via settings
 };
 
 #$wgHooks['UserGetLanguageObject'][] = function( $user, &$code ) {

@@ -360,7 +360,7 @@ RUN set -x; \
     && git clone -b refactoring https://github.com/OpenSemanticLab/mediawiki-extensions-InteractiveSemanticGraph InteractiveSemanticGraph \
     && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-InteractiveSemanticGraph2 InteractiveSemanticGraph2 \
     && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-SciFileHandler SciFileHandler \    
-    && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab \
+    && git clone https://github.com/OpenSemanticLab/mediawiki-extensions-OpenSemanticLab.git OpenSemanticLab \
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticProperties.git SemanticProperties \
     && git clone --depth 1 https://github.com/OpenSemanticWorld/mediawiki-extensions-Chatbot.git Chatbot \
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-FileApi.git FileApi \

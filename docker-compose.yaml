@@ -105,6 +105,31 @@ services:
         ports:
             - "${DRAWIO_HOST_PORT}:8080"
 
+    codeceptjs:
+        image: codeceptjs/codeceptjs
+        build: ./tests/codecept
+        profiles: [testing]
+        depends_on:
+            - firefox
+            #- chrome
+        environment:
+            - MW_SITE_SERVER=${MW_SITE_SERVER}
+            - MW_ADMIN_USER=admin
+            - MW_ADMIN_PASS=${MW_ADMIN_PASS}
+        volumes:
+            - ./tests/codecept:/tests
+        #command: codeceptjs run --config=codecept.json osl-testing-codecept/tests/codecept/codecept.conf.js
+    firefox:
+        image: selenium/standalone-firefox-debug:3.141.59-20210929
+        profiles: [testing]
+        environment:
+            - VNC_NO_PASSWORD=1
+        ports:
+            - '4444'
+            - '9059:5900'
+        # Mount shm also for firefox, see https://github.com/SeleniumHQ/docker-selenium#running-the-images
+        shm_size: '2gb' # for windows environment
+
 #for internal connections, e. g. non public dockered email server
 #networks:
 #    default:

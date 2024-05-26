@@ -20,12 +20,8 @@ module.exports = function () {
       I.fillField('#wpPassword1', process.env.MW_ADMIN_PASS);
       I.moveCursorTo('#wpRemember')
       I.checkOption('#wpRemember');
-      //wpRemember
-      //wpLoginAttempt
       I.moveCursorTo('#wpLoginAttempt')
       I.click('#wpLoginAttempt')
-      //I.waitForElement('#Semantic_Lab', 5); // section on Main page
-      //I.amOnPage('/wiki/Main_Page')
     },
 
     enableCursor: async function () {
@@ -144,26 +140,9 @@ module.exports = function () {
     scrollAndMove: async function (params) {
       const I = this
       
-      /*I.moveCursorTo(params.selector).catch(() => {
-        I.scrollIntoView(params.selector)
-        I.moveCursorTo(params.selector)
-      });*/
-      /*try {
-        I.moveCursorTo(params.selector)
-      } catch (err) {
-        console.log(params.selector + 'Not in viewport, scroll to it');
-        I.scrollIntoView(params.selector)
-        I.moveCursorTo(params.selector)
-      }*/
-      /*I.moveCursorTo(params.selector)
-      .then(() => I.say('try block'))
-      .catch(() => {
-        I.scrollIntoView(params.selector)
-        I.moveCursorTo(params.selector)
-      });*/
-      //let numOfElements = await I.grabNumberOfVisibleElements(params.selector);
-      //if (numOfElements == 0) {
+      // exception handling does not work, so we need to check if element is outside viewport first
       let inViewPort = await I.seeElementInViewport(params)
+      // scroll only if needed
       if (!inViewPort) {
         I.scrollIntoView(params.selector)
        } 
@@ -205,14 +184,8 @@ module.exports = function () {
     addAdditionalProperty: async function (params) {
       const I = this
       await I.addNotification({text: "Select the property from the list"})
-      //I.moveCursorTo('.json-editor-btntype-properties')
-      //I.click('.json-editor-btntype-properties')
       await I.scrollAndMoveAndClick({selector: '.json-editor-btntype-properties'})
-      //I.moveCursorTo('#root-orderer')
-      //I.checkOption('#root-orderer')
       I.checkOption(params.name)
-      //await I.scrollAndMoveAndCheckOption({selector: params.name})
-      //I.click('.json-editor-btntype-properties')
       await I.scrollAndMoveAndClick({selector: '.json-editor-btntype-properties'})
     },
 
@@ -220,18 +193,6 @@ module.exports = function () {
       const I = this
       I.moveCursorTo('[data-schemapath="' + params.schemapath + '"] .inline-edit-btn')
       I.click('[data-schemapath="' + params.schemapath + '"] .inline-edit-btn')
-      //I.waitForElement({ css: '#root[orderer]'}, 1); // secs
-      //I.seeElement({ css: '#root[orderer]'})
-      //I.click({ css: '#root[orderer]'})
-      //I.waitForElement('.inline-edit-btn', 1); // secs
-      //I.seeElement({ css: '.inline-edit-btn'})
-      //I.click({ css: '.inline-edit-btn'})
-      //I.wait(3)
-      //I.executeScript('document.querySelectorAll(".inline-edit-btn")[0].click();');
-      //I.wait(5)
-
-      //I.retry({ retries: 5, maxTimeout: 1000 }).see('OrganizationalUnit')
-      //I.retry({ retries: 5, maxTimeout: 1000 }).see('#' + editorId)
       // xPath index is 1-based
       I.waitForVisible('(//*[@class="je-ready"])['+ (this.getEditorLevel() + 2) + ']', 10);
 
@@ -282,39 +243,27 @@ module.exports = function () {
 
     fillEditorField: async function (params) {
       const I = this
-      //I.moveCursorTo('#' + this.editorId + ' [name="' + params.name + '"]')
-      //I.fillField('#' + this.editorId + ' [name="' + params.name + '"]', params.value)
       await I.scrollAndMoveAndFillField({selector: '#' + this.editorId + ' [name="' + params.name + '"]', value: params.value})
     },
 
     addArrayElement: async function (params) {
       const I = this
-      //I.moveCursorTo('#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"] .json-editor-btn-add')
-      //I.click('#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"] .json-editor-btn-add')
       await I.scrollAndMoveAndClick({selector: '#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"] .json-editor-btn-add'})
     },
 
 
     selectAutocompleteResult: async function (params) {
       const I = this
-      //I.scrollIntoView('#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"]')
-      //I.moveCursorTo('#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"]')
-      //I.click('#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"]')
       await I.scrollAndMoveAndClick({selector: '#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"]'})
       if (params.input) I.type(params.input)
       I.wait(3)
-      //I.moveCursorTo('#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"] #autocomplete-result-' + params.index)
-      //I.click('#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"] #autocomplete-result-' + params.index)
       await I.scrollAndMoveAndClick({selector: '#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"] #autocomplete-result-' + params.index})
       I.wait(1)
     },
 
     assertFieldHasValue: async function (params) {
       const I = this
-      //I.retry({ retries: 10, maxTimeout: 1000 }).seeInField('[name="root[orderer]"', 'Test Org label');
-      //I.retry({ retries: 10, maxTimeout: 1000 }).see('Test Org label', '[data-schemapath="root.orderer"]');
       const value = await I.executeScript(`return document.querySelector('[name="` + params.name + `"]').value`)
-      //assert.equal(orderer, orgName);
       I.assertEqual(value, params.expected);
     }
   })

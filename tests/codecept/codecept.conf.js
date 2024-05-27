@@ -24,9 +24,9 @@ exports.config = {
       "WebDriver": {
         "url": process.env.MW_SITE_SERVER,
         "browser": "firefox",
-        //"restart": false,
+        //"restart": false, // video renaming of selenoid does not work if false
         //"host": "firefox",
-        "host": "localhost",
+        "host": "localhost", //'selenoid' does not work here
         "port": 4444,
         "keepCookies": true,
         "smartWait": 10000,

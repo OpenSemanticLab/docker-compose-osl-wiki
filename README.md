@@ -148,3 +148,27 @@ triggers CI/CD workflow and pushes image with tags to docker registry (see also 
 git tag <tag>
 git push --atomic origin main --tags
 ```
+
+### Testing
+Note: You may have to wait 15 - 30 min for all page packages to be installed on the first run
+
+Run default test with a single browser
+```
+docker compose run --rm codeceptjs
+```
+
+Run multi-browser tests
+```
+docker compose run --rm codeceptjs codeceptjs run-multiple --all
+```
+
+You can follow the test execution on selenoid-ui at "http://localhost:8080"
+
+### Create Testcases
+
+Create a new file ./tests/codecept/tests/<name>_test.js
+
+Follow the existing examples or https://codecept.io/tutorial/
+
+To find XPath expressions and test them in the browser:
+https://stackoverflow.com/questions/41857614/how-to-find-xpath-of-an-element-in-firefox-inspector

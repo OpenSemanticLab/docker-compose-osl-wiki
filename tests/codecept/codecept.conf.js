@@ -3,7 +3,9 @@ exports.config = {
     "timeout": 6000,
     "output": "./output",
     "plugins": {
-      "pauseOnFail": {},
+      "pauseOnFail": {
+        "enabled": false,
+      },
       "autoDelay": {
         "enabled": true
       },
@@ -69,13 +71,32 @@ exports.config = {
       },
       "basic": {
         "browsers": [
-          "firefox",
+          {
+            "url": process.env.MW_SITE_SERVER,
+            "browser": "firefox",
+            "host": "localhost", //'selenoid' does not work here
+            "port": 4444,
+            "keepCookies": true,
+            "smartWait": 10000,
+            desiredCapabilities: {
+              firefoxOptions: {
+                args: [ "--kiosk" ]
+              }
+            }
+          },
           {
             "url": process.env.MW_SITE_SERVER,
             "browser": "chrome",
-            "host": "chrome",
-            "restart": false
-          }
+            "host": "localhost", //'selenoid' does not work here
+            "port": 4444,
+            "keepCookies": true,
+            "smartWait": 10000,
+            desiredCapabilities: {
+              chromeOptions: {
+                args: [ "--kiosk" ]
+              }
+            }
+          },          
         ]
       }
     }

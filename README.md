@@ -162,7 +162,11 @@ Run multi-browser tests
 docker compose run --rm codeceptjs codeceptjs run-multiple --all
 ```
 
-You can follow the test execution on selenoid-ui at "http://localhost:8080"
+You can follow the test execution on selenoid-ui at "http://localhost:8080".
+Run with autopause to interact with the browser in a state where test have failed
+```
+docker compose run --rm codeceptjs run -p pauseOnFail
+```
 
 ### Create Testcases
 

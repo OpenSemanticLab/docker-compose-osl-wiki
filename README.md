@@ -152,10 +152,17 @@ git push --atomic origin main --tags
 ### Testing
 Note: You may have to wait 15 - 30 min for all page packages to be installed on the first run
 
-Pull reqired images from docker registry before running `codeceptjs`
+Pull reqired images (see `./tests/codecept/browsers.json`) from docker registry before running `codeceptjs`:
 
+manually
 ```sh
-docker pull selenoid/firefox:latest; docker pull selenoid/chrome:latest; docker pull selenoid/video-recorder:latest
+docker pull selenoid/video-recorder:latest-release;
+docker pull selenoid/firefox:latest;
+...
+```
+automated by parsing `./tests/codecept/browsers.json` (replace `docker run --rm -i imega/jq` with `jq` if installed on your host), see [docs](https://aerokube.com/selenoid/latest/#_syncing_browser_images_from_existing_file)
+```sh
+docker pull selenoid/video-recorder:latest-release && cat ./tests/codecept/browsers.json | docker run --rm -i imega/jq -r '..|.image?|strings' | xargs -I{} docker pull {}
 ```
 
 Run default test with a single browser

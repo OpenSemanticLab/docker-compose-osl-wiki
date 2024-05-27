@@ -136,6 +136,7 @@ services:
             - ./tests/codecept/output/video/:/opt/selenoid/video/
         environment:
             - OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/tests/codecept/output/video
+        # see: https://aerokube.com/selenoid/1.6.0/#_selenoid_with_docker_compose
         command: ["-container-network", "${COMPOSE_PROJECT_NAME}_default"]
 
     selenoid-ui:

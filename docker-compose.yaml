@@ -3,7 +3,6 @@
 #   mkdir -p mediawiki/data && chown www-data:www-data mediawiki/data
 #   mkdir -p blazegraph/data
 
-version: '3.8'
 services:
     db:
         image: mysql:8.0.17
@@ -109,7 +108,6 @@ services:
         #image: codeceptjs/codeceptjs
         build: ./tests/codecept
         profiles: [testing]
-        network_mode: host
         depends_on:
             #- firefox
             #- chrome
@@ -127,7 +125,6 @@ services:
     selenoid:
         image: aerokube/selenoid:latest-release
         container_name: selenoid
-        network_mode: host
         profiles: [testing]
         ports:
             - '4444:4444'
@@ -139,12 +136,12 @@ services:
             - ./tests/codecept/output/video/:/opt/selenoid/video/
         environment:
             - OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/tests/codecept/output/video
+        command: ["-container-network", "${COMPOSE_PROJECT_NAME}_default"]
 
     selenoid-ui:
         image: aerokube/selenoid-ui:latest-release
         profiles: [testing]
-        command: --selenoid-uri http://localhost:4444
-        network_mode: host
+        command: --selenoid-uri http://selenoid:4444
         ports:
             - 8080:8080
 

@@ -152,20 +152,30 @@ git push --atomic origin main --tags
 ### Testing
 Note: You may have to wait 15 - 30 min for all page packages to be installed on the first run
 
-Run default test with a single browser
+Pull reqired images from docker registry before running `codeceptjs`
+
+```sh
+docker pull selenoid/firefox:latest; docker pull selenoid/chrome:latest; docker pull selenoid/video-recorder:latest
 ```
+
+Run default test with a single browser
+```sh
 docker compose run --rm codeceptjs
 ```
 
 Run multi-browser tests
-```
+```sh
 docker compose run --rm codeceptjs codeceptjs run-multiple --all
 ```
 
 You can follow the test execution on selenoid-ui at "http://localhost:8080".
 Run with autopause to interact with the browser in a state where test have failed
-```
-docker compose run --rm codeceptjs run -p pauseOnFail
+
+1. codeceptjs: container name
+2. codeceptjs: shell command inside container
+
+```sh
+docker compose run --rm codeceptjs codeceptjs run -p pauseOnFail
 ```
 
 ### Create Testcases

@@ -106,29 +106,47 @@ services:
             - "${DRAWIO_HOST_PORT}:8080"
 
     codeceptjs:
-        image: codeceptjs/codeceptjs
+        #image: codeceptjs/codeceptjs
         build: ./tests/codecept
         profiles: [testing]
+        network_mode: host
         depends_on:
-            - firefox
+            #- firefox
             #- chrome
+            - selenoid
+            - selenoid-ui
         environment:
             - MW_SITE_SERVER=${MW_SITE_SERVER}
             - MW_ADMIN_USER=admin
             - MW_ADMIN_PASS=${MW_ADMIN_PASS}
         volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
             - ./tests/codecept:/tests
         #command: codeceptjs run --config=codecept.json osl-testing-codecept/tests/codecept/codecept.conf.js
-    firefox:
-        image: selenium/standalone-firefox-debug:3.141.59-20210929
+
+    selenoid:
+        image: aerokube/selenoid:latest-release
+        container_name: selenoid
+        network_mode: host
         profiles: [testing]
-        environment:
-            - VNC_NO_PASSWORD=1
         ports:
-            - '4444'
-            - '9059:5900'
-        # Mount shm also for firefox, see https://github.com/SeleniumHQ/docker-selenium#running-the-images
-        shm_size: '2gb' # for windows environment
+            - '4444:4444'
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            #- ./tests/selenoid:/etc/selenoid/:ro
+            #- ./tests/selenoid/output/video/:/opt/selenoid/video/
+            - ./tests/codecept:/etc/selenoid/:ro
+            - ./tests/codecept/output/video/:/opt/selenoid/video/
+        environment:
+            - OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/tests/codecept/output/video
+
+    selenoid-ui:
+        image: aerokube/selenoid-ui:latest-release
+        profiles: [testing]
+        command: --selenoid-uri http://localhost:4444
+        network_mode: host
+        ports:
+            - 8080:8080
 
 #for internal connections, e. g. non public dockered email server
 #networks:

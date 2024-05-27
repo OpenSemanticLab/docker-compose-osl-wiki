@@ -8,23 +8,47 @@ exports.config = {
         "enabled": true
       },
       "selenoid": {
-        "enabled": false,
-        "deletePassed": true,
-        "autoCreate": true,
+        "name": 'selenoid',
+        "enabled": true,
+        "deletePassed": false,
+        "autoCreate": false,
         "autoStart": true,
         "sessionTimeout": '60m',
         "enableVideo": true,
         "enableLog": true,
+        "enableVNC": true,
+        "screenResolution": "1280x1024x24",
       },
     },
     "helpers": {
       "WebDriver": {
         "url": process.env.MW_SITE_SERVER,
         "browser": "firefox",
-        "restart": false,
-        "host": "firefox",
+        //"restart": false,
+        //"host": "firefox",
+        "host": "localhost",
+        "port": 4444,
         "keepCookies": true,
-        "smartWait": 10000
+        "smartWait": 10000,
+        desiredCapabilities: {
+          chromeOptions: {
+            args: [ "--kiosk" ]
+          },
+          firefoxOptions: {
+            args: [ "--kiosk" ]
+          }
+        }
+        //"windowSize": "1280x1024",
+        //"video": true,
+        //"keepVideoForPassedTests": true,
+        //"recordVideo": {},
+        //"trace": true,
+        //"keepTraceForPassedTests": false,
+        //"selenoid:options": {
+        //  "enableVNC": true,
+        //  "screenResolution": "1280x1024x24"
+        //"videoName": "Test"
+        //}
       },
       "ChaiWrapper": {
         "require": "codeceptjs-chai"
@@ -47,7 +71,7 @@ exports.config = {
         "browsers": [
           "firefox",
           {
-            "url": "https://stacktest.digital.isc.fraunhofer.de/",
+            "url": process.env.MW_SITE_SERVER,
             "browser": "chrome",
             "host": "chrome",
             "restart": false

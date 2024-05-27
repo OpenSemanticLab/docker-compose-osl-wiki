@@ -99,9 +99,7 @@ tar -zcf backup/file_backup_$(date +"%Y%m%d_%H%M%S").tar mediawiki/data
 ## Restore
 cleanup old data
 ```bash
-rm -r mediawiki/data
-rm -r mysql/data
-rm -r blazegraph/data
+docker compose down -v && sudo rm -r mediawiki/data && sudo rm -r blazegraph/data && sudo rm -r mysql/data
 ```
 import
 ```bash

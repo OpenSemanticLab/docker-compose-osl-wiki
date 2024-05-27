@@ -41,7 +41,7 @@ module.exports = function () {
           + 'ONcpr3PrXy9VfS473M/D7H+TLmrqsXtOGctvxvMv2oVNP+Av0uHbzbxyJaywyUjx8TlnPY2YxqkD'
           + 'dAAAAABJRU5ErkJggg==');
         seleniumFollowerImg.setAttribute('id', 'selenium_mouse_follower');
-        seleniumFollowerImg.setAttribute('style', 'position: absolute; z-index: 99999999999; pointer-events: none; left:0; top:0');
+        seleniumFollowerImg.setAttribute('style', 'position: absolute; z-index: 99999999999; pointer-events: none; left:0; top:0; width: 50px; height: auto' );
         document.body.appendChild(seleniumFollowerImg);
         document.onmousemove = function (e) {
           document.getElementById("selenium_mouse_follower").style.left = e.pageX + 'px';
@@ -256,7 +256,7 @@ module.exports = function () {
       const I = this
       await I.scrollAndMoveAndClick({selector: '#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"]'})
       if (params.input) I.type(params.input)
-      I.wait(3)
+      I.wait(5)
       await I.scrollAndMoveAndClick({selector: '#' + this.editorId + ' [data-schemapath="' + params.schemapath + '"] #autocomplete-result-' + params.index})
       I.wait(1)
     },

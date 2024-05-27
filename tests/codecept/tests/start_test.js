@@ -34,6 +34,7 @@ Scenario('Create ELN entry', async ({ I }) => {
 
     await I.addAdditionalProperty({name: "Actionees"})
     await I.addArrayElement({schemapath: "root.actionees"})
+    await I.fillEditorField({name: 'root[actionees][0]', value:''})
     await I.createInline({schemapath: "root.actionees.0"})
     let actName = 'Person ' + loop_index
     await I.fillEditorField({name: 'root[first_name]', value: 'Test'})

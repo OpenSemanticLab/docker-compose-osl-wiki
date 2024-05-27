@@ -3,6 +3,27 @@
 'use strict'
 // in this file you can append custom step methods to 'I' object
 
+// converts e.g. 'root[label][0][text]' to 'root.label.0.text'
+const nameToSchemaPath = function (name) {
+  name = name.replaceAll('][','.') // 'root[label.0.text]'
+  name = name.replaceAll('[','.') // 'root.label.0.text]'
+  name = name.replaceAll(']','') // 'root.label.0.text'
+  return name
+}
+
+// converts e.g. 'root.label.0.text' to 'root[label][0][text]'
+const schemaPathToName = function (schemapath) {
+  schemapath = schemapath.replace('.','[') // 'root[label.0.text.'
+  schemapath = schemapath.replaceAll('.','][') // 'root[label][0][text'
+  if (schemapath.includes('[')) schemapath += ']' // 'root[label][0][text]'
+  return schemapath
+}
+
+const normalizeParams = function (params) {
+  if (!params.schemapath && params.name) params.schemapath = nameToSchemaPath(params.name)
+  if (params.schemapath && !params.name) params.name = schemaPathToName(params.schemapath)
+}
+
 module.exports = function () {
   return actor({
 
@@ -182,15 +203,20 @@ module.exports = function () {
     },
 
     addAdditionalProperty: async function (params) {
+      let legacy_mode = false
+      if (params.name) legacy_mode = true
       const I = this
+      normalizeParams(params)
       await I.addNotification({text: "Select the property from the list"})
       await I.scrollAndMoveAndClick({selector: '.json-editor-btntype-properties'})
-      I.checkOption(params.name)
+      if (legacy_mode) I.checkOption(params.name) // older json-editor version didn't create id, only property title is set as label
+      else I.scrollAndMoveAndCheckOption({ selector: '#' + params.schemapath.replace(/(\.)(?!.*\1)/, '-')}) // replace last '.' with '-'
       await I.scrollAndMoveAndClick({selector: '.json-editor-btntype-properties'})
     },
 
     createInline: async function (params) {
       const I = this
+      normalizeParams(params)
       I.moveCursorTo('[data-schemapath="' + params.schemapath + '"] .inline-edit-btn')
       I.click('[data-schemapath="' + params.schemapath + '"] .inline-edit-btn')
       // xPath index is 1-based
@@ -243,6 +269,7 @@ module.exports = function () {
 
     fillEditorField: async function (params) {
       const I = this
+      normalizeParams(params)
       await I.scrollAndMoveAndFillField({selector: '#' + this.editorId + ' [name="' + params.name + '"]', value: params.value})
     },
 
@@ -263,6 +290,7 @@ module.exports = function () {
 
     assertFieldHasValue: async function (params) {
       const I = this
+      normalizeParams(params)
       const value = await I.executeScript(`return document.querySelector('[name="` + params.name + `"]').value`)
       I.assertEqual(value, params.expected);
     }

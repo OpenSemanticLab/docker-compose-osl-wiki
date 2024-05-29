@@ -1,9 +1,5 @@
 Feature('OSL up and running');
 
-
-
-
-
 Before(async ({ I }) => {
   await I.addNotification({ text: "Login first" })
   await I.login()
@@ -102,7 +98,7 @@ Scenario('print article', async ({ I }) => {
   await I.scrollAndMoveAndClick({selector: '.oo-ui-tool-name-showSave'})
   await I.scrollAndMoveAndFillField({selector:'.ve-ui-mwSaveDialog-summary textarea', value:'Some test content'})
   await I.scrollAndMoveAndClick({selector: '.oo-ui-processDialog-actions-primary'})
-  I.wait(3)
+  I.wait(6)
 
   //click away notifications
   while ((await I.grabNumberOfVisibleElements('.mw-notification')) > 0) {
@@ -123,6 +119,21 @@ Scenario('print article', async ({ I }) => {
     I.closeOtherTabs();
   }
 
+});
+
+Scenario('Autocomplete undefined', async ({ I }) => {
+  for (let loop_index = 0; loop_index < 1; loop_index++) {
+    I.amOnPage('/wiki/Main_Page');
+    await I.openCreateInstanceForm({ category: 'Category:OSW0e7fab2262fb4427ad0fa454bc868a0d' }); // ElnEntry
+
+    //await I.fillEditorField({ schemapath: 'root.label.0.text', value: 'Test label' })
+
+    await I.addAdditionalProperty({ schemapath: "root.actionees" })
+    await I.addArrayElement({ schemapath: "root.actionees" })
+    await I.fillEditorField({ schemapath: 'root.actionees.0', value: 'DOESNOTEXISTS' })
+    await I.scrollAndMoveAndClick({ selector: '[for="root[actionees][0]"]' })
+    await I.assertFieldHasValue({ schemapath: "root.actionees.0", expected: '' })
+  }
 });
 
 Scenario('Create ELN entry', async ({ I }) => {

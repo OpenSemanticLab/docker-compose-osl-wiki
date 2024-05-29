@@ -199,7 +199,21 @@ module.exports = function () {
       I.wait(3)
       I.click('#ca-create-instance')
       I.waitForElement('.je-ready', 5) // secs
-      I.moveCursorTo('.je-ready')
+      I.moveCursorTo('.je-ready .card-title')
+      await I.incrementEditorLevel();
+    },
+
+    openEditInstanceForm: async function (params) {
+      const I = this
+      I.amOnPage('/wiki/' + params.title);
+      this.editorLevel = -1
+      await I.addNotification({text: "Navigate to the Item and click 'Edit Data'"})
+      await I.enableCursor()
+      I.moveCursorTo('#ca-edit-data')
+      I.wait(3)
+      I.click('#ca-edit-data')
+      I.waitForElement('.je-ready', 5) // secs
+      I.moveCursorTo('.je-ready .card-title')
       await I.incrementEditorLevel();
     },
 

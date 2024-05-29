@@ -192,6 +192,7 @@ module.exports = function () {
     openCreateInstanceForm: async function (params) {
       const I = this
       I.amOnPage('/wiki/' + params.category);
+      this.editorLevel = -1
       await I.addNotification({text: "Navigate to the Category and click 'Create Instance'"})
       await I.enableCursor()
       I.moveCursorTo('#ca-create-instance')

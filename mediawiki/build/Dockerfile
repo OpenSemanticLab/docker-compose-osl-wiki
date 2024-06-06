@@ -205,7 +205,7 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:^4.1.3 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:^4.2.0 \
+    # && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:^4.2.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.1 \
     && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:~1.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:3.0.1 \
@@ -218,7 +218,8 @@ RUN set -x; \
     ## SRF
     && cd $MW_HOME/extensions \
     #&& git clone --depth 1 -b use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git SemanticResultFormats \
-    #&& git clone --depth 1 -b REL1.35_use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git \
+    && git clone https://github.com/SemanticMediaWiki/SemanticResultFormats.git SemanticResultFormats \
+    && cd SemanticResultFormats && git checkout -b dev f9ba69b35f43f2859e0bfd3dca14282bcb3fd5d3 && cd .. \
     #&& git clone --depth 1 https://github.com/SemanticMediaWiki/Mermaid.git Mermaid \
     #&& git clone --depth 1 https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties.git \
     #&& git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
@@ -231,7 +232,7 @@ RUN set -x; \
     && git clone --depth 1 https://github.com/enterprisemediawiki/PageImporter.git \
     && cd $MW_HOME \
     #&& jq '.extra."merge-plugin".include += ["extensions/Mermaid/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
-    #&& jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #&& jq '.extra."merge-plugin".include += ["extensions/SemanticCite/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && jq '.extra."merge-plugin".include += ["extensions/Maps/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Apply 

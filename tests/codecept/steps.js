@@ -311,6 +311,13 @@ module.exports = function () {
       normalizeParams(params)
       const value = await I.executeScript(`return document.querySelector('[name="` + params.name + `"]').value`)
       I.assertEqual(value, params.expected);
+    },
+
+    assertNotFieldHasValue: async function (params) {
+      const I = this
+      normalizeParams(params)
+      const value = await I.executeScript(`return document.querySelector('[name="` + params.name + `"]').value`)
+      I.assertNotEqual(value, params.value);
     }
   })
 }

@@ -165,15 +165,30 @@ automated by parsing `./tests/codecept/browsers.json` (replace `docker run --rm 
 docker pull selenoid/video-recorder:latest-release && cat ./tests/codecept/browsers.json | docker run --rm -i imega/jq -r '..|.image?|strings' | xargs -I{} docker pull {}
 ```
 
-Run default test with a single browser
+Note: use kiosk mode for demo video recording
+
+Run all tests with a single browser
 ```sh
 docker compose run --rm codeceptjs
+```
+
+Run only test with tag `@<tag>` a single browser
+```sh
+docker compose run --rm codeceptjs codeceptjs run --grep "@<tag>"
+```
+
+Run only test with without `@<tag>` a single browser
+```sh
+docker compose run --rm codeceptjs codeceptjs run --grep "@<tag>" --invert
 ```
 
 Run multi-browser tests
 ```sh
 docker compose run --rm codeceptjs codeceptjs run-multiple --all
 ```
+
+More options: https://codecept.io/commands/
+
 
 You can follow the test execution on selenoid-ui at "http://localhost:8080".
 Run with autopause to interact with the browser in a state where test have failed
@@ -193,3 +208,5 @@ Follow the existing examples or https://codecept.io/tutorial/
 
 To find XPath expressions and test them in the browser:
 https://stackoverflow.com/questions/41857614/how-to-find-xpath-of-an-element-in-firefox-inspector
+
+To compare / assert values: https://github.com/SitamJana/codeceptjs-chai

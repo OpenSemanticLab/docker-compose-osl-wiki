@@ -33,11 +33,13 @@ exports.config = {
       "keepCookies": true,
       "smartWait": 10000,
       desiredCapabilities: {
+        // https://stackoverflow.com/questions/24507078/how-to-deal-with-certificates-using-selenium
+        acceptInsecureCerts: true,
         chromeOptions: {
-          // args: ["--kiosk"]
+          // args: ["--kiosk"] // note: use kiosk mode for demo videos
         },
         firefoxOptions: {
-          // args: ["--kiosk"]
+          // args: ["--kiosk"] // note: use kiosk mode for demo videos
         }
       }
       //"windowSize": "1280x1024",

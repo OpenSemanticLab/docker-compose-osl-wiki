@@ -250,6 +250,9 @@ module.exports = function () {
       // somehow I.click does not work here => run click() manually
       //await I.executeScript('document.querySelectorAll(".je-ready")[' + (this.getEditorLevel()) + '].closest(".oo-ui-window-content").querySelector(".oo-ui-processDialog-actions-primary .oo-ui-buttonElement-button").click()')
       //I.retry({ retries: 5, maxTimeout: 1000 }).dontSee('#' + editorId)
+      if ((await I.grabNumberOfVisibleElements('.oo-ui-messageDialog-content')) > 0) {
+        await I.scrollAndMoveAndClick({selector:'(//*[contains(@class,"oo-ui-messageDialog-content")]//*[@class="oo-ui-buttonElement-button"])[2]'}) // OK button
+      }
       I.waitForInvisible('#' + this.editorId, 10);
       // xPath index is 1-based
       //I.waitForInvisible('(//*[@class="je-ready"])['+ (this.getEditorLevel() + 1) + ']', 10);

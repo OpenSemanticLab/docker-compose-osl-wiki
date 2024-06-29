@@ -45,6 +45,20 @@ module.exports = function () {
       I.click('#wpLoginAttempt')
     },
 
+    // Login in to hidden local login form (e.g. when OIDC is prefered for users)
+    loginHidden: async function () {
+      const I = this
+      I.amOnPage('/wiki/Special:UserLogin');
+      I.executeScript(`document.querySelector('#wpName1').style.display = 'block'`)
+      I.executeScript(`document.querySelector('#wpPassword1').style.display = 'block'`)
+      I.executeScript(`document.querySelector('#wpRemember').style.display = 'block'`)
+      I.executeScript(`document.querySelector('#wpLoginAttempt').style.display = 'block'`)
+      I.fillField('#wpName1', 'Admin');
+      I.fillField('#wpPassword1', process.env.MW_ADMIN_PASS);
+      I.checkOption('#wpRemember');
+      I.click('#wpLoginAttempt')
+    },
+
     enableCursor: async function () {
       const I = this
       // highlight curser: https://stackoverflow.com/questions/53900972/how-can-i-see-the-mouse-pointer-as-it-performs-actions-in-selenium

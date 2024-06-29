@@ -99,9 +99,7 @@ tar -zcf backup/file_backup_$(date +"%Y%m%d_%H%M%S").tar mediawiki/data
 ## Restore
 cleanup old data
 ```bash
-rm -r mediawiki/data
-rm -r mysql/data
-rm -r blazegraph/data
+docker compose down -v && sudo rm -r mediawiki/data && sudo rm -r blazegraph/data && sudo rm -r mysql/data
 ```
 import
 ```bash
@@ -150,3 +148,65 @@ triggers CI/CD workflow and pushes image with tags to docker registry (see also 
 git tag <tag>
 git push --atomic origin main --tags
 ```
+
+### Testing
+Note: You may have to wait 15 - 30 min for all page packages to be installed on the first run
+
+Pull reqired images (see `./tests/codecept/browsers.json`) from docker registry before running `codeceptjs`:
+
+manually
+```sh
+docker pull selenoid/video-recorder:latest-release;
+docker pull selenoid/firefox:latest;
+...
+```
+automated by parsing `./tests/codecept/browsers.json` (replace `docker run --rm -i imega/jq` with `jq` if installed on your host), see [docs](https://aerokube.com/selenoid/latest/#_syncing_browser_images_from_existing_file)
+```sh
+docker pull selenoid/video-recorder:latest-release && cat ./tests/codecept/browsers.json | docker run --rm -i imega/jq -r '..|.image?|strings' | xargs -I{} docker pull {}
+```
+
+Note: use kiosk mode for demo video recording
+
+Run all tests with a single browser
+```sh
+docker compose run --rm codeceptjs
+```
+
+Run only test with tag `@<tag>` a single browser
+```sh
+docker compose run --rm codeceptjs codeceptjs run --grep "@<tag>"
+```
+
+Run only test with without `@<tag>` a single browser
+```sh
+docker compose run --rm codeceptjs codeceptjs run --grep "@<tag>" --invert
+```
+
+Run multi-browser tests
+```sh
+docker compose run --rm codeceptjs codeceptjs run-multiple --all
+```
+
+More options: https://codecept.io/commands/
+
+
+You can follow the test execution on selenoid-ui at "http://localhost:8080".
+Run with autopause to interact with the browser in a state where test have failed
+
+1. codeceptjs: container name
+2. codeceptjs: shell command inside container
+
+```sh
+docker compose run --rm codeceptjs codeceptjs run -p pauseOnFail
+```
+
+### Create Testcases
+
+Create a new file ./tests/codecept/tests/<name>_test.js
+
+Follow the existing examples or https://codecept.io/tutorial/
+
+To find XPath expressions and test them in the browser:
+https://stackoverflow.com/questions/41857614/how-to-find-xpath-of-an-element-in-firefox-inspector
+
+To compare / assert values: https://github.com/SitamJana/codeceptjs-chai

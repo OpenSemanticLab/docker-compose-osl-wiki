@@ -3,7 +3,6 @@
 #   mkdir -p mediawiki/data && chown www-data:www-data mediawiki/data
 #   mkdir -p blazegraph/data
 
-version: '3.8'
 services:
     db:
         image: mysql:8.0.17
@@ -104,6 +103,48 @@ services:
         restart: unless-stopped
         ports:
             - "${DRAWIO_HOST_PORT}:8080"
+
+    codeceptjs:
+        #image: codeceptjs/codeceptjs
+        build: ./tests/codecept
+        profiles: [testing]
+        depends_on:
+            #- firefox
+            #- chrome
+            - selenoid
+            - selenoid-ui
+        environment:
+            - MW_SITE_SERVER=${MW_SITE_SERVER}
+            - MW_ADMIN_USER=admin
+            - MW_ADMIN_PASS=${MW_ADMIN_PASS}
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./tests/codecept:/tests
+        #command: codeceptjs run --config=codecept.json osl-testing-codecept/tests/codecept/codecept.conf.js
+
+    selenoid:
+        image: aerokube/selenoid:latest-release
+        container_name: selenoid
+        profiles: [testing]
+        ports:
+            - '4444:4444'
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            #- ./tests/selenoid:/etc/selenoid/:ro
+            #- ./tests/selenoid/output/video/:/opt/selenoid/video/
+            - ./tests/codecept:/etc/selenoid/:ro
+            - ./tests/codecept/output/video/:/opt/selenoid/video/
+        environment:
+            - OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/tests/codecept/output/video
+        # see: https://aerokube.com/selenoid/1.6.0/#_selenoid_with_docker_compose
+        command: ["-container-network", "${COMPOSE_PROJECT_NAME}_default"]
+
+    selenoid-ui:
+        image: aerokube/selenoid-ui:latest-release
+        profiles: [testing]
+        command: --selenoid-uri http://selenoid:4444
+        ports:
+            - 8080:8080
 
 #for internal connections, e. g. non public dockered email server
 #networks:

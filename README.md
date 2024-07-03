@@ -141,6 +141,27 @@ copy files
 ```bash
 docker cp mediawiki/config/pub/* osl-wiki_mediawiki_1:/var/www/html/w/pub/
 ```
+### Debugging in interactive browser session
+
+run test
+
+```sh
+docker compose run --rm codeceptjs codeceptjs run -p pauseOnFail
+```
+check ID
+* unlock the screen
+* inspect the field which does not work as expected
+* check id in inspector
+
+Find the related field in the console
+
+```java
+document.getElementByID ("id")
+```
+
+Example
+
+![console](console.png)
 
 ### Push with tag
 triggers CI/CD workflow and pushes image with tags to docker registry (see also [stackoverflow: push-git-commits-tags-simultaneously](https://stackoverflow.com/questions/3745135/push-git-commits-tags-simultaneously/57842917#57842917) )

@@ -31,6 +31,30 @@ services:
         ports:
             - "${GRAPHDB_HOST_PORT}:9999"
 
+    fuseki:
+        # https://github.com/SemanticComputing/fuseki-docker
+        # https://hub.docker.com/r/secoresearch/fuseki
+        # http://fuseki:3030/ds/sparql
+        # http://fuseki:3030/ds/update
+        image: secoresearch/fuseki
+        profiles: [fuseki]
+        restart: unless-stopped
+        volumes:
+        - './fuseki/data:/fuseki-base/databases'
+        - './fuseki/config/shiro.ini:/jena-fuseki/shiro.ini' # override config before docker-init
+        #- './fuseki/config/shiro.ini:/fuseki-base/shiro.ini' # override config after docker-init
+        user: root  # Run the container with root user
+        #ports:
+        #- "${GRAPHDB_HOST_PORT}:3030"
+        environment:
+        - JVM_ARGS=-Xmx4G -Dlog4j2.formatMsgNoLookups=true # CVE-2021-44228 [MIT2021]
+        - ADMIN_PASSWORD=${MW_ADMIN_PASS}
+        - ENABLE_DATA_WRITE=true
+        - ENABLE_UPDATE=true
+        - ENABLE_UPLOAD=true
+        - QUERY_TIMEOUT=60000 # in milliseconds (60 seconds by default)
+
+
     mediawiki:
         image: opensemanticlab/osl-mw
         build:

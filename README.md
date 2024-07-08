@@ -63,9 +63,48 @@ You may also create a single page with all necessary informations and point with
 If you don't have an email server yet (optional, but necessary for notification and password resets, etc.), you can use [docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)
 
 ### Optional Extensions
-wfLoadExtension( 'Widgets' );
-wfLoadExtension( 'TwitterTag' ); #Not GDPR conform!
-wfLoadExtension( 'WebDAV' ); # Allows access to uploaded files via WebDAV (e. g. directly with MS Word)
+- wfLoadExtension( 'Widgets' );
+- wfLoadExtension( 'TwitterTag' ); #Not GDPR conform!
+- wfLoadExtension( 'WebDAV' ); # Allows access to uploaded files via WebDAV (e. g. directly with MS Word)
+
+### SMW Store
+Currently the default is blazegraph as SPARQL-Store. Since blazegraph is no longer maintained we are transitioning to use Apache Jena Fuseki.
+To switch to Fuseke, add the following settings to your CustomSettings.php file:
+```php
+$smwgSparqlRepositoryConnector = 'fuseki';
+$smwgSparqlEndpoint["query"] = 'http://fuseki:3030/ds/sparql';
+$smwgSparqlEndpoint["update"] = 'http://fuseki:3030/ds/update';
+```
+
+and run the stack with
+```bash
+docker compose --profile fuseki up
+```
+
+Note: A full data rebuild is required to populate the new store.
+
+to run include sparklis SPARQL editor, run
+```bash
+docker compose --profile fuseki --profile sparklis up
+```
+or
+```bash
+COMPOSE_PROFILES=fuseki,sparklis docker compose up
+```
+
+If you do not need a SPARQL endpoint, you can switch to SMWElasticStore by reusing the elasticsearch container:
+```php
+$smwgDefaultStore = 'SMWElasticStore';
+$smwgElasticsearchEndpoints = [
+    [
+        'host' => 'elasticsearch',
+        'port' => 9200,
+        'scheme' => 'http'
+    ]
+];
+```
+
+Note: Switch store types requires to re-setup the store.
 
 ## Maintenance
 

@@ -43,6 +43,7 @@ services:
         - './fuseki/data:/fuseki-base/databases'
         - './fuseki/config/shiro.ini:/jena-fuseki/shiro.ini' # override config before docker-init
         #- './fuseki/config/shiro.ini:/fuseki-base/shiro.ini' # override config after docker-init
+        - './fuseki/config/log4j2.properties:/jena-fuseki/log4j2.properties' # override config 
         user: root  # Run the container with root user
         #ports:
         #- "${GRAPHDB_HOST_PORT}:3030"

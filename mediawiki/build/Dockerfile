@@ -371,6 +371,8 @@ RUN set -x; \
     #manual patch of external submodule VisualEditor (lib/ve)
     #&& sed -i -e "s/surface.getModel().setLinearSelection( startNode.getOuterRange() );/if (startNode.length != 0) surface.getModel().setLinearSelection( startNode.getOuterRange() );/g" VisualEditor/lib/ve/src/ce/keydownhandlers/ve.ce.LinearDeleteKeyDownHandler.js \
     && cd $MW_HOME \
+    && git clone --depth 1 https://github.com/opensemanticworld/mediawiki-extensions-RdfExport.git extensions/RdfExport \
+    && jq '.extra."merge-plugin".include += ["extensions/RdfExport/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source \
     && cd ..
 

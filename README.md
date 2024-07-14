@@ -64,8 +64,9 @@ If you don't have an email server yet (optional, but necessary for notification 
 
 ### Optional Extensions
 - wfLoadExtension( 'Widgets' );
-- wfLoadExtension( 'TwitterTag' ); #Not GDPR conform!
+- wfLoadExtension( 'TwitterTag' ); # Not GDPR conform!
 - wfLoadExtension( 'WebDAV' ); # Allows access to uploaded files via WebDAV (e. g. directly with MS Word)
+- wfLoadExtension( 'RdfExport' ); # exposes an DCAT catalog at `/api.php?action=catalog&format=json&rdf_format=turtle` and allows OWL ontology export (use only in public instances, requires SPARQL-Store)
 
 ### SMW Store
 Currently the default is blazegraph as SPARQL-Store. Since blazegraph is no longer maintained we are transitioning to use Apache Jena Fuseki.

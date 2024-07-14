@@ -670,7 +670,8 @@ $wgFileExtensions = array_merge($wgFileExtensions, array(
     'dx', 'jdx', 'jcm', # JCAMP-DX
     'mpr', 'mps', 'mpt', # Biologic
 ));
-#wfLoadExtension( 'Chatbot' );
+#wfLoadExtension( 'Chatbot' ); # not enabled by default
+#wfLoadExtension( 'DCAT' ); # not enabled by default
 
 ####################### Custom Content #####################
 wfLoadExtension( 'PageExchange' );

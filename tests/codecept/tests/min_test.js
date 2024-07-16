@@ -31,6 +31,23 @@ Scenario('create test person creation @min person', async ({ I }) => {
     // search for formular path using browser inspect tool (F12) and add test value (type as expected in formular field)
     await I.fillEditorField({ schemapath: 'root.first_name', value: `Max` })
     await I.fillEditorField({ schemapath: 'root.surname', value: `Mustermann` })
+    await I.addArrayElement({ schemapath: "root.description" })
+    await I.fillEditorField({ schemapath: `root.description.0.text`, value: `Some test description` })
+    // click save-button
+    await I.saveEditor()
+    // wait 3 seconds to show video content
+    I.wait(3)
+});
+
+Scenario('create test room creation @min room', async ({ I }) => {
+    // navigate to startpage
+    I.amOnPage('/');
+    // find OSW Category
+    await I.openCreateInstanceForm({ category: 'Category:OSWc5ed0ed1e33c4b31887c67af25a610c1' }); // Room
+    // for debugging or subtitleing in tutorial video 
+    await I.addNotification({ text: `Assign at least a label to entry` })
+    // search for formular path using browser inspect tool (F12) and add test value (type as expected in formular field)
+    await I.fillEditorField({ schemapath: 'root.label.0.text', value: `TestRaum001` })
     // click save-button
     await I.saveEditor()
     // wait 3 seconds to show video content

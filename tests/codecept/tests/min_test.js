@@ -5,12 +5,7 @@ Before(async ({ I }) => {
     await I.addNotification({ text: "Login first" })
     await I.login()
 });
-crypto = require('node:crypto');
-function uuidv4() {
-    return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
-        (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
-    );
-}
+
 ////// all scenarios down here ///// 
 Scenario('create test article creation @min test', async ({ I }) => {
     // navigate to startpage
@@ -63,7 +58,6 @@ Scenario('create test room creation @min room', async ({ I }) => {
 Scenario('create test article collection @article collection', async ({ I }) => {
     // navigate to startpage
     I.amOnPage('/');
-    const uuid = uuidv4().split('-')[0] + "Meine Artikel Testsammlung" // crypto.randomUUID()
     // find OSW Category
     await I.openCreateInstanceForm({ category: 'Category:OSW92cc6b1a2e6b4bb7bad470dfdcfdaf26' }); // Article
     // for debugging or subtitleing in tutorial video

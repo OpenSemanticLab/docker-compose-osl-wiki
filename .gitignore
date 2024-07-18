@@ -8,4 +8,4 @@ mediawiki/config/logo*
 mediawiki/data/*
 mysql/data/*
 tests/codecept/output/*
-docker-compose.override.yaml
+docker-compose.override.yml

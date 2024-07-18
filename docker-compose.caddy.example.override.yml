@@ -1,0 +1,34 @@
+# this files shows how to use caddy as a reverse proxy
+# requires https://github.com/lucaslorentz/caddy-docker-proxy
+# and a existing docker network 'caddy'
+
+services:
+    mediawiki:
+        networks:
+            - default
+            - caddy
+        labels:
+            caddy: ${MW_SITE_SERVER}
+            caddy.reverse_proxy: "{{upstreams 80}}"
+            caddy.request_body: 2g
+
+    graphdb:
+        networks:
+            - default
+            - caddy
+        labels:
+            caddy: ${GRAPHDB_SERVER}
+            caddy.reverse_proxy: "{{upstreams 9999}}"
+
+    drawio:
+        networks:
+            - caddy
+        labels:
+            caddy: ${DRAWIO_SERVER}
+            caddy.reverse_proxy: "{{upstreams 8080}}"
+
+        
+networks:
+  # Add caddy as an external network.
+  caddy:
+    external: true

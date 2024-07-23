@@ -11,8 +11,8 @@ services:
         cap_add:
           - SYS_NICE  # CAP_SYS_NICE, fix error mbind: Operation not permitted
         restart: unless-stopped
-        ports:
-            - "${MYSQL_HOST_PORT}:3306"
+        # ports:
+        #     - "${MYSQL_HOST_PORT}:3306"
         environment:
             - MYSQL_ROOT_HOST=%
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -28,8 +28,8 @@ services:
         volumes:
             - ./blazegraph/data:/var/lib/blazegraph
             - ./blazegraph/config:/docker-entrypoint-initdb.d
-        ports:
-            - "${GRAPHDB_HOST_PORT}:9999"
+        # ports:
+        #     - "${GRAPHDB_HOST_PORT}:9999"
 
     mediawiki:
         image: opensemanticlab/osl-mw
@@ -48,9 +48,9 @@ services:
         #networks:
         #    - default
         #    - inter_docker
-        ports:
-            - "${MW_HOST_PORT}:80"
-            - "${SSH_HOST_PORT}:22"
+        # ports:
+        #     - "${MW_HOST_PORT}:80"
+        #     - "${SSH_HOST_PORT}:22"
         volumes:
             - ./mediawiki/config/CustomSettings.php:/var/www/html/w/CustomSettings.php
             - ./mediawiki/data:/var/www/html/w/images
@@ -101,8 +101,8 @@ services:
     drawio:
         image: jgraph/drawio
         restart: unless-stopped
-        ports:
-            - "${DRAWIO_HOST_PORT}:8080"
+        # ports:
+        #     - "${DRAWIO_HOST_PORT}:8080"
 
     codeceptjs:
         #image: codeceptjs/codeceptjs
@@ -126,8 +126,8 @@ services:
         image: aerokube/selenoid:latest-release
         container_name: selenoid
         profiles: [testing]
-        ports:
-            - '4444:4444'
+        # ports:
+        #     - '4444:4444'
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             #- ./tests/selenoid:/etc/selenoid/:ro
@@ -143,8 +143,8 @@ services:
         image: aerokube/selenoid-ui:latest-release
         profiles: [testing]
         command: --selenoid-uri http://selenoid:4444
-        ports:
-            - 8080:8080
+        # ports:
+        #     - :8080
 
 #for internal connections, e. g. non public dockered email server
 #networks:

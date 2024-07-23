@@ -82,7 +82,7 @@ exports.config = {
           "smartWait": 10000,
           desiredCapabilities: {
             firefoxOptions: {
-              // args: ["--kiosk"]
+              // args: ["--kiosk"] // hide address field
             }
           }
         },
@@ -95,6 +95,19 @@ exports.config = {
           "smartWait": 10000,
           desiredCapabilities: {
             chromeOptions: {
+              args: ["--kiosk"]
+            }
+          }
+        },
+        {
+          "url": process.env.MW_SITE_SERVER,
+          "browser": "webkit",
+          "host": "localhost", //'selenoid' does not work here
+          "port": 4444,
+          "keepCookies": true,
+          "smartWait": 10000,
+          desiredCapabilities: {
+            webkitOptions: {
               args: ["--kiosk"]
             }
           }

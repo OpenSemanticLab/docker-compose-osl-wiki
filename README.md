@@ -106,6 +106,11 @@ $smwgElasticsearchEndpoints = [
 ```
 
 Note: Switch store types requires to re-setup the store.
+```bash
+php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/setupStore.php
+php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildElasticIndex.php
+php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
+```
 
 ## Maintenance
 

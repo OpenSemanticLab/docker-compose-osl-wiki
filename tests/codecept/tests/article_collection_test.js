@@ -1,5 +1,5 @@
 // What is tested in this file?
-Feature('min test');
+Feature('article collection');
 // Login is required for all test scenarios
 Before(async ({ I }) => {
     await I.addNotification({ text: "Login first" })

@@ -58,6 +58,8 @@ $wgHooks['LoadUserOptions'][] = function( $user, array &$options ) use ($wgDefau
     //if (!array_key_exists('language', $data)) $options['language'] = $wgDefaultUserOptions['language']; // does not work with Extension:ULS, prevents changing the language via settings
 };
 
+$wgJobRunRate = 0; // do not perform jobs runs on requests for performance reasons (jobs are handled per script)
+
 #$wgHooks['UserGetLanguageObject'][] = function( $user, &$code ) {
 #    $code =  $user->getOption( 'language' );
 #};

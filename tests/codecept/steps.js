@@ -259,13 +259,12 @@ module.exports = function () {
       await I.addNotification({text: "Save your changes"})
       //const editorId = await I.executeScript('return document.querySelectorAll(".je-ready")[1].id;')
       I.click('#' + this.editorId + ' .card-title.level-1')
-      const xpath = '(//*[@class="je-ready"])[' + (this.getEditorLevel() + 1) + ']/ancestor::*[contains(@class,"oo-ui-window-content")]//*[contains(@class,"oo-ui-processDialog-actions-primary")]//*[contains(@class,"oo-ui-buttonElement-button")]'
-      await I.scrollAndMoveAndClick({selector: xpath})
+      await I.scrollAndMoveAndClick({selector: '#' + this.editorId + '_btn-submit'})
       // somehow I.click does not work here => run click() manually
       //await I.executeScript('document.querySelectorAll(".je-ready")[' + (this.getEditorLevel()) + '].closest(".oo-ui-window-content").querySelector(".oo-ui-processDialog-actions-primary .oo-ui-buttonElement-button").click()')
       //I.retry({ retries: 5, maxTimeout: 1000 }).dontSee('#' + editorId)
-      if ((await I.grabNumberOfVisibleElements('.oo-ui-messageDialog-content')) > 0) {
-        await I.scrollAndMoveAndClick({selector:'(//*[contains(@class,"oo-ui-messageDialog-content")]//*[@class="oo-ui-buttonElement-button"])[2]'}) // OK button
+      if ((await I.grabNumberOfVisibleElements('#confirmClose')) > 0) {
+        await I.scrollAndMoveAndClick({selector:'#confirmClose .btn-secondary'}) // OK button
       }
       I.waitForInvisible('#' + this.editorId, 10);
       // xPath index is 1-based
@@ -286,8 +285,7 @@ module.exports = function () {
       const I = this
       //const editorId = await I.executeScript('return document.querySelectorAll(".je-ready")[1].id;')
       //I.click('#' + this.editorId + ' .card-title.level-1')
-      const xpath = '(//*[@class="je-ready"])[' + (this.getEditorLevel() + 1) + ']/ancestor::*[contains(@class,"oo-ui-window-content")]//*[contains(@class,"oo-ui-processDialog-actions-safe")]//*[contains(@class,"oo-ui-buttonElement-button")]'
-      await I.scrollAndMoveAndClick({selector: xpath})
+      await I.scrollAndMoveAndClick({selector: '#dataEditorModal_' + this.editorId + ' .btn-close'})
       // somehow I.click does not work here => run click() manually
       //await I.executeScript('document.querySelectorAll(".je-ready")[' + (this.getEditorLevel()) + '].closest(".oo-ui-window-content").querySelector(".oo-ui-processDialog-actions-safe .oo-ui-buttonElement-button").click()')
       

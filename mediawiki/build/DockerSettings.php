@@ -89,7 +89,7 @@ $wgCitizenSearchGateway = "smwAskApi";
 $wgCitizenSearchSmwApiAction = "compoundquery";
 $wgCitizenSearchSmwAskApiQueryTemplate = "
 [[HasNormalizedLabel::\${input_normalized}]][[HasOswId::!~*#*]];?HasLabel=displaytitle;?HasType.Display_title_of=type;?HasImage=thumbnail;?HasDescription=desc;limit=1
-|[[HasNormalizedLabel::~*\${input_normalized_tokenized}*]][[HasOswId::!~*#*]];?HasLabel=displaytitle;?Category.Display_title_of=type;?HasImage=thumbnail;?HasDescription=desc;limit=7>
+|[[HasNormalizedLabel::~*\${input_normalized_tokenized}*]][[HasOswId::!~*#*]];?HasLabel=displaytitle;?Category.Display_title_of=type;?HasImage=thumbnail;?HasDescription=desc;limit=7
 ";
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org

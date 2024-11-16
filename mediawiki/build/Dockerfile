@@ -217,9 +217,9 @@ RUN set -x; \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:~2.2 \
     ## SRF
     && cd $MW_HOME/extensions \
-    #&& git clone --depth 1 -b use-vizjs-renderer https://github.com/simontaurus/SemanticResultFormats.git SemanticResultFormats \
-    && git clone https://github.com/SemanticMediaWiki/SemanticResultFormats.git SemanticResultFormats \
-    && cd SemanticResultFormats && git checkout -b dev f9ba69b35f43f2859e0bfd3dca14282bcb3fd5d3 && cd .. \
+    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
+    #&& git clone https://github.com/SemanticMediaWiki/SemanticResultFormats.git SemanticResultFormats \
+    #&& cd SemanticResultFormats && git checkout -b dev f9ba69b35f43f2859e0bfd3dca14282bcb3fd5d3 && cd .. \
     #&& git clone --depth 1 https://github.com/SemanticMediaWiki/Mermaid.git Mermaid \
     #&& git clone --depth 1 https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties.git \
     #&& git clone --depth 1 -b dev-$MW_VERSION https://github.com/simontaurus/SemanticFormsSelect.git \
@@ -239,7 +239,9 @@ RUN set -x; \
     && cd $MW_HOME \
     && composer update  --no-dev --prefer-source --optimize-autoloader \
     # fix: videos in gallery format not shown
-    && sed -i -e "s/find( 'a.image' )/find( 'a.image' ).add( 'video>a' )/g" $MW_HOME/extensions/SemanticResultFormats/formats/gallery/resources/ext.srf.gallery.redirect.js
+    && sed -i -e "s/find( 'a.image' )/find( 'a.image' ).add( 'video>a' )/g" $MW_HOME/extensions/SemanticResultFormats/formats/gallery/resources/ext.srf.gallery.redirect.js \
+    # fix: create temp table only if not existing yet, see https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/5714
+    && sed -i -e 's/"CREATE TEMPORARY TABLE "/"CREATE TEMPORARY TABLE IF NOT EXISTS "/g' $MW_HOME/extensions/SemanticMediaWiki/src/SQLStore/TableBuilder/TemporaryTableBuilder.php
 
 #### Scribunto / Lua ####
 RUN set -x; \

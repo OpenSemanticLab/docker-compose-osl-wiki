@@ -266,7 +266,7 @@ module.exports = function () {
       if ((await I.grabNumberOfVisibleElements('#confirmClose')) > 0) {
         await I.scrollAndMoveAndClick({selector:'#confirmClose .btn-secondary'}) // OK button
       }
-      I.waitForInvisible('#' + this.editorId, 10);
+      I.waitForInvisible('#' + this.editorId, 20); //save Organization takes long
       // xPath index is 1-based
       //I.waitForInvisible('(//*[@class="je-ready"])['+ (this.getEditorLevel() + 1) + ']', 10);
       await this.decrementEditorLevel()
@@ -288,7 +288,9 @@ module.exports = function () {
       await I.scrollAndMoveAndClick({selector: '#dataEditorModal_' + this.editorId + ' .btn-close'})
       // somehow I.click does not work here => run click() manually
       //await I.executeScript('document.querySelectorAll(".je-ready")[' + (this.getEditorLevel()) + '].closest(".oo-ui-window-content").querySelector(".oo-ui-processDialog-actions-safe .oo-ui-buttonElement-button").click()')
-      
+      if ((await I.grabNumberOfVisibleElements('#confirmClose')) > 0) {
+        await I.scrollAndMoveAndClick({selector:'#confirmClose .btn-secondary'}) // OK button
+      }
       //I.retry({ retries: 5, maxTimeout: 1000 }).dontSee('#' + editorId)
       I.waitForInvisible('#' + this.editorId, 10);
       // xPath index is 1-based

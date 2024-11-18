@@ -283,6 +283,11 @@ RUN set -x; \
     #  apply patch for private wikis, see: https://phabricator.wikimedia.org/T271347
     && sed -i -e "s/static \$validNamespaces = \[/static \$validNamespaces = \['http:\/\/www.w3.org\/1999\/xhtml',/g" $MW_HOME/includes/upload/UploadBase.php \
     && sed -i -e "s/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' );/\/\/datastr = datastr.replace( expr, '\"http:\/\/www.w3.org\/2000\/svg\"' ); /g" $MW_HOME/extensions/DrawioEditor/resources/ext.drawioeditor.js \
+    # LLM support in VisualEditor
+    && git clone --depth 1 -b REL1_39-1.1.x https://github.com/wikimedia/mediawiki-extensions-VisualEditorPlus VisualEditorPlus \
+    && cd $MW_HOME && jq '.extra."merge-plugin".include += ["extensions/VisualEditorPlus/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json && cd $MW_HOME/extensions \
+    #&& COMPOSER=composer.local.json composer require --no-update hallowelt/visualeditorplus:dev-REL1_39-1.1.x \
+    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-AIEditingAssistant AIEditingAssistant \
     # WebDAV
     && git clone --depth 1 https://github.com/OpenSemanticWorld/mediawiki-extensions-WebDAV.git WebDAV \
     && cd $MW_HOME \

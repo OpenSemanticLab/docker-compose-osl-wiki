@@ -192,7 +192,7 @@ RUN set -x; \
     && cd extensions/LinkedWiki && npm install --production && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/LinkedWiki/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## WSSlots
-    && git clone --depth 1 https://github.com/OpenSemanticLab/WSSlots.git extensions/WSSlots \
+    && git clone --depth 1 https://github.com/Open-CSP/WSSlots.git extensions/WSSlots \
     && jq '.extra."merge-plugin".include += ["extensions/WSSlots/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## PageExchange
     && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-PageExchange extensions/PageExchange \

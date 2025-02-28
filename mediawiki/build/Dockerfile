@@ -238,10 +238,10 @@ RUN set -x; \
     ## Apply 
     && cd $MW_HOME \
     && composer update  --no-dev --prefer-source --optimize-autoloader \
+    && rm -R extensions/SemanticMediaWiki \
+    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/SemanticMediaWiki.git extensions/SemanticMediaWiki \
     # fix: videos in gallery format not shown
-    && sed -i -e "s/find( 'a.image' )/find( 'a.image' ).add( 'video>a' )/g" $MW_HOME/extensions/SemanticResultFormats/formats/gallery/resources/ext.srf.gallery.redirect.js \
-    # fix: create temp table only if not existing yet, see https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/5714
-    && sed -i -e 's/"CREATE TEMPORARY TABLE "/"CREATE TEMPORARY TABLE IF NOT EXISTS "/g' $MW_HOME/extensions/SemanticMediaWiki/src/SQLStore/TableBuilder/TemporaryTableBuilder.php
+    && sed -i -e "s/find( 'a.image' )/find( 'a.image' ).add( 'video>a' )/g" $MW_HOME/extensions/SemanticResultFormats/formats/gallery/resources/ext.srf.gallery.redirect.js
 
 #### Scribunto / Lua ####
 RUN set -x; \

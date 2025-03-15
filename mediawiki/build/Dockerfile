@@ -316,7 +316,7 @@ RUN set -x; \
     #&& git clone --depth 1 -b dev-$MW_VERSION  https://github.com/simontaurus/mediawiki-extensions-PageForms.git PageForms \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \ 
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-MagicNoCache.git MagicNoCache \
-    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-HeaderTabs.git HeaderTabs \ 
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-HeaderTabs.git HeaderTabs \ 
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-UploadWizard.git UploadWizard \
     ## Guilded Tours
     && cd $MW_HOME \

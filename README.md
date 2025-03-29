@@ -187,6 +187,11 @@ copy files
 docker cp mediawiki/config/pub/* osl-wiki_mediawiki_1:/var/www/html/w/pub/
 ```
 
+backup extensions
+```bash
+docker-compose exec -T mediawiki tar -czf - -C /var/www/html/w/extensions/ . > backup/extensions_backup_$(date +"%Y%m%d_%H%M%S").tar
+```
+
 ### Push with tag
 triggers CI/CD workflow and pushes image with tags to docker registry (see also [stackoverflow: push-git-commits-tags-simultaneously](https://stackoverflow.com/questions/3745135/push-git-commits-tags-simultaneously/57842917#57842917) )
 ```

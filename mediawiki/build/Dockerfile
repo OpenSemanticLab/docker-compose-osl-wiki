@@ -172,7 +172,7 @@ RUN set -x; \
     && apt-get -y update && apt-get -y install php$PHP_VERSION-mongodb && phpenmod mongodb \
     ## allow plugin
     && COMPOSER=composer.local.json composer config --no-plugins allow-plugins.composer/installers true \
-    && COMPOSER=composer.local.json composer require --no-update mongodb/mongodb "^1.6.0" \
+    && COMPOSER=composer.local.json composer require --no-update mongodb/mongodb \
     && git clone --depth 1 -b dev-REL1_35 https://github.com/simontaurus/mediawiki-extensions-ExternalData.git extensions/ExternalData \
     && jq '.extra."merge-plugin".include += ["extensions/ExternalData/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     #https://www.mediawiki.org/wiki/Extension:External_Data/Local_programs

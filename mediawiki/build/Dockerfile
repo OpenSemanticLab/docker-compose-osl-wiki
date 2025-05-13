@@ -48,6 +48,7 @@ RUN set -x; \
         nano \
         curl \
         jq \
+        lua5.1 \
     && update-alternatives --set php /usr/bin/php$PHP_VERSION \
     && sed -i "$ s|\-n||g" /usr/bin/pecl \
     && pear install mail net_smtp \

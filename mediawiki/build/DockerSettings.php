@@ -565,6 +565,9 @@ wfLoadExtension( 'SemanticScribunto' );
 wfLoadExtension( 'Capiunto' );
 wfLoadExtension( 'VariablesLua' );
 
+# Set lua binaries to apt installed Lua5.1
+$wgScribuntoEngineConf['luastandalone']['luaPath'] = '/usr/bin/lua';
+
 
 ########### Flow (AFTER SMW!!!) ###############
 # https://www.mediawiki.org/wiki/Extension:Flow

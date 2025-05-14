@@ -48,7 +48,6 @@ RUN set -x; \
         nano \
         curl \
         jq \
-        lua5.1 \
     && update-alternatives --set php /usr/bin/php$PHP_VERSION \
     && sed -i "$ s|\-n||g" /usr/bin/pecl \
     && pear install mail net_smtp \
@@ -247,6 +246,8 @@ RUN set -x; \
 #### Scribunto / Lua ####
 RUN set -x; \
     cd $MW_HOME/extensions \
+    # install lua from distro to support all platforms
+    && apt-get update &&  apt-get install -y --no-install-recommends lua5.1 \
     && git clone --depth 1 https://github.com/Liquipedia/VariablesLua.git \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Capiunto.git Capiunto
 

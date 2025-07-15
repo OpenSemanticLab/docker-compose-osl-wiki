@@ -11,6 +11,13 @@ docker-compose build
 docker-compose up
 ```
 
+## Build Multi-Architecture Image
+
+```bash
+cd /mediawiki/build
+docker buildx build --platform=linux/amd64,linux/arm64 --push -t docker.io/opensemanticlab/osl-mw:main-arm64 .
+```
+
 ## Config
 
 ### MediaWiki

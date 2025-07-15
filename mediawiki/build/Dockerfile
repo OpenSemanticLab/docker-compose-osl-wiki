@@ -98,6 +98,9 @@ RUN set -x; \
     && COMPOSER=composer.local.json composer config --no-plugins allow-plugins.wikimedia/composer-merge-plugin true \
     ## alternative way to allow plugin
     #&& jq '.config."allow-plugins" += {"wikimedia/composer-merge-plugin": true}' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    ## handle bundled extensions that required composer install
+    && jq '.extra."merge-plugin".include += ["extensions/OATHAuth/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && composer update --no-dev \
     && cd ..
 
 ##### Skins ####

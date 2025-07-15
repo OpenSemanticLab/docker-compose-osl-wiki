@@ -119,6 +119,16 @@ php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildElasticIndex
 php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 ```
 
+### Two-Factor-Authentication
+```php
+# 2FA, see https://www.mediawiki.org/wiki/Extension:OATHAuth
+wfLoadExtension( 'OATHAuth' );
+$wgGroupPermissions['user']['oathauth-enable'] = true;
+# $wgOATHRequiredForGroups = ['user']; # this will enforce 2FA but can only be applied in private wikis after every user activated it
+# make sure to persist $wgSecretKey between updates, otherwise user need to re-register
+$wgSecretKey = "...";
+```
+
 ## Maintenance
 
 missing semantic properties after backup restore

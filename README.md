@@ -75,6 +75,22 @@ If you don't have an email server yet (optional, but necessary for notification 
 - wfLoadExtension( 'WebDAV' ); # Allows access to uploaded files via WebDAV (e. g. directly with MS Word)
 - wfLoadExtension( 'RdfExport' ); # exposes an DCAT catalog at `/api.php?action=catalog&format=json&rdf_format=turtle` and allows OWL ontology export (use only in public instances, requires SPARQL-Store)
 
+#### Iframes
+
+[Extension:Iframe](https://www.mediawiki.org/wiki/Extension:Iframe) enabled. To do so, add the following to your `CustomSettings.php`
+```php
+wfLoadExtension( 'Iframe' );
+$wgIframe['width'] = "100%"; # example for a default setting
+$wgIframe['server']['example'] = [ 'scheme' => 'https', 'domain' => 'example.com' ];
+$wgIframe['server']['dashboard'] = [ 'scheme' => 'https', 'domain' => 'user:password@example.com' ]; # example for basic auth
+$wgIframe['server']['localhost:20200'] = [ 'scheme' => 'http', 'domain' => 'localhost:20200' ]; # to allow users to test a local running webapp
+```
+
+To make use of the whitelisted domains, e.g. as `https://subdomain.example.com/example/page&hl=e`, add the following to any wiki page or template:
+```mediawiki
+<iframe key="example" level="subdomain" path="example/page&hl=en" />
+```
+
 ### SMW Store
 Currently the default is blazegraph as SPARQL-Store. Since blazegraph is no longer maintained we are transitioning to use Apache Jena Fuseki.
 To switch to Fuseke, add the following settings to your CustomSettings.php file:

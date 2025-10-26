@@ -229,6 +229,7 @@ RUN set -x; \
     #&& git clone --depth 1 -b semantic_reference_template https://github.com/simontaurus/SemanticCite.git \ #needs update
     && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticACL.git SemanticACL \
     #&& git clone --depth 1 -b master https://github.com/wikimedia/mediawiki-extensions-SemanticACL.git SemanticACL \
+    && git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/Lockdown \
     && git clone -b dev https://github.com/OpenSemanticLab/Maps \
     ## SemanticActions
     && git clone --depth 1 -b dev_en https://github.com/OpenSemanticLab/SemanticActions.git \

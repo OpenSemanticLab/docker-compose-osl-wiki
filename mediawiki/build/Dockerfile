@@ -269,8 +269,8 @@ RUN set -x; \
     && apt-get update && apt-get install -y --no-install-recommends ffmpeg \
     && cd TimedMediaHandler && composer install --no-dev && cd .. \
     && git clone --depth 1 -b v3.3.0 https://github.com/StarCitizenWiki/mediawiki-extensions-EmbedVideo EmbedVideo \
-    # 3D Files
-    && git clone --depth 1 https://github.com/dolfinus/3DAlloy 3DAlloy \
+    # 3D Files commit hash MW1.39 compatible
+    && git clone --depth 1 https://github.com/dolfinus/3DAlloy.git 3DAlloy && cd 3DAlloy && git fetch --depth 1 origin 78496c99dd92956376833f63f9e6228bb3fc4324 && git checkout 78496c99dd92956376833f63f9e6228bb3fc4324 && cd .. \
     ## Visual Editor
     # && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Math.git \ # bundled in REL1_39
     && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm librsvg2-dev build-essential \

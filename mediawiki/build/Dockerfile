@@ -220,7 +220,7 @@ RUN set -x; \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:~2.2 \
     ## SRF
     && cd $MW_HOME/extensions \
-    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
+    && git clone --depth 1 -b dev-5.1.0 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
     #&& git clone https://github.com/SemanticMediaWiki/SemanticResultFormats.git SemanticResultFormats \
     #&& cd SemanticResultFormats && git checkout -b dev f9ba69b35f43f2859e0bfd3dca14282bcb3fd5d3 && cd .. \
     #&& git clone --depth 1 https://github.com/SemanticMediaWiki/Mermaid.git Mermaid \

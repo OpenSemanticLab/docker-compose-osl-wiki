@@ -73,11 +73,7 @@ RUN set -ex \
 ##### MediaWiki Core setup
 RUN set -x; \
     mkdir -p $MW_HOME \
-    && git clone \
-        --depth 1 \
-        -b $MW_VERSION-dev \
-        https://github.com/OpenSemanticLab/mediawiki.git \
-        $MW_HOME \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/mediawiki/mediawiki.git $MW_HOME \
     && cd $MW_HOME \
     ## Bundled extensions
     && git submodule update --init --recursive \

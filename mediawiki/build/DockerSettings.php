@@ -660,6 +660,10 @@ $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage 
 ####################### Custom Extensions ####################
 wfLoadExtension( 'FileApi' );
 wfLoadExtension( 'MwJson' );
+$wgMwJsonSlotRenderResultTransformation = [
+    "enabled" => true,
+];
+
 wfLoadExtension( 'OpenSemanticLab' );
 $wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
 wfLoadExtension( 'SemanticProperties' );

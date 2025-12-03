@@ -142,8 +142,6 @@ run_script_if_needed () {
     fi
 }
 
-service ssh start
-
 cd $MW_HOME
 
 ########## Create Temp Dir #########

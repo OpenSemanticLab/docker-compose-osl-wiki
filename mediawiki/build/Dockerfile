@@ -70,14 +70,6 @@ RUN set -ex \
     && ln -sfT /dev/stdout "$APACHE_LOG_DIR/access.log" \
     && ln -sfT /dev/stdout "$APACHE_LOG_DIR/other_vhosts_access.log"
 
-#### Dev Tools
-ARG SSH_PASS
-RUN set -x; \
-    apt-get -y update \
-    && apt-get -y install openssh-server
-RUN useradd -m -s /bin/bash -g $WWW_GROUP -p "$(openssl passwd -1 $SSH_PASS)" sshuser
-EXPOSE 22
-
 ##### MediaWiki Core setup
 RUN set -x; \
     mkdir -p $MW_HOME \

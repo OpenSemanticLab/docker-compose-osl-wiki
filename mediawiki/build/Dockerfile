@@ -57,8 +57,12 @@ RUN set -x; \
     && a2enmod remoteip \
     && rm /var/www/html/index.html \
     && rm -rf /etc/apache2/sites-enabled/* \
+    # install composer 2.2 LTS version to avoid issues 2.9 auto enabled audit plugin
     && wget -qO composer-setup.php https://getcomposer.org/installer \
-    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer --2.2
+    # alternatively this should also work:
+    # ignore CVE-2021-46743 advisories, see https://phabricator.wikimedia.org/T411006
+    # && jq '.config.audit.ignore."PKSA-2kqm-ps5x-s4f5" = "Blocks upgrading a vulnerable npm package; see T411006" ' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
 
 # logs should go to stdout / stderr
 RUN set -ex \

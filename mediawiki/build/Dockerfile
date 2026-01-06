@@ -1,8 +1,8 @@
-FROM ubuntu:22.04 AS base
+FROM debian:12.8 AS base
 
 LABEL maintainers="simon.stier@gmx.de"
 
-ENV MW_VERSION=REL1_39 \
+ENV MW_VERSION=REL1_43 \
     MW_HOME=/var/www/html/w \
     MW_VOLUME=/mediawiki \
     WWW_USER=www-data \
@@ -13,52 +13,98 @@ ENV MW_VERSION=REL1_39 \
     # allow plugins to run as root/super user
     COMPOSER_ALLOW_SUPERUSER=1 
 
-# Install requered packages
+# System setup
+RUN set x; \
+	apt-get clean \
+	&& apt-get update \
+	&& apt-get install -y aptitude \
+	&& aptitude -y upgrade \
+	&& aptitude install -y \
+	git \
+	inotify-tools \
+	apache2 \
+	software-properties-common \
+	gpg \
+	apt-transport-https \
+	ca-certificates \
+	wget \
+	lsb-release \
+	imagemagick  \
+	librsvg2-bin \
+	python3-pygments \
+	msmtp \
+	msmtp-mta \
+	patch \
+	vim \
+	mc \
+	ffmpeg \
+	curl \
+	iputils-ping \
+	unzip \
+	gnupg \
+	default-mysql-client \
+	rsync \
+	lynx \
+	poppler-utils \
+	&& wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
+	&& echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list \
+	&& aptitude update \
+	&& aptitude install -y \
+	php$PHP_VERSION \
+	php$PHP_VERSION-cli \
+	php$PHP_VERSION-gd \
+	php$PHP_VERSION-mbstring \
+	php$PHP_VERSION-xml \
+	php$PHP_VERSION-mysql \
+    php$PHP_VERSION-pgsql \
+	php$PHP_VERSION-intl \
+	php$PHP_VERSION-opcache \
+	php$PHP_VERSION-apcu \
+	php$PHP_VERSION-redis \
+	php$PHP_VERSION-curl \
+	php$PHP_VERSION-zip \
+    php$PHP_VERSION-memcached \
+	#php$PHP_VERSION-fpm \
+	php$PHP_VERSION-yaml \
+	php$PHP_VERSION-ldap \
+	#libapache2-mod-fcgid \
+    libapache2-mod-php$PHP_VERSION
+
+# Install additional packages
 RUN set -x; \
-    apt-get update \
-    && export LANG=C.UTF-8 \
-    && apt-get install -y software-properties-common \
-    && add-apt-repository -y ppa:ondrej/php \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        apache2 \
-        libapache2-mod-php$PHP_VERSION \
-        php$PHP_VERSION \
-        php$PHP_VERSION-mysql \
-        php$PHP_VERSION-pgsql \
-        php$PHP_VERSION-cli \
-        php$PHP_VERSION-gd \
-        php$PHP_VERSION-curl \
-        php$PHP_VERSION-mbstring \
-        php$PHP_VERSION-xml \
-        php-xml \
-        php$PHP_VERSION-apcu \
-        php$PHP_VERSION-intl \
-        php$PHP_VERSION-zip \
-        php$PHP_VERSION-memcached \
-        php-pear \
-        imagemagick \
-        netcat \
-        git \
-        #composer \
-        unzip \
-        mysql-client \
-        wget \
-        nano \
-        curl \
-        jq \
+	aptitude update \
+	&& aptitude install -y \
+    nano \
+    jq \
+    php-pear \
     && update-alternatives --set php /usr/bin/php$PHP_VERSION \
     && sed -i "$ s|\-n||g" /usr/bin/pecl \
     && pear install mail net_smtp \
+    && aptitude clean \
     && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/cache/apt/archives/* \
-    && a2enmod rewrite \
-    && a2enmod remoteip \
+    && rm -rf /var/cache/apt/archives/*
+
+# Post install configuration
+# ToDo: https://github.com/CanastaWiki/CanastaBase/blob/master/_sources/configs/php-fpm-www.conf#L397
+RUN set -x; \
+	# Remove default config
+	rm -rf /etc/apache2/sites-enabled/* \
+	&& rm -rf /etc/apache2/sites-available/* \
+	# && rm -rf /var/www/html \
     && rm /var/www/html/index.html \
-    && rm -rf /etc/apache2/sites-enabled/* \
-    && wget -qO composer-setup.php https://getcomposer.org/installer \
-    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+	# Enable rewrite module
+    && a2enmod rewrite \
+    && a2enmod remoteip
+	# enabling mpm_event and php-fpm
+	#&& a2dismod mpm_prefork \
+	#&& a2enconf php8.1-fpm \
+	#&& a2enmod mpm_event \
+	#&& a2enmod proxy_fcgi
+
+# Composer
+RUN set -x; \
+	curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && composer self-update 2.1.3
 
 # logs should go to stdout / stderr
 RUN set -ex \
@@ -66,22 +112,11 @@ RUN set -ex \
     && ln -sfT /dev/stdout "$APACHE_LOG_DIR/access.log" \
     && ln -sfT /dev/stdout "$APACHE_LOG_DIR/other_vhosts_access.log"
 
-#### Dev Tools
-ARG SSH_PASS
-RUN set -x; \
-    apt-get -y update \
-    && apt-get -y install openssh-server
-RUN useradd -m -s /bin/bash -g $WWW_GROUP -p "$(openssl passwd -1 $SSH_PASS)" sshuser
-EXPOSE 22
-
 ##### MediaWiki Core setup
 RUN set -x; \
     mkdir -p $MW_HOME \
-    && git clone \
-        --depth 1 \
-        -b $MW_VERSION-dev \
-        https://github.com/OpenSemanticLab/mediawiki.git \
-        $MW_HOME \
+    #&& git clone --depth 1 -b $MW_VERSION-dev https://github.com/OpenSemanticLab/mediawiki.git $MW_HOME \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/mediawiki/mediawiki.git $MW_HOME \
     && cd $MW_HOME \
     ## Bundled extensions
     && git submodule update --init --recursive \
@@ -106,20 +141,10 @@ RUN set -x; \
 ##### Skins ####
 RUN set -x; \
     cd $MW_HOME/skins \
-    ## bundled
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Vector \
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MonoBook \
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Timeless \
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/MinervaNeue \
-    ## non-bundled
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/skins/Modern \
-    && git clone --depth 1 https://github.com/jthingelstad/foreground \
     && git clone --depth 1 -b osw https://github.com/OpenSemanticLab/mediawiki-skins-Citizen Citizen \
-    && cd $MW_HOME/extensions \
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/MobileFrontend \
+    && git clone --depth 1 -b https://github.com/StarCitizenTools/mediawiki-skins-Citizen Citizen \
     && cd $MW_HOME \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/bootstrap-components:~5.0 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/chameleon-skin:~4.0 \
     && composer update  --no-dev --prefer-source
 
 ##### Non-bundled Core Extensions ####

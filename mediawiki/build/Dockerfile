@@ -264,13 +264,6 @@ RUN set -x; \
     # 3D Files commit hash MW1.39 compatible
     && git clone --depth 1 https://github.com/dolfinus/3DAlloy.git 3DAlloy && cd 3DAlloy && git fetch --depth 1 origin 78496c99dd92956376833f63f9e6228bb3fc4324 && git checkout 78496c99dd92956376833f63f9e6228bb3fc4324 && cd .. \
     ## Visual Editor
-    # && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/Math.git \ # bundled in REL1_39
-    && apt-get update -y && apt-get install --no-install-recommends -y -o Dpkg::Options::="--force-confold" -y nodejs npm librsvg2-dev build-essential \
-    && mkdir -p /usr/local/nodejs/mathoid/ && cd /usr/local/nodejs/mathoid/ \
-    && npm install mathoid \
-    #  https://github.com/wikimedia/mathoid/commit/8aa71deeb28d4b039d421bee011342aaf5cc124a
-    && npm install commander@6.2.1 \
-    && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-VEForAll.git VEForAll \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CodeMirror.git CodeMirror \
     && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/WikiMarkdown.git WikiMarkdown \

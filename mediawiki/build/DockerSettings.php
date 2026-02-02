@@ -256,12 +256,8 @@ $wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
 $wgVisualEditorEnableDiffPage = true;
 
 wfLoadExtension( 'Math' ); # bundled in REL1_39
-#$wgMathValidModes[] = 'mathml';
-#$wgDefaultUserOptions['math'] = 'mathml';
-//use local cli. disable speech (config.prod.yaml) may improve performance
-$wgMathoidCli = ['/usr/local/nodejs/mathoid/node_modules/mathoid/cli.js', '-c', '/usr/local/nodejs/mathoid/node_modules/mathoid/config.dev.yaml'];
-// Raise MediaWiki's memory limit to 2*1.2G for mathoid.
-$wgMaxShellMemory = 2*1228800;
+$wgMathValidModes[] = 'mathml';
+$wgDefaultUserOptions['math'] = 'mathml';
 wfLoadExtension( 'CodeMirror' );
 
 ############ Multimedia & Editors ############
@@ -275,7 +271,7 @@ $wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER' );
 #wfLoadExtension( 'CognitiveProcessDesigner' );
 wfLoadExtension( 'TimedMediaHandler' );
 $wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
-#$wgMaxShellMemory *= 4; //already increased by Extension:Math
+$wgMaxShellMemory = 2*1228800;
 wfLoadExtension( 'EmbedVideo' );
 $wgEmbedVideoFetchExternalThumbnails = false; #true will fetch external images before user consent
 wfLoadExtension( '3DAlloy' ); #3D Files

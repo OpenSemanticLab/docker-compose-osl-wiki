@@ -15,29 +15,29 @@ if ( getenv( 'MW_SHOW_EXCEPTION_DETAILS' ) === 'true' ) {
 # we have to use "UTC" here, otherwise SMW stores time values with reference to the local time zone
 # see also: https://www.semantic-mediawiki.org/wiki/Help:Type_Date
 $wgLocaltimezone = "UTC";
-#$wgLocaltimezone = getenv( 'MW_TIME_ZONE' );
+#$wgLocaltimezone = getenv( 'MW_TIME_ZONE', true ) ?: getenv( 'MW_TIME_ZONE' );
 # instead we store the timezone param as default user timezone setting
 # the offset is dynamically calculated, e.g. 'ZoneInfo|120|Europe/Berlin';
-date_default_timezone_set('UTC');
+/*date_default_timezone_set('UTC');
 $wgDefaultUserOptions['timecorrection'] = 'ZoneInfo|' 
     . timezone_offset_get(
-        new DateTimeZone( getenv( 'MW_TIME_ZONE' ) ), 
-        new DateTime( 'now', new DateTimeZone( getenv( 'MW_TIME_ZONE' ) ) )
+    new DateTimeZone( getenv( 'MW_TIME_ZONE', true ) ?: getenv( 'MW_TIME_ZONE' ) ), 
+    new DateTime( 'now', new DateTimeZone( getenv( 'MW_TIME_ZONE', true ) ?: getenv( 'MW_TIME_ZONE' ) ) )
     ) / 60
-    . '|' . getenv( 'MW_TIME_ZONE' );
+    . '|' . (getenv( 'MW_TIME_ZONE', true ) ?: getenv( 'MW_TIME_ZONE' ));*/
 
 # Site language code, should be one of the list in ./languages/Names.php
 # we have to use 'en' here for technical reasons (namespace and smw property names)
 $wgLanguageCode = 'en';
 # instead, we set the lang param as default user interface lang
 # see also: https://www.mediawiki.org/wiki/Manual:$wgDefaultUserOptions
-$wgDefaultUserOptions['language'] = getenv( 'MW_SITE_LANG' );
+$wgDefaultUserOptions['language'] = getenv( 'MW_SITE_LANG', true ) ?: getenv( 'MW_SITE_LANG' );
 
 # we have to override the options loading to apply our defaults
 # https://www.mediawiki.org/wiki/Manual_talk:$wgDefaultUserOptions#Setting_$wgDefaultUserOptions['language']_=_'de';_fails
 $wgHooks['LoadUserOptions'][] = function( $user, array &$options ) use ($wgDefaultUserOptions) {
     # lookup explicite user settings
-    $dbr = wfGetDB( DB_MASTER );
+    $dbr = wfGetDB( DB_PRIMARY );
     $res = $dbr->select(
         'user_properties',
         [ 'up_property', 'up_value' ],
@@ -65,10 +65,10 @@ $wgJobRunRate = 0; // do not perform jobs runs on requests for performance reaso
 #};
 
 ## The protocol and server name to use in fully-qualified URLs => set in Custom settings
-$wgServer = getenv( 'MW_SITE_SERVER' );
+$wgServer = getenv( 'MW_SITE_SERVER', true ) ?: getenv( 'MW_SITE_SERVER' );
 
 # The name of the site. This is the name of the site as displayed throughout the site.
-$wgSitename = getenv( 'MW_SITE_NAME' );
+$wgSitename = getenv( 'MW_SITE_NAME', true ) ?: getenv( 'MW_SITE_NAME' );
 
 # Default skin: you can change the default skin. Use the internal symbolic
 # names, ie 'standard', 'nostalgia', 'cologneblue', 'monobook', 'vector', 'chameleon':
@@ -93,7 +93,7 @@ $wgCitizenSearchSmwAskApiQueryTemplate = "
 ";
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
-$wgUseInstantCommons = getenv( 'MW_USE_INSTANT_COMMONS' );
+$wgUseInstantCommons = getenv( 'MW_USE_INSTANT_COMMONS', true ) ?: getenv( 'MW_USE_INSTANT_COMMONS' );
 
 # Name used for the project namespace. The name of the meta namespace (also known as the project namespace), used for pages regarding the wiki itself.
 #$wgMetaNamespace = 'Site'; #just an alias. does not work at all of canonical namespace 'project' is created / used by an extension
@@ -120,7 +120,7 @@ $wgArticlePath = '/wiki/$1';
 
 ##### Improve performance
 # https://www.mediawiki.org/wiki/Manual:$wgMainCacheType
-switch ( getenv( 'MW_MAIN_CACHE_TYPE' ) ) {
+switch ( getenv( 'MW_MAIN_CACHE_TYPE', true ) ?: getenv( 'MW_MAIN_CACHE_TYPE' ) ) {
     case 'CACHE_ACCEL':
         # APC has several problems in latest versions of MediaWiki and extensions, for example:
         # https://www.mediawiki.org/wiki/Extension:Flow#.22Exception_Caught:_CAS_is_not_implemented_in_Xyz.22
@@ -141,7 +141,7 @@ switch ( getenv( 'MW_MAIN_CACHE_TYPE' ) ) {
         $wgMainCacheType = CACHE_MEMCACHED;
         $wgParserCacheType = CACHE_MEMCACHED; # optional
         $wgMessageCacheType = CACHE_MEMCACHED; # optional
-        $wgMemCachedServers = explode( ',', getenv( 'MW_MEMCACHED_SERVERS' ) );
+        $wgMemCachedServers = explode( ',', getenv( 'MW_MEMCACHED_SERVERS', true ) ?: getenv( 'MW_MEMCACHED_SERVERS' ) );
         $wgSessionsInObjectCache = true; # optional
         $wgSessionCacheType = CACHE_MEMCACHED; # optional
         break;
@@ -156,7 +156,7 @@ $wgCacheDirectory = $IP . '/cache';
 ########################### Search ############################
 wfLoadExtension( 'Elastica' );
 wfLoadExtension( 'CirrusSearch' );
-$wgCirrusSearchServers =  explode( ',', getenv( 'MW_CIRRUS_SEARCH_SERVERS' ) );
+$wgCirrusSearchServers =  explode( ',', getenv( 'MW_CIRRUS_SEARCH_SERVERS', true ) ?: getenv( 'MW_CIRRUS_SEARCH_SERVERS' ) );
 $wgSearchType = 'CirrusSearch';
 
 //manual fetch a property from the db and index it (does not work as expected)
@@ -461,23 +461,23 @@ $egPushAllAttachedNamespaces[] = "Discussion";
 ########### Semantic Mediawiki ###############
 wfLoadExtension( 'SemanticMediaWiki' );
 #strip protocol from MW_SITE_SERVER
-enableSemantics( preg_replace( "#^[^:/.]*[:/]+#i", "", getenv( 'MW_SITE_SERVER' ) ) );
+enableSemantics( preg_replace( "#^[^:/.]*[:/]+#i", "", getenv( 'MW_SITE_SERVER', true ) ?: getenv( 'MW_SITE_SERVER' ) ) );
 
 #$smwgChangePropagationProtection = false; #temp fix to restore locked pages
 $smwgQMaxSize = 50; #increase max query conditions, default 12
 $smwgQMaxDepth = 20; #increase property chain query limit, default 4
 $maxRecursionDepth = 5; #increase limit of nested templates in query results, default 2
 
-$smwgDefaultStore = 'SMWSparqlStore';
+$smwgDefaultStore = 'SMW\SPARQLStore\SPARQLStore';
 $smwgSparqlRepositoryConnector = 'blazegraph';
 $smwgSparqlEndpoint["query"] = 'http://graphdb:9999/blazegraph/namespace/kb/sparql';
 $smwgSparqlEndpoint["update"] = 'http://graphdb:9999/blazegraph/namespace/kb/sparql';
 $smwgSparqlEndpoint["data"] = '';
 
 # Optional name of default graph
-$smwgSparqlDefaultGraph = getenv( 'MW_SITE_SERVER' ) . '/id/';
+$smwgSparqlDefaultGraph = (getenv( 'MW_SITE_SERVER', true ) ?: getenv( 'MW_SITE_SERVER' )) . '/id/';
 # Namespace for export
-$smwgNamespace =  getenv( 'MW_SITE_SERVER' ) . '/id/';
+$smwgNamespace =  (getenv( 'MW_SITE_SERVER', true ) ?: getenv( 'MW_SITE_SERVER' )) . '/id/';
 #needs rebuild: php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 
 #$smwgShowFactbox = SMW_FACTBOX_NONEMPTY; #Show factboxes only if they have some content
@@ -660,6 +660,9 @@ $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage 
 ####################### Custom Extensions ####################
 wfLoadExtension( 'FileApi' );
 wfLoadExtension( 'MwJson' );
+$wgMwJsonSlotRenderResultTransformation = [
+    "enabled" => true,
+];
 wfLoadExtension( 'OpenSemanticLab' );
 $wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
 wfLoadExtension( 'SemanticProperties' );

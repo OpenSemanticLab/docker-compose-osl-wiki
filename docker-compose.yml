@@ -61,8 +61,6 @@ services:
         build:
             context: ./mediawiki/build
             dockerfile: Dockerfile
-            args:
-               SSH_PASS: ${SSH_PASS}
         restart: unless-stopped
         depends_on:
             - db
@@ -75,7 +73,6 @@ services:
         #    - inter_docker
         ports:
             - "${MW_HOST_PORT}:80"
-            - "${SSH_HOST_PORT}:22"
         volumes:
             - ./mediawiki/config/CustomSettings.php:/var/www/html/w/CustomSettings.php
             - ./mediawiki/data:/var/www/html/w/images

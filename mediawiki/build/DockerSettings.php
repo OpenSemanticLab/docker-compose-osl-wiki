@@ -4,10 +4,10 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 }
 
 #Debug Settings
-if ( getenv( 'MW_SHOW_EXCEPTION_DETAILS' ) === 'true' ) {
+if ( (getenv( 'MW_SHOW_EXCEPTION_DETAILS', true ) ?: getenv( 'MW_SHOW_EXCEPTION_DETAILS' )) === 'true' ) {
 #    error_reporting( -1 );
 #    ini_set( 'display_errors', 1 );
-#    $wgShowExceptionDetails = true;
+    $wgShowExceptionDetails = true;
 }
 
 ########################### Core Settings ##########################
@@ -51,14 +51,12 @@ $wgHooks['LoadUserOptions'][] = function( $user, array &$options ) use ($wgDefau
         $data[$row->up_property] = $row->up_value;
     }
 
-    # apply default timezone if not set
-    if (!array_key_exists('timecorrection', $data)) $options['timecorrection'] = $wgDefaultUserOptions['timecorrection'];
+    # apply default timezone if not set or if stored value is empty/invalid
+    if (!array_key_exists('timecorrection', $data) || !is_string($data['timecorrection']) || $data['timecorrection'] === '') $options['timecorrection'] = $wgDefaultUserOptions['timecorrection'] ?? 'System|0';
 
     # apply default language if not set
     //if (!array_key_exists('language', $data)) $options['language'] = $wgDefaultUserOptions['language']; // does not work with Extension:ULS, prevents changing the language via settings
 };
-
-$wgJobRunRate = 0; // do not perform jobs runs on requests for performance reasons (jobs are handled per script)
 
 #$wgHooks['UserGetLanguageObject'][] = function( $user, &$code ) {
 #    $code =  $user->getOption( 'language' );
@@ -72,24 +70,42 @@ $wgSitename = getenv( 'MW_SITE_NAME', true ) ?: getenv( 'MW_SITE_NAME' );
 
 # Default skin: you can change the default skin. Use the internal symbolic
 # names, ie 'standard', 'nostalgia', 'cologneblue', 'monobook', 'vector', 'chameleon':
-wfLoadSkin( 'Modern' );
-wfLoadSkin( 'MinervaNeue' );
 wfLoadExtension( 'Bootstrap' );
-wfLoadSkin( 'chameleon' );
-wfLoadSkin( 'foreground' );
-$wgDefaultSkin = getenv( 'MW_DEFAULT_SKIN' );
-wfLoadExtension( 'MobileFrontend' );
-$wgMFAutodetectMobileView = false;
-#$wgMFDefaultSkinClass = 'SkinMinerva';
+$wgDefaultSkin = getenv( 'MW_DEFAULT_SKIN', true ) ?: getenv( 'MW_DEFAULT_SKIN' );
 $wgCitizenTableNowrapClasses[] = 'info_box'; # disable wrapping of info_box tables
+
+# Citizen SMW Search Configuration
+# ---------------------------------
+# SearchGateway: which search backend the Citizen skin uses for suggestions.
+#   "mwRestApi"  — (default) MediaWiki REST API (standard full-text search)
+#   "mwActionApi" — MediaWiki Action API
+#   "smwAskApi"  — Semantic MediaWiki Ask API (requires SMW)
+# When set to "smwAskApi", typing in the search bar queries SMW directly.
+# For Citizen > 3.0: Regardless of this setting, users can always type "/ask <query>" in the
+# command palette to trigger an SMW search on-demand.
 $wgCitizenSearchGateway = "smwAskApi";
-#$wgCitizenSearchSmwAskApiQueryTemplate = '[[HasLabel::~*${input}*]]|?HasLabel=displaytitle|?HasImage=thumbnail|?HasDescription=desc';
-#$wgCitizenSearchSmwAskApiQueryTemplate = '[[Display_title_of::~*${input}*]]|?Display_title_of=displaytitle|?HasImage=thumbnail';
-#$wgCitizenSearchSmwAskApiQueryTemplate = '[[HasNormalizedLabel::~*${input_normalized_tokenized}*]]|?HasLabel=displaytitle|?HasImage=thumbnail|?HasDescription=desc';
+
+# SearchSmwApiAction: the SMW API action to use.
+#   "ask"           — (default) standard SMW ask query
+#   "compoundquery"  — multiple sub-queries (requires Extension:SemanticCompoundQueries)
 $wgCitizenSearchSmwApiAction = "compoundquery";
+
+# SearchSmwAskApiQueryTemplate: the SMW query template with variable substitution.
+# Available variables:
+#   ${input}                       — raw user input
+#   ${input_lowercase}             — lowercased input
+#   ${input_normalized}            — lowercased, non-alphanumeric chars removed
+#   ${input_normalized_tokenized}  — each word tokenized into separate conditions
+# Printout aliases (mapped to result fields):
+#   displaytitle — shown as the result label (multi-lang aware)
+#   thumbnail    — result thumbnail image (via Special:Redirect/file/)
+#   desc         — result description text (multi-lang aware)
+#   type         — appended as suffix to the label, e.g. "Title (Category)"
+# UUID detection: pasting a UUID auto-searches via [[HasUuid::<uuid>]]
+# Namespace filtering: typing "Category:term" adds [[:Category:+]] condition
 $wgCitizenSearchSmwAskApiQueryTemplate = "
-[[HasNormalizedLabel::\${input_normalized}]][[HasOswId::!~*#*]];?HasLabel=displaytitle;?HasType.Display_title_of=type;?HasImage=thumbnail;?HasDescription=desc;limit=1
-|[[HasNormalizedLabel::~*\${input_normalized_tokenized}*]][[HasOswId::!~*#*]];?HasLabel=displaytitle;?Category.Display_title_of=type;?HasImage=thumbnail;?HasDescription=desc;limit=7
+[[HasNormalizedLabel::\${input_normalized}]][[HasOswId::!~*#*]];?HasLabel=displaytitle;?HasImage=thumbnail;?HasDescription=desc;limit=1
+|[[HasNormalizedLabel::~*\${input_normalized_tokenized}*]][[HasOswId::!~*#*]];?HasLabel=displaytitle;?HasImage=thumbnail;?HasDescription=desc;limit=7
 ";
 
 # InstantCommons allows wiki to use images from http://commons.wikimedia.org
@@ -256,26 +272,18 @@ $wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
 $wgVisualEditorEnableDiffPage = true;
 
 wfLoadExtension( 'Math' ); # bundled in REL1_39
-#$wgMathValidModes[] = 'mathml';
-#$wgDefaultUserOptions['math'] = 'mathml';
-//use local cli. disable speech (config.prod.yaml) may improve performance
-$wgMathoidCli = ['/usr/local/nodejs/mathoid/node_modules/mathoid/cli.js', '-c', '/usr/local/nodejs/mathoid/node_modules/mathoid/config.dev.yaml'];
-// Raise MediaWiki's memory limit to 2*1.2G for mathoid.
-$wgMaxShellMemory = 2*1228800;
 wfLoadExtension( 'CodeMirror' );
 
 ############ Multimedia & Editors ############
 ## File formats
 wfLoadExtension( 'NativeSvgHandler' );
-wfLoadExtension( 'PagedTiffHandler' );
-## Visual Editor
+#wfLoadExtension( 'PagedTiffHandler' ); // not enabled by default
 ## Other Editors
 wfLoadExtension( 'DrawioEditor' );
-$wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER' );
-#wfLoadExtension( 'CognitiveProcessDesigner' );
+$wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER', true ) ?: getenv( 'DRAWIO_SERVER' );
 wfLoadExtension( 'TimedMediaHandler' );
 $wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
-#$wgMaxShellMemory *= 4; //already increased by Extension:Math
+$wgMaxShellMemory *= 4;
 wfLoadExtension( 'EmbedVideo' );
 $wgEmbedVideoFetchExternalThumbnails = false; #true will fetch external images before user consent
 wfLoadExtension( '3DAlloy' ); #3D Files
@@ -285,8 +293,6 @@ $wgWebDAVInvalidateTokenOnUnlock = false; // MS Excel does a lock-unlock cycle r
 
 ######################### Page Forms ###################
 wfLoadExtension( 'PageForms' );
-#bsgPermissionConfig["multipageedit"] = ["type" => "global", "roles" => ["editor"]];
-#$bsgPermissionConfig["viewedittab"] = ["type" => "global", "roles" => ["editor"]];
 $wgPageFormsUseDisplayTitle = true;
 $wgPageFormsSimpleUpload = true; #skip upload form
 $smwgNamespacesWithSemanticLinks[106] = true; #PF_NS_FORM
@@ -306,33 +312,12 @@ $wgAllowExternalImages = true; #to use images on public main page
 ## access images over img_auth.php
 $wgUploadPath = "$wgScriptPath/img_auth.php";
 
-
 ####################### Semantic Access Control ####################
 wfLoadExtension( 'SemanticACL' );
-###Partial Public Wiki ##
-## https://github.com/simontaurus/mediawiki-extensions-SemanticACL/tree/feature_default_policy_only_users #
-#$wgGroupPermissions['*']['read'] = true;
-##cp /extensions/SemanticACL/img_auth_patched.php img_auth.php
-#$wgImgAuthForceAuth = true; #force user validation also in 'public' wiki
-#$wgPublicPagesCategory = 'PublicPages';
-#$wgPublicImagesCategory = 'PublicFiles';
-$wgGroupPermissions['user']['view-non-categorized-pages'] = true;
-$wgGroupPermissions['user']['view-non-categorized-media'] = true;
-#flow-bot is active during semantic data build (??) - therefore we need to grant him all rights
-$wgGroupPermissions['flow-bot']['sacl-exempt'] = true;
-$wgGroupPermissions['flow-bot']['view-non-categorized-pages'] = true;
-$wgGroupPermissions['flow-bot']['view-non-categorized-media'] = true;
-#in case of all pages default restricted we need explicite read permission for oauth
-$wgWhitelistRead[] = 'Special:UserLogin';
-$wgWhitelistRead[] = 'Special:RequestAccount';
-$wgWhitelistRead[] = "Special:OAuth/initiate";
-$wgWhitelistRead[] = "Special:OAuth/authorize";
-$wgWhitelistRead[] = "Special:OAuth/token";
-$wgWhitelistRead[] = "Special:OAuth/authenticate";
-$wgWhitelistRead[] = "Special:OAuth/identify";
+#wfLoadExtension( 'Lockdown' ); // not enabled by default
 
 ############## Uploads #####################
-$wgEnableUploads  = getenv( 'MW_ENABLE_UPLOADS' );
+$wgEnableUploads  = getenv( 'MW_ENABLE_UPLOADS', true ) ?: getenv( 'MW_ENABLE_UPLOADS' );
 $wgGroupPermissions['user']['reupload'] = true;
 $wgGroupPermissions['user']['upload_by_url'] = true;
 $wgAllowCopyUploads = true;
@@ -382,7 +367,6 @@ wfLoadExtension( 'ParserFunctions' );
 $wgPFEnableStringFunctions = true;
 wfLoadExtension( 'PdfHandler' );
 wfLoadExtension( 'Poem' );
-wfLoadExtension( 'Renameuser' );
 wfLoadExtension( 'ReplaceText' );
 $wgGroupPermissions['bureaucrat']['replacetext'] = true;
 #wfLoadExtension( 'Scribunto' ); # bundled in REL1_39 but customized
@@ -398,13 +382,10 @@ wfLoadExtension( 'WikiEditor' );
 
 
 ##### Non-bundled Core Extensions ####
-wfLoadExtension( 'Variables' ); #requirement for SemanticActions
-wfLoadExtension( 'MyVariables' ); #additional variables like USERLANGUAGECODE 
-wfLoadExtension( 'Arrays' );
-wfLoadExtension( 'WSArrays' );  
-wfLoadExtension( 'Loops' );
-#wfLoadExtension( 'ApprovedRevs' );
+wfLoadExtension( 'MyVariables' ); #additional variables like USERLANGUAGECODE
+#wfLoadExtension( 'ApprovedRevs' ); // not enabled by default
 wfLoadExtension( 'UserMerge' ); //to merge and delete users
+#wfLoadExtension( 'HitCounters' ); // not enabled by default
 // By default nobody can use this function, enable for bureaucrat?
 $wgGroupPermissions['bureaucrat']['usermerge'] = true;
 wfLoadExtension( 'Thanks' );
@@ -413,50 +394,13 @@ wfLoadExtension( 'BetaFeatures' );
 wfLoadExtension( 'CookieWarning' );
 $wgCookieWarningEnabled = true;
 $wgCookieWarningMoreUrl = '/wiki/Project:Privacy_policy#Cookies';
-#wfLoadExtension( 'CleanChanges' ); //no effect visible - already included
-#$wgCCTrailerFilter = true;
-#$wgCCUserFilter = false;
-#$wgDefaultUserOptions['usenewrc'] = 1;
-wfLoadExtension( 'UniversalLanguageSelector' );
 wfLoadExtension( 'PDFEmbed' );
 $wgPdfEmbed['width'] = 800; // Default width for the PDF object container.
 $wgPdfEmbed['height'] = 1090; // Default height for the PDF object container.
-$wgGroupPermissions['user']['embed_pdf'] = true; //Allow user the usage of the pdf tag (default
-
-########### External Data ###############
-wfLoadExtension( 'ExternalData' );
-$wgExternalDataSources['graphviz'] = [
-   'name'              => 'GraphViz',
-   'program url'       => 'https://graphviz.org/',
-   'version command'   => null,
-   'command'           => 'dot -K$layout$ -Tsvg',
-   'params'            => [ 'layout' => 'dot' ],
-   'param filters'     => [ 'layout' => '/^(dot|neato|twopi|circo|fdp|osage|patchwork|sfdp)$/' ],
-   'input'             => 'dot',
-   'preprocess'        => 'EDConnectorExe::wikilinks4dot',
-   'postprocess'       => 'EDConnectorExe::innerXML',
-   'min cache seconds' => 30 * 24 * 60 * 60,
-   'tag'               => 'graphviz'
-];
+$wgGroupPermissions['user']['embed_pdf'] = true; //Allow user the usage of the pdf tag
 
 ########## Linked Wiki ############
-wfLoadExtension( 'LinkedWiki' );
-#$wgLinkedWikiOSMAccessToken = ""; // => CustomSettings.php
-#$wgLinkedWikiConfigSPARQLServices = .. // => CustomSettings.php
-$wgHooks['BeforePageDisplay'][] = function( OutputPage &$out, Skin &$skin ) {
-  $out->addInlineStyle("#ca-linkedwiki-purge { display: none;}"); #hide second "Purge" button next to "Refresh"
-};
-
-wfLoadExtension( 'UrlGetParameters' );
-#require_once("$IP/extensions/UrlGetParameters/UrlGetParameters.php");
-
-wfLoadExtension( 'PushAll' );
-$egPushAllAttachedNamespaces[] = "Data";
-$egPushAllAttachedNamespaces[] = "Discussion";
-#wfLoadExtension( 'Push' );
-#wfLoadExtension( 'Sync' ); #private config needed, breaks VE
-#require_once("$IP/extensions/Sync/Sync.php");
-
+# wfLoadExtension( 'UrlGetParameters' ); // not enabled by default
 
 ########### Semantic Mediawiki ###############
 wfLoadExtension( 'SemanticMediaWiki' );
@@ -485,25 +429,13 @@ $smwgNamespace =  (getenv( 'MW_SITE_SERVER', true ) ?: getenv( 'MW_SITE_SERVER' 
 $smwgShowFactbox = SMW_FACTBOX_HIDDEN; #Never show it
 
 wfLoadExtension( 'SemanticResultFormats' );
-$srfgFormats[] = 'graph';
-$srfgFormats[] = 'process';
 wfLoadExtension( 'Mermaid' );
 $mermaidgDefaultTheme = 'dark';
 $srfgFormats[] = 'gantt';
 wfLoadExtension( 'ModernTimeline' );
 wfLoadExtension( 'Maps' );
 $egMapsDefaultService = 'leaflet';
-
-wfLoadExtension( 'SemanticFormsSelect' );
-wfLoadExtension( 'SemanticExtraSpecialProperties' );
 wfLoadExtension( 'SemanticCompoundQueries' );
-#wfLoadExtension( 'SemanticCite' );
-##$GLOBALS['wgGroupPermissions']['user']['sci-metasearch'] = false;
-#wfLoadExtension( 'SemanticInterlanguageLinks' );
-wfLoadExtension('PageImporter'); #import templates and forms for SemanticActions
-#run once: php extensions/PageImporter/importPages.php
-#wfLoadExtension('SemanticActions');
-$egSemanticActionsAssigneeValuesFrom = "User";
 
 #Enable Semantic NS
 $smwgNamespacesWithSemanticLinks[NS_MAIN] = true;
@@ -562,35 +494,9 @@ $wgScribuntoDefaultEngine = 'luastandalone';
 $wgScribuntoUseGeSHi = true;
 $wgScribuntoUseCodeEditor = true;
 wfLoadExtension( 'SemanticScribunto' );
-wfLoadExtension( 'Capiunto' );
-wfLoadExtension( 'VariablesLua' );
 
 # Set lua binaries to apt installed Lua5.1
 $wgScribuntoEngineConf['luastandalone']['luaPath'] = '/usr/bin/lua';
-
-
-########### Flow (AFTER SMW!!!) ###############
-# https://www.mediawiki.org/wiki/Extension:Flow
-$flowNamespaces = getenv( 'MW_FLOW_NAMESPACES' );
-if ( $flowNamespaces ) {
-    wfLoadExtension( 'Flow' );
-    $wgFlowContentFormat = 'html';
-    foreach ( explode( ',', $flowNamespaces ) as $ns ) {
-        $wgNamespaceContentModels[ constant( $ns ) ] = 'flow-board';
-    }
-}
-# fix see https://www.mediawiki.org/wiki/Topic:X8mv19b4va26u8tz
-wfLoadExtension( 'Parsoid', "$IP/vendor/wikimedia/parsoid/extension.json" );
-# enable Flow in build-in & SMW namespaces
-# $wgNamespaceContentModels[NS_USER_TALK] = 'flow-board';
-# $wgNamespaceContentModels[NS_PROJECT_TALK] = 'flow-board';
-# $wgNamespaceContentModels[NS_FILE_TALK] = 'flow-board';
-# $wgNamespaceContentModels[NS_TEMPLATE_TALK] = 'flow-board';
-# $wgNamespaceContentModels[NS_HELP_TALK] = 'flow-board';
-# $wgNamespaceContentModels[NS_CATEGORY_TALK] = 'flow-board';
-# $wgNamespaceContentModels[103] = 'flow-board'; # SMW_NS_PROPERTY_TALK
-# $wgNamespaceContentModels[115] = 'flow-board'; # SMW_NS_SCHEMA_TALK
-# $wgNamespaceContentModels[109] = 'flow-board'; # SMW_NS_CONCEPT_TALK
 
 ########### CommentStreams ###############
 # wfLoadExtension( 'CommentStreams' ); # not enabled by default
@@ -599,26 +505,12 @@ wfLoadExtension( 'Parsoid', "$IP/vendor/wikimedia/parsoid/extension.json" );
 # $wgCommentStreamsAllowedNamespaces = []; # not enable by default in any namespace
 
 ######################## UI  #############################
-$wgNamespacesWithSubpages[NS_MAIN] = true;
-#wfLoadExtension( 'SemanticBreadcrumbLinks' ); //installation problem with composer
-$wgNamespacesWithSubpages[NS_TEMPLATE] = true; //NS Template
-$smwgNamespacesWithSemanticLinks[NS_TEMPLATE] = true; //Needed for Subpage Navbar
-wfLoadExtension( 'JSBreadCrumbs' );
+
 wfLoadExtension( 'TreeAndMenu' );
 wfLoadExtension( 'DisplayTitle' );
 $wgAllowDisplayTitle = true;
 $wgRestrictDisplayTitle = false;
-wfLoadExtension( 'HeaderTabs' );
-wfLoadExtension( 'MagicNoCache' );
 wfLoadExtension( 'SimpleBatchUpload' );
-wfLoadExtension( 'UploadWizard' );
-#GuidedTours
-wfLoadExtension( 'EventStreamConfig' );
-wfLoadExtension( 'EventLogging' );
-$wgEventLoggingBaseUri = '/beacon/event';
-$wgEventLoggingSchemaApiUri = $wgServer . '/w/api.php';
-$wgEventLoggingDBname = $wgDBname;
-#wfLoadExtension( 'GuidedTour' );
 #wfLoadExtension( 'Iframe' );
 wfLoadExtension( 'Reveal' );
 wfLoadExtension( 'WikiMarkdown' );
@@ -627,7 +519,6 @@ $wgAllowMarkdownExtended = true; // allows usage of Parsedown Extended
 
 ####################### Auth ####################
 ## Manual Account request and confirmation
-#require_once "$IP/extensions/ConfirmAccount/ConfirmAccount.php";
 wfLoadExtension( 'ConfirmAccount' );
 
 ## Wiki as auth provider for other services (e.g. jupyterhub)
@@ -664,22 +555,22 @@ $wgMwJsonSlotRenderResultTransformation = [
     "enabled" => true,
 ];
 wfLoadExtension( 'OpenSemanticLab' );
-$wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
+// $wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
 wfLoadExtension( 'SemanticProperties' );
 wfLoadExtension( 'WellplateEditor' );
 wfLoadExtension( 'SvgEditor' );
 wfLoadExtension( 'SpreadsheetEditor' );
 wfLoadExtension( 'ChemEditor' );
 wfLoadExtension( 'InteractiveSemanticGraph' );
-wfLoadExtension( 'InteractiveSemanticGraph2' );
+// wfLoadExtension( 'InteractiveSemanticGraph2' );
 wfLoadExtension( 'SciFileHandler' );
 $wgFileExtensions = array_merge($wgFileExtensions, array(
     'hdf', 'h4', 'hdf4', 'he2', 'h5', 'hdf5', 'he5', # HDF File format
     'dx', 'jdx', 'jcm', # JCAMP-DX
     'mpr', 'mps', 'mpt', # Biologic
 ));
-#wfLoadExtension( 'Chatbot' ); # not enabled by default
-#wfLoadExtension( 'DCAT' ); # not enabled by default
+#wfLoadExtension( 'Chatbot' );
+#wfLoadExtension( 'RdfExport' ); # not enabled by default
 
 ####################### Custom Content #####################
 wfLoadExtension( 'PageExchange' );

@@ -115,7 +115,6 @@ RUN set -ex \
 ##### MediaWiki Core setup
 RUN set -x; \
     mkdir -p $MW_HOME \
-    #&& git clone --depth 1 -b $MW_VERSION-dev https://github.com/OpenSemanticLab/mediawiki.git $MW_HOME \
     && git clone --depth 1 -b $MW_VERSION https://github.com/mediawiki/mediawiki.git $MW_HOME \
     && cd $MW_HOME \
     ## Bundled extensions
@@ -314,6 +313,7 @@ RUN set -x; \
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticProperties.git SemanticProperties \
     && git clone --depth 1 https://github.com/OpenSemanticWorld/mediawiki-extensions-Chatbot.git Chatbot \
     && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-FileApi.git FileApi \
+    && git clone --depth 1 https://github.com/OpenSemanticLab/mediawiki-extensions-ApiGateway.git ApiGateway \
     && cd $MW_HOME \
     && git clone --depth 1 https://github.com/opensemanticworld/mediawiki-extensions-RdfExport.git extensions/RdfExport \
     && jq '.extra."merge-plugin".include += ["extensions/RdfExport/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \

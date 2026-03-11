@@ -11,8 +11,6 @@ services:
         cap_add:
           - SYS_NICE  # CAP_SYS_NICE, fix error mbind: Operation not permitted
         restart: unless-stopped
-        ports:
-            - "${MYSQL_HOST_PORT}:3306"
         environment:
             - MYSQL_ROOT_HOST=%
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -28,8 +26,6 @@ services:
         volumes:
             - ./blazegraph/data:/var/lib/blazegraph
             - ./blazegraph/config:/docker-entrypoint-initdb.d
-        ports:
-            - "${GRAPHDB_HOST_PORT}:9999"
 
     fuseki:
         # https://github.com/SemanticComputing/fuseki-docker
@@ -57,7 +53,7 @@ services:
 
 
     mediawiki:
-        image: opensemanticlab/osl-mw:main
+        image: opensemanticlab/osl-mw:${MW_IMAGE_TAG:-main}
         build:
             context: ./mediawiki/build
             dockerfile: Dockerfile
@@ -68,11 +64,6 @@ services:
             - memcached
             - graphdb
             - drawio
-        #networks:
-        #    - default
-        #    - inter_docker
-        ports:
-            - "${MW_HOST_PORT}:80"
         volumes:
             - ./mediawiki/config/CustomSettings.php:/var/www/html/w/CustomSettings.php
             - ./mediawiki/data:/var/www/html/w/images
@@ -123,15 +114,11 @@ services:
     drawio:
         image: jgraph/drawio
         restart: unless-stopped
-        ports:
-            - "${DRAWIO_HOST_PORT}:8080"
 
     sparklis: 
         image: sferre/sparklis
         profiles: [sparklis]
         restart: unless-stopped
-        #ports:
-        #    - "${SPARKLIS_HOST_PORT}:8080"
 
     codeceptjs:
         #image: codeceptjs/codeceptjs

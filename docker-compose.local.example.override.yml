@@ -1,0 +1,21 @@
+# This file exposes service ports on the host for local development and debugging.
+# No ports are exposed by default in docker-compose.yml (except testing profile services).
+# Copy to docker-compose.override.yml to activate:
+#   cp docker-compose.local.example.override.yml docker-compose.override.yml
+
+services:
+    mediawiki:
+        ports:
+            - "${MW_HOST_PORT:-8081}:80"
+
+    db:
+        ports:
+            - "${MYSQL_HOST_PORT:-3307}:3306"
+
+    graphdb:
+        ports:
+            - "${GRAPHDB_HOST_PORT:-9999}:9999"
+
+    drawio:
+        ports:
+            - "${DRAWIO_HOST_PORT:-8082}:8080"

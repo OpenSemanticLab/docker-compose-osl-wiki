@@ -79,9 +79,10 @@ MYSQL_ROOT_PASSWORD=change_me123 # the password of the 'root' account
 | Tag | MediaWiki | Description |
 |-----|-----------|-------------|
 | `main` | REL1_43 | Latest stable build (default) |
-| `2.x.x` (e.g. `2.0.0-alpha.1`) | REL1_43 | Versioned releases for MW 1.43 |
-| `1.x.x` (e.g. `1.0.0-beta.23`) | REL1_39 | Versioned releases for MW 1.39 |
-| `0.x.x` (e.g. `0.8.0`) | REL1_35 | Legacy releases for MW 1.35 |
+| `latest` | REL1_43 | Alias for main |
+| `v2.x.x` (e.g. `v2.0.0-alpha.1`) | REL1_43 | Versioned releases for MW 1.43 |
+| `v1.x.x` (e.g. `v1.0.0-beta.23`) | REL1_39 | Versioned releases for MW 1.39 |
+| `v0.x.x` (e.g. `v0.8.0`) | REL1_35 | Legacy releases for MW 1.35 |
 
 > [!NOTE]
 > By default, **no ports are exposed** on the host. Services communicate over the internal Docker network.
@@ -413,10 +414,9 @@ This is also required if you change the database passwords after the first run.
 
 ## Restore
 
-reset your instance first then import your backup
-(get your container name, e. g. `osl-1-db-1`, with `docker ps -a`)
+Reset your instance first, then import your backup
 ```bash
-zcat backup/db_backup_<date>.sql.gz | docker exec -i <container> sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
+zcat backup/db_backup_<date>.sql.gz | docker compose exec -T db sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
 tar -xf backup/file_backup_<date>.tar
 chown -R www-data:www-data mediawiki/data
 ```

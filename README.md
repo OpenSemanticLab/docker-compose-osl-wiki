@@ -43,9 +43,10 @@ sudo chown -R www-data:www-data mediawiki/data
 
 ### Config
 
-Copy .env.example to .env
+Copy .env.example to .env and CustomSettings.php.example to CustomSettings.php
 ```
 cp .env.example .env
+cp mediawiki/config/CustomSettings.example.php mediawiki/config/CustomSettings.php
 ```
 
 Set the config parameters in .env

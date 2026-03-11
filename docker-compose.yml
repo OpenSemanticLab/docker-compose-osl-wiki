@@ -57,7 +57,7 @@ services:
 
 
     mediawiki:
-        image: opensemanticlab/osl-mw
+        image: opensemanticlab/osl-mw:main
         build:
             context: ./mediawiki/build
             dockerfile: Dockerfile
@@ -94,7 +94,7 @@ services:
             - MW_DB_INSTALLDB_PASS=${MYSQL_ROOT_PASSWORD}
             - MW_AUTOUPDATE=true
             - MW_REINSTALL=true
-            - MW_AUTOINSTALL_CA_CERTS=true
+            - MW_AUTOINSTALL_CA_CERTS=false
             - MW_PAGE_PACKAGES=${MW_PAGE_PACKAGES}
             - MW_AUTOIMPORT_PAGES=${MW_AUTOIMPORT_PAGES}
             - MW_AUTOBUILD_SITEMAP=${MW_AUTOBUILD_SITEMAP}

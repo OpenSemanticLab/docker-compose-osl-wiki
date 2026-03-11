@@ -15,7 +15,7 @@ Recommended:
 - 8 GB RAM
 - 100 GB SSD
 
-OS: Any OS with support for Docker, e.g. Ubuntu in it'S current LTS version (24.04.3)
+OS: Any OS with support for Docker, e.g. Ubuntu in its current LTS version (24.04.3)
 
 ### Prerequisites
 
@@ -53,10 +53,12 @@ Set the config parameters in .env
 
 Example:
 ```env
-MW_HOST_PORT=8081 # the port mediawiki exposes on the host
-MW_SITE_SERVER=http://localhost:8081
+COMPOSE_PROJECT_NAME=osl-1 # unique project name (change when running multiple instances)
+MW_IMAGE_TAG=main # Docker image tag, see table below
+MW_HOST_PORT=8081 # the port mediawiki exposes on the host (localhost only)
+MW_SITE_SERVER=http://localhost:8081 # the public URL of your wiki
 MW_SITE_NAME=Wiki # the name of your instance
-MW_SITE_LANG=en # the site language. Others than 'en' are not supported
+MW_SITE_LANG=en # the site language
 MW_TIME_ZONE=Europe/Berlin # your time zone
 MW_ADMIN_PASS=change_me123 # the password of the 'Admin' account
 MW_DB_PASS=change_me123 # the db password of the user 'mediawiki'
@@ -67,18 +69,35 @@ world.opensemantic.base;
 world.opensemantic.demo.common;
 "
 MW_AUTOIMPORT_PAGES=true # if true, packages are installed / updated at start
-MW_AUTOBUILD_SITEMAP=false # if true, the sitemap is periodically build (exposes a page for public instances)
+MW_AUTOBUILD_SITEMAP=false # if true, the sitemap is periodically built
 
-MYSQL_HOST_PORT=3307 # the port mysql exposes on the host
 MYSQL_ROOT_PASSWORD=change_me123 # the password of the 'root' account
-
-DRAWIO_HOST_PORT=8082 # the port mysql exposes on the host
-DRAWIO_SERVER=http://localhost:8081 # the address under which drawio is reachable for the mediawiki container
-
-GRAPHDB_HOST_PORT=9999 # the port blazegraph exposes on the host
 ```
 
-Optional partial overwrite of `docker-compose.yml` with `docker-compose.override.yml`, e. g.
+**Available image tags (`MW_IMAGE_TAG`):**
+
+| Tag | MediaWiki | Description |
+|-----|-----------|-------------|
+| `main` | REL1_43 | Latest stable build (default) |
+| `2.x.x` (e.g. `2.0.0-alpha.1`) | REL1_43 | Versioned releases for MW 1.43 |
+| `1.x.x` (e.g. `1.0.0-beta.23`) | REL1_39 | Versioned releases for MW 1.39 |
+| `0.x.x` (e.g. `0.8.0`) | REL1_35 | Legacy releases for MW 1.35 |
+
+> [!NOTE]
+> By default, **no ports are exposed** on the host. Services communicate over the internal Docker network.
+> Use a reverse proxy (nginx/caddy) to expose mediawiki publicly, or use the local override for development:
+> ```bash
+> cp docker-compose.local.example.override.yml docker-compose.override.yml
+> ```
+> This exposes mediawiki (:8081), mysql (:3307), blazegraph (:9999), and drawio (:8082) on the host.
+
+You can customize the stack further with `docker-compose.override.yml`. Example overrides:
+
+**Expose ports for local development** — see `docker-compose.local.example.override.yml`
+
+**Add caddy as reverse proxy** — see `docker-compose.caddy.example.override.yml`
+
+**Mount custom volumes** (logos, extensions):
 ```yaml
 services:
     mediawiki:
@@ -144,7 +163,7 @@ $wgGroupPermissions['sysop']['schema-edit'] = true;
 $wgNamespaceProtection[NS_CATEGORY] = ['schema-edit'];
 ```
 
-#### Addtional content packages
+#### Additional content packages
 Please note: Content packages defined by MW_PAGE_PACKAGES will be install automatically.
 Optional packages listed [here](https://github.com/OpenSemanticLab/PagePackages/blob/main/package_index.txt) can be installed under `<your wiki domain>/wiki/Special:Packages`. Package sources are hosted [here](https://github.com/orgs/OpenSemanticWorld-Packages/repositories).
 To add additional optional packages, add
@@ -196,10 +215,32 @@ You may also create a single page with all necessary informations and point with
 If you don't have an email server yet (optional, but necessary for notification and password resets, etc.), you can use [docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)
 
 #### Optional Extensions
-- wfLoadExtension( 'Widgets' );
-- wfLoadExtension( 'TwitterTag' ); # Not GDPR conform!
-- wfLoadExtension( 'WebDAV' ); # Allows access to uploaded files via WebDAV (e. g. directly with MS Word)
-- wfLoadExtension( 'RdfExport' ); # exposes an DCAT catalog at `/api.php?action=catalog&format=json&rdf_format=turtle` and allows OWL ontology export (use only in public instances, requires SPARQL-Store)
+The following extensions are bundled but **not enabled by default**. Enable them by adding the corresponding line to `mediawiki/config/CustomSettings.php`:
+
+```php
+# Authentication
+wfLoadExtension( 'OATHAuth' );          # Two-factor authentication (see Two-Factor-Authentication section)
+wfLoadExtension( 'PluggableAuth' );     # Pluggable authentication framework
+wfLoadExtension( 'OpenIDConnect' );     # OpenID Connect login (e.g. via Keycloak)
+wfLoadExtension( 'Realnames' );         # Display real names beside user IDs
+
+# Content & Moderation
+wfLoadExtension( 'ApprovedRevs' );      # Allows setting approved revisions of pages
+wfLoadExtension( 'CommentStreams' );    # Discussion comments on pages
+wfLoadExtension( 'Lockdown' );          # Restrict namespace access per group
+wfLoadExtension( 'HitCounters' );       # Page view counters
+wfLoadExtension( 'UrlGetParameters' );  # Access URL parameters in wiki pages
+
+# UI & Display
+wfLoadExtension( 'Iframe' );            # Embed external content via iframes (see Iframes section)
+wfLoadExtension( 'PagedTiffHandler' );  # Multi-page TIFF file support
+wfLoadExtension( 'InteractiveSemanticGraph2' ); # Interactive graph visualization (v2)
+
+# Data & Export
+wfLoadExtension( 'WebDAV' );            # Access uploaded files via WebDAV (e.g. directly with MS Word)
+wfLoadExtension( 'RdfExport' );         # DCAT catalog at /api.php?action=catalog&format=json&rdf_format=turtle and OWL ontology export (use only in public instances, requires SPARQL-Store)
+wfLoadExtension( 'Chatbot' );           # AI chatbot integration
+```
 
 ### ReverseProxy
 ```bash
@@ -317,12 +358,12 @@ Large mysql binlog files (see https://askubuntu.com/questions/1322041/how-to-sol
 
 List files
 ```bash
-docker-compose exec db /bin/bash -c 'exec echo "SHOW BINARY LOGS;" | mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
+docker compose exec db /bin/bash -c 'exec echo "SHOW BINARY LOGS;" | mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
 ```
 
 Delete files
 ```bash
-docker-compose exec db /bin/bash -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
+docker compose exec db /bin/bash -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
 mysql> PURGE BINARY LOGS TO 'binlog.000123';
 ```
 
@@ -354,7 +395,7 @@ To change the setting, adapt `/etc/docker/daemon.json`
 ## Backup
 ```bash
 mkdir backup
-docker-compose exec db /bin/bash -c 'mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD" 2>/dev/null | gzip | base64 -w 0' | base64 -d > backup/db_backup_$(date +"%Y%m%d_%H%M%S").sql.gz
+docker compose exec db /bin/bash -c 'mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD" 2>/dev/null | gzip | base64 -w 0' | base64 -d > backup/db_backup_$(date +"%Y%m%d_%H%M%S").sql.gz
 tar -zcf backup/file_backup_$(date +"%Y%m%d_%H%M%S").tar mediawiki/data
 ```
 
@@ -373,7 +414,7 @@ This is also required if you change the database passwords after the first run.
 ## Restore
 
 reset your instance first then import your backup
-(get your container name, e. g. `docker-compose-osl-wiki_db_1`, with `docker ps -a`)
+(get your container name, e. g. `osl-1-db-1`, with `docker ps -a`)
 ```bash
 zcat backup/db_backup_<date>.sql.gz | docker exec -i <container> sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
 tar -xf backup/file_backup_<date>.tar
@@ -422,7 +463,7 @@ CustomSettings.php can be mounted to the container (optional)
 
 To modify LocalSettings.php without restarting the container, copy the merged file and mount it, this will skip the dynamical creation:
 ```bash
-docker cp -L osl-mw-dev-test_mediawiki_1:/var/www/html/w/LocalSettings.php mediawiki/config/LocalSettings.php
+docker cp -L <container>:/var/www/html/w/LocalSettings.php mediawiki/config/LocalSettings.php
 ```
 in docker-compose.yml:
 ```yaml
@@ -464,7 +505,7 @@ docker cp mediawiki/config/pub/* osl-wiki_mediawiki_1:/var/www/html/w/pub/
 
 backup extensions
 ```bash
-docker-compose exec -T mediawiki tar -czf - -C /var/www/html/w/extensions/ . > backup/extensions_backup_$(date +"%Y%m%d_%H%M%S").tar
+docker compose exec -T mediawiki tar -czf - -C /var/www/html/w/extensions/ . > backup/extensions_backup_$(date +"%Y%m%d_%H%M%S").tar
 ```
 
 ### Push with tag

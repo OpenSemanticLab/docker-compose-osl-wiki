@@ -189,6 +189,9 @@ RUN set -x; \
     && jq '.extra."merge-plugin".include += ["extensions/WSSlots/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## PageExchange
     && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-PageExchange extensions/PageExchange \
+    ## ExternalData
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-ExternalData.git extensions/ExternalData \
+    && jq '.extra."merge-plugin".include += ["extensions/ExternalData/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## Update composer
     && composer update  --no-dev --prefer-source \
     && cd ..

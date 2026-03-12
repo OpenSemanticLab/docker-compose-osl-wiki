@@ -402,6 +402,9 @@ $wgGroupPermissions['user']['embed_pdf'] = true; //Allow user the usage of the p
 ########## Linked Wiki ############
 # wfLoadExtension( 'UrlGetParameters' ); // not enabled by default
 
+########## External Data ############
+wfLoadExtension( 'ExternalData' );
+
 ########### Semantic Mediawiki ###############
 wfLoadExtension( 'SemanticMediaWiki' );
 #strip protocol from MW_SITE_SERVER

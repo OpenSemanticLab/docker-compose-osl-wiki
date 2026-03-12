@@ -463,7 +463,7 @@ CustomSettings.php can be mounted to the container (optional)
 
 To modify LocalSettings.php without restarting the container, copy the merged file and mount it, this will skip the dynamical creation:
 ```bash
-docker cp -L <container>:/var/www/html/w/LocalSettings.php mediawiki/config/LocalSettings.php
+docker compose cp mediawiki:/var/www/html/w/LocalSettings.php mediawiki/config/LocalSettings.php
 ```
 in docker-compose.yml:
 ```yaml
@@ -500,7 +500,7 @@ rm /var/www/html/w/my-custom-debug.log && touch /var/www/html/w/my-custom-debug.
 
 copy files
 ```bash
-docker cp mediawiki/config/pub/* osl-wiki_mediawiki_1:/var/www/html/w/pub/
+docker compose cp mediawiki/config/pub/. mediawiki:/var/www/html/w/pub/
 ```
 
 backup extensions

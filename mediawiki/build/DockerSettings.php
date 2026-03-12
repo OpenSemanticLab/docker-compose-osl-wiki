@@ -571,6 +571,7 @@ $wgFileExtensions = array_merge($wgFileExtensions, array(
 ));
 #wfLoadExtension( 'Chatbot' );
 #wfLoadExtension( 'RdfExport' ); # not enabled by default
+#wfLoadExtension( 'ApiGateway' );
 
 ####################### Custom Content #####################
 wfLoadExtension( 'PageExchange' );

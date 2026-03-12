@@ -241,6 +241,7 @@ wfLoadExtension( 'InteractiveSemanticGraph2' ); # Interactive graph visualizatio
 wfLoadExtension( 'WebDAV' );            # Access uploaded files via WebDAV (e.g. directly with MS Word)
 wfLoadExtension( 'RdfExport' );         # DCAT catalog at /api.php?action=catalog&format=json&rdf_format=turtle and OWL ontology export (use only in public instances, requires SPARQL-Store)
 wfLoadExtension( 'Chatbot' );           # AI chatbot integration
+wfLoadExtension( 'ApiGateway' );        # API gateway for external service integration
 ```
 
 ### ReverseProxy

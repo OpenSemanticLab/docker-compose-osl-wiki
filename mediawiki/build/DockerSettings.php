@@ -452,6 +452,13 @@ $smwgNamespacesWithSemanticLinks[NS_CATEGORY] = true;
 $smwgNamespacesWithSemanticLinks[102] = true; # SMW_NS_PROPERTY
 $smwgNamespacesWithSemanticLinks[114] = true; # SMW_NS_SCHEMA
 $smwgNamespacesWithSemanticLinks[108] = true; # SMW_NS_CONCEPT
+
+# Register additional namespaces as content namespaces (needed for slot transformation, search, etc.)
+# NS_CATEGORY, Item (7000) and others are set by Extension:OpenSemanticLab
+$wgContentNamespaces[] = NS_FILE;
+$wgContentNamespaces[] = 102; # SMW_NS_PROPERTY
+$wgContentNamespaces[] = 114; # SMW_NS_SCHEMA
+$wgContentNamespaces[] = 108; # SMW_NS_CONCEPT
 $smwgNamespacesWithSemanticLinks[690] = true; #Action
 $smwgNamespacesWithSemanticLinks[692] = true; #Label
 

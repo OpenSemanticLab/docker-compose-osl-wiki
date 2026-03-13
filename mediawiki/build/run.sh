@@ -256,8 +256,15 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
     #workaround for https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/4865 => fixed
     # php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/updateEntityCountMap.php
 
+    # Refresh MySQL index statistics after update.php migrations.
+    # install.php + update.php can create/populate tables (e.g. slots, content) without
+    # updating InnoDB statistics, causing the query optimizer to choose full table scans.
+    echo "Analyzing key database tables..."
+    mysql -h db -u$MW_DB_INSTALLDB_USER -p$MW_DB_INSTALLDB_PASS $MW_DB_NAME \
+        -e "ANALYZE TABLE revision, slots, content, page, text, actor, comment, job;" 2>/dev/null || true
+
     ### maintenance/update.php
-    run_maintenance_script_if_needed 'maintenance_update' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/update.php --quick' 
+    run_maintenance_script_if_needed 'maintenance_update' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/update.php --quick'
     #run_script_if_needed 'maintenance_update' "$MW_VERSION-$MW_MAINTENANCE_UPDATE" 'maintenance/update.php --quick'
 
     ### images

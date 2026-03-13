@@ -159,7 +159,7 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
     echo "There is no LocalSettings.php, create one"
 
     # If there is no LocalSettings.php, create one using maintenance/install.php
-    if [ ! -e "$MW_HOME/InstallSettings.php" ] || [ $MW_REINSTALL == 'true' ]; then 
+    if [ ! -e "$MW_HOME/InstallSettings.php" ] || [ $MW_REINSTALL == 'true' ]; then
 
         echo "There is no InstallSettings.php or reinstall was forced, create one using maintenance/install.php"
 
@@ -172,6 +172,13 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
         done
 
         wait_database_started $MW_DB_INSTALLDB_USER $MW_DB_INSTALLDB_PASS $MW_DB_USER $MW_DB_PASS
+
+        # Back up updatelog before install.php runs.
+        # install.php marks all migrations as done ("Prevent running unneeded updates")
+        # even on existing databases where those migrations never actually ran.
+        # We restore the original updatelog afterwards so update.php can run them properly.
+        mysql -h db -u$MW_DB_INSTALLDB_USER -p$MW_DB_INSTALLDB_PASS $MW_DB_NAME \
+            -e "SELECT ul_key, ul_value FROM updatelog" > /tmp/updatelog_backup.tsv 2>/dev/null || true
 
         # remove previous created file, otherwise install.php will fail
         rm -f "$MW_VOLUME/LocalSettings.php"
@@ -196,6 +203,24 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
             --pass "$MW_ADMIN_PASS" \
             "$MW_SITE_NAME" \
             "$MW_ADMIN_USER"
+
+        # Restore updatelog if it existed before install.php ran (= existing DB upgrade)
+        if [ -s /tmp/updatelog_backup.tsv ]; then
+            echo "Restoring updatelog to pre-install state so update.php can run pending migrations"
+            mysql -h db -u$MW_DB_INSTALLDB_USER -p$MW_DB_INSTALLDB_PASS $MW_DB_NAME \
+                -e "DELETE FROM updatelog" 2>/dev/null
+            # Re-import the original rows (skip TSV header line)
+            tail -n +2 /tmp/updatelog_backup.tsv | while IFS=$'\t' read -r key value; do
+                if [ "$value" = "NULL" ] || [ -z "$value" ]; then
+                    mysql -h db -u$MW_DB_INSTALLDB_USER -p$MW_DB_INSTALLDB_PASS $MW_DB_NAME \
+                        -e "INSERT IGNORE INTO updatelog (ul_key) VALUES ('$(echo "$key" | sed "s/'/''/g")')" 2>/dev/null
+                else
+                    mysql -h db -u$MW_DB_INSTALLDB_USER -p$MW_DB_INSTALLDB_PASS $MW_DB_NAME \
+                        -e "INSERT IGNORE INTO updatelog (ul_key, ul_value) VALUES ('$(echo "$key" | sed "s/'/''/g")', '$(echo "$value" | sed "s/'/''/g")')" 2>/dev/null
+                fi
+            done
+            rm -f /tmp/updatelog_backup.tsv
+        fi
 
         # copy the freshly created LocalSettings.php to InstallSettings.php
         cp "$MW_VOLUME/LocalSettings.php" "$MW_HOME/InstallSettings.php"

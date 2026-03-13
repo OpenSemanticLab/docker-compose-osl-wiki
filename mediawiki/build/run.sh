@@ -277,9 +277,9 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
         #run_maintenance_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
         #run_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
 
-        run_maintenance_script_if_needed 'maintenance_CirrusSearch_forceIndex' "$MW_MAINTENANCE_CIRRUSSEARCH_FORCEINDEX" \
+        run_maintenance_script_if_needed 'maintenance_CirrusSearch_forceIndex' "$MW_VERSION-$MW_MAINTENANCE_UPDATE-${MW_MAINTENANCE_CIRRUSSEARCH_FORCEINDEX:-0}" \
             'extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipLinks --indexOnSkip' \
-            'extensions/CirrusSearch/maintenance/ForceSearchIndex.php –skipParse'
+            'extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipParse'
 
         #run_script_if_needed 'maintenance_CirrusSearch_forceIndex' "$MW_MAINTENANCE_CIRRUSSEARCH_FORCEINDEX" \
         #    'extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipLinks --indexOnSkip' \

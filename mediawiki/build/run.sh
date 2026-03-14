@@ -202,7 +202,7 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
     echo "There is no LocalSettings.php, create one"
 
     # If there is no LocalSettings.php, create one using maintenance/install.php
-    if [ ! -e "$MW_HOME/InstallSettings.php" ] || [ $MW_REINSTALL == 'true' ]; then
+    if [ ! -e "$MW_HOME/InstallSettings.php" ] || [ "$MW_REINSTALL" == 'true' ]; then
 
         echo "There is no InstallSettings.php or reinstall was forced, create one using maintenance/install.php"
 
@@ -231,6 +231,10 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
             rm -f "$MW_HOME/LocalSettings.php"
         fi
 
+        # install.php may return non-zero on existing databases due to non-fatal
+        # GRANT errors (Error 1410). We check for actual success by verifying
+        # that LocalSettings.php was created.
+        install_result=0
         php maintenance/install.php \
             --confpath "$MW_VOLUME" \
             --dbserver "db" \
@@ -245,7 +249,15 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
             --lang "en" \
             --pass "$MW_ADMIN_PASS" \
             "$MW_SITE_NAME" \
-            "$MW_ADMIN_USER"
+            "$MW_ADMIN_USER" || install_result=$?
+
+        if [ ! -e "$MW_VOLUME/LocalSettings.php" ]; then
+            echo >&2 "install.php failed: LocalSettings.php was not created (exit code $install_result)"
+            exit 1
+        fi
+        if [ $install_result -ne 0 ]; then
+            echo "Warning: install.php exited with code $install_result but LocalSettings.php was created, continuing"
+        fi
 
         # Restore updatelog if it existed before install.php ran (= existing DB upgrade)
         if [ -s /tmp/updatelog_backup.tsv ]; then
@@ -290,7 +302,7 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
 fi
 
 ########## Run maintenance scripts ##########
-if [ $MW_AUTOUPDATE == 'true' ]; then
+if [ "$MW_AUTOUPDATE" == 'true' ]; then
     echo 'Check for the need to run maintenance scripts'
     #wait_database_started "$MW_DB_INSTALLDB_USER" "$MW_DB_INSTALLDB_PASS" "$MW_DB_USER" "$MW_DB_PASS"
     
@@ -375,12 +387,12 @@ if [ $MW_AUTOUPDATE == 'true' ]; then
 fi
 
 ########## Install certs ##########
-if [ $MW_AUTOINSTALL_CA_CERTS == 'true' ]; then
+if [ "$MW_AUTOINSTALL_CA_CERTS" == 'true' ]; then
     update-ca-certificates
 fi
 
 ########## Import pages ##########
-if [ $MW_AUTOIMPORT_PAGES == 'true' ]; then
+if [ "$MW_AUTOIMPORT_PAGES" == 'true' ]; then
     #php /var/www/html/w/extensions/PageImporter/importPages.php 
     #php /var/www/html/w/extensions/PageExchange/maintenance/maintainPackage.php --packageid org.open-semantic-lab.core --update
     while IFS=';' read -ra PACKAGES; do #split package list by ';'
@@ -401,7 +413,7 @@ rm -rf /run/apache2/*
 
 su -s /bin/bash -c '/mwjobrunner.sh &' www-data  #run in the background as www-data, fixes https://www.mediawiki.org/wiki/Topic:Tn0u0v07qa9cb9v8 
 su -s /bin/bash -c '/mwmaintenance.sh &' www-data 
-if [ $MW_AUTOBUILD_SITEMAP == 'true' ]; then
+if [ "$MW_AUTOBUILD_SITEMAP" == 'true' ]; then
     su -s /bin/bash -c '/mwsitemapbuilder.sh "$MW_SITE_SERVER" &'  #updates the sitemap in the background
 fi
 

@@ -12,6 +12,9 @@ if ( (getenv( 'MW_SHOW_EXCEPTION_DETAILS', true ) ?: getenv( 'MW_SHOW_EXCEPTION_
 
 ########################### Core Settings ##########################
 
+# Increase PHP memory limit (default 128/150MB is too low for SMW + CirrusSearch indexing)
+ini_set( 'memory_limit', '512M' );
+
 # Robot / crawler policy — add noindex meta tags as second layer (robots.txt is first)
 $wgDefaultRobotPolicy = 'index,follow';
 $wgNamespaceRobotPolicies = [
@@ -445,7 +448,8 @@ wfLoadExtension( 'SemanticResultFormats' );
 wfLoadExtension( 'Mermaid' );
 $mermaidgDefaultTheme = 'dark';
 $srfgFormats[] = 'gantt';
-wfLoadExtension( 'ModernTimeline' );
+# ModernTimeline removed: incompatible with SMW 6.x (SMWQueryResult class removed)
+# wfLoadExtension( 'ModernTimeline' );
 wfLoadExtension( 'Maps' );
 $egMapsDefaultService = 'leaflet';
 wfLoadExtension( 'SemanticCompoundQueries' );

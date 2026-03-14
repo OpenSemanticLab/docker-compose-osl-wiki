@@ -211,7 +211,7 @@ RUN set -x; \
     ## SRF
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b dev-5.1.0 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
-    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
+    && git clone --depth 1 -b master https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
     && git clone -b dev-MW1.43 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticACL.git SemanticACL \
     && git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/Lockdown \
     && cd $MW_HOME \

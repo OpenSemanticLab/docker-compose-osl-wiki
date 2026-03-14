@@ -308,6 +308,8 @@ if [ "$MW_AUTOUPDATE" == 'true' ]; then
     
     #development: always run update.php for SMW
     php maintenance/update.php
+    # Fix ownership of SMW config file (created by root during update.php, needed by www-data at runtime)
+    chown $WWW_USER:$WWW_USER $MW_HOME/extensions/SemanticMediaWiki/.smw.json 2>/dev/null || true
     #workaround for https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/4865 => fixed
     # php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/updateEntityCountMap.php
 

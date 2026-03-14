@@ -409,6 +409,11 @@ fi
 ############### Run Apache ###############
 rm -rf /run/apache2/*
 
+# Set ServerName from MW_SITE_SERVER to suppress AH00558 warning
+SERVER_HOST=$(echo "$MW_SITE_SERVER" | sed 's|https\?://||; s|/.*||; s|:.*||')
+echo "ServerName ${SERVER_HOST}" > /etc/apache2/conf-available/servername.conf
+a2enconf servername > /dev/null 2>&1
+
 #apachectl -e info & #run in the background
 
 su -s /bin/bash -c '/mwjobrunner.sh &' www-data  #run in the background as www-data, fixes https://www.mediawiki.org/wiki/Topic:Tn0u0v07qa9cb9v8 

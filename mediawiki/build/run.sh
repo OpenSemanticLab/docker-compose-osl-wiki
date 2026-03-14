@@ -149,7 +149,50 @@ if [ ! -d "$MW_HOME/images/temp" ]; then
 	echo " temp dir not existing, create it"
 	mkdir "$MW_HOME/images/temp"
     chown www-data:www-data "$MW_HOME/images/temp"
-fi    
+fi
+
+########## Generate robots.txt ##########
+echo "Generating robots.txt"
+cat > "$MW_HOME/robots.txt" << 'ROBOTS'
+# robots.txt for OpenSemanticLab MediaWiki
+# Generated at container startup
+
+User-agent: *
+Allow: /w/resources
+Allow: /w/skins
+Allow: /w/extensions
+Allow: /w/images
+Allow: /w/sitemap
+Allow: /w/api.php?action=mobileview
+Allow: /w/load.php
+Disallow: /w/
+Disallow: /Special:
+Disallow: /Special%3A
+Disallow: /wiki/Special:
+Disallow: /wiki/Special%3A
+Disallow: /MediaWiki:
+Disallow: /MediaWiki%3A
+Disallow: /wiki/MediaWiki:
+Disallow: /wiki/MediaWiki%3A
+
+# Block aggressive crawlers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+ROBOTS
+# Append sitemap reference only if sitemap building is enabled
+if [ "$MW_AUTOBUILD_SITEMAP" == 'true' ]; then
+    echo "Sitemap: ${MW_SITE_SERVER}/sitemap.xml" >> "$MW_HOME/robots.txt"
+fi
 
 ########## Create LocalSettings ##########
 

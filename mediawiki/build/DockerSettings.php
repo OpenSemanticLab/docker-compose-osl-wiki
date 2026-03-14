@@ -11,6 +11,16 @@ if ( (getenv( 'MW_SHOW_EXCEPTION_DETAILS', true ) ?: getenv( 'MW_SHOW_EXCEPTION_
 }
 
 ########################### Core Settings ##########################
+
+# Robot / crawler policy — add noindex meta tags as second layer (robots.txt is first)
+$wgDefaultRobotPolicy = 'index,follow';
+$wgNamespaceRobotPolicies = [
+    NS_SPECIAL => 'noindex,nofollow',
+    NS_TALK => 'noindex,nofollow',
+    NS_USER => 'noindex,nofollow',
+    NS_USER_TALK => 'noindex,nofollow',
+];
+
 #local time zone
 # we have to use "UTC" here, otherwise SMW stores time values with reference to the local time zone
 # see also: https://www.semantic-mediawiki.org/wiki/Help:Type_Date

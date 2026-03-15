@@ -1,0 +1,21 @@
+--- a/UploadBase.php
++++ b/UploadBase.php
+@@ -1676,6 +1676,9 @@
+ 		// This is nasty but harmless. (T144827)
+ 		$isBuggyInkscape = preg_match( '/^&(#38;)*ns_[a-z_]+;$/', $namespace );
+ 
++		// Allow additional SVG namespaces via \$wgAllowedAdditionalSvgNamespaces (e.g. xhtml for DrawIO)
++		$validNamespaces = array_merge( $validNamespaces, $GLOBALS['wgAllowedAdditionalSvgNamespaces'] ?? [] );
++
+ 		if ( !( $isBuggyInkscape || in_array( $namespace, $validNamespaces ) ) ) {
+ 			wfDebug( __METHOD__ . ": Non-svg namespace '$namespace' in uploaded file." );
+ 			/** @todo Return a status object to a closure in XmlTypeCheck, for MW1.21+ */
+@@ -1769,7 +1772,7 @@
+ 				// phpcs:ignore Generic.Files.LineLength
+ 				$parameters = '(?>;[a-zA-Z0-9\!#$&\'*+.^_`{|}~-]+=(?>[a-zA-Z0-9\!#$&\'*+.^_`{|}~-]+|"(?>[\0-\x0c\x0e-\x21\x23-\x5b\x5d-\x7f]+|\\\\[\0-\x7f])*"))*(?:;base64)?';
+ 
+-				if ( !preg_match( "!^data:\s*image/(gif|jpeg|jpg|png)$parameters,!i", $value ) ) {
++				if ( !( ($GLOBALS['wgAllowSvgDataUriInSvg'] ?? false) && preg_match( "!^data:\\s*image/svg\\+xml!i", $value ) ) && !preg_match( "!^data:\s*image/(gif|jpeg|jpg|png)$parameters,!i", $value ) ) {
+ 					wfDebug( __METHOD__ . ": Found href to allow listed data: uri "
+ 						. "\"<$strippedElement '$attrib'='$value'...\" in uploaded file." );
+ 					return [ 'uploaded-href-unsafe-target-svg', $strippedElement, $attrib, $value ];

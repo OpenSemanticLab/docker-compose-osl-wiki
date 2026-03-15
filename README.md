@@ -244,6 +244,16 @@ wfLoadExtension( 'Chatbot' );           # AI chatbot integration
 wfLoadExtension( 'ApiGateway' );        # API gateway for external service integration
 ```
 
+#### DrawIO SVG uploads with embedded images
+
+DrawIO diagrams may contain embedded SVG images (mostly from the built in icon library) using `data:image/svg+xml` URIs. MediaWiki blocks these by default as a security measure (embedded SVGs could contain scripts). If you need this feature, add to `mediawiki/config/CustomSettings.php`:
+
+```php
+$wgAllowSvgDataUriInSvg = true;
+```
+
+> **Warning**: This reduces upload security. Only enable this on trusted instances where all uploaders are authenticated.
+
 ### ReverseProxy
 ```bash
 sudo cp misc/reverse_proxy_nginx.conf /etc/nginx/sites-enabled/default

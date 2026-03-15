@@ -112,6 +112,9 @@ RUN set -ex \
     && ln -sfT /dev/stdout "$APACHE_LOG_DIR/access.log" \
     && ln -sfT /dev/stdout "$APACHE_LOG_DIR/other_vhosts_access.log"
 
+##### Patches for MediaWiki core
+COPY patches/ /tmp/patches/
+
 ##### MediaWiki Core setup
 RUN set -x; \
     mkdir -p $MW_HOME \
@@ -122,6 +125,9 @@ RUN set -x; \
     && composer install --no-dev \
     && chown -R $WWW_USER:$WWW_GROUP images \
     && chown -R $WWW_USER:$WWW_GROUP cache \
+    ## Patch UploadBase.php to support configurable SVG namespaces and data URIs
+    ## Allows DrawIO and other tools to upload SVGs with xhtml namespace and embedded SVG images
+    && cd includes/upload && patch -p1 < /tmp/patches/UploadBase-svg-upload.patch && cd $MW_HOME \
     ## for PdfHandler (bundled)
     && apt-get update && apt-get install -y --no-install-recommends poppler-utils ghostscript \
     ## for SyntaxHighlight (bundled), alternativ: apt-get install python-pygments & set $wgPygmentizePath = '/usr/bin/pygmentize';

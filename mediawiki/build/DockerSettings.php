@@ -294,6 +294,9 @@ wfLoadExtension( 'NativeSvgHandler' );
 ## Other Editors
 wfLoadExtension( 'DrawioEditor' );
 $wgDrawioEditorBackendUrl =  getenv( 'DRAWIO_SERVER', true ) ?: getenv( 'DRAWIO_SERVER' );
+# Allow additional SVG namespaces (e.g. xhtml used by DrawIO exports)
+# Can be extended in CustomSettings.php: $wgAllowedAdditionalSvgNamespaces[] = 'http://example.com/ns';
+$wgAllowedAdditionalSvgNamespaces = [ 'http://www.w3.org/1999/xhtml' ];
 wfLoadExtension( 'TimedMediaHandler' );
 $wgFFmpegLocation = '/usr/bin/ffmpeg'; // Most common ffmpeg path on Linux
 $wgMaxShellMemory = 2*1228800;

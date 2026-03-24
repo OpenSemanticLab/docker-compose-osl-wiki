@@ -337,7 +337,13 @@ if [ "$MW_AUTOUPDATE" == 'true' ]; then
     if [ "$MW_SEARCH_TYPE" == 'CirrusSearch' ]; then
 
         #always update config due to changes in LocalSettings.php
-        php extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php
+        # Update search index config; if it fails (e.g. analyzer change after MW upgrade),
+        # follow the safe upgrade path (1.B): reindex to a new index copy, then force full reindex.
+        # Search stays available during the reindex.
+        if ! php extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php 2>&1; then
+            echo "UpdateSearchIndexConfig failed, running safe upgrade path (reindex to new index copy)..."
+            php extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php --reindexAndRemoveOk --indexIdentifier now || echo "Warning: UpdateSearchIndexConfig reindex failed, continuing..."
+        fi
 
         #run_maintenance_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
         #run_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'

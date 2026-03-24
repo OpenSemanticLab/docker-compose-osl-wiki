@@ -196,12 +196,13 @@ fi
 
 ########## Create LocalSettings ##########
 
-# If LocalSettings was not mounted: File does not exist (first run) or is a symlink (after first run) 
-if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ]; then
+# Always rebuild LocalSettings.php from InstallSettings.php + DockerSettings + CustomSettings.
+# This ensures env var changes and config updates are applied on every restart.
+# Remove any existing LocalSettings.php (regular file or symlink) to start fresh.
+rm -f "$MW_HOME/LocalSettings.php"
 
-    echo "There is no LocalSettings.php, create one"
-
-    # If there is no LocalSettings.php, create one using maintenance/install.php
+{
+    # If there is no InstallSettings.php, create one using maintenance/install.php
     if [ ! -e "$MW_HOME/InstallSettings.php" ] || [ "$MW_REINSTALL" == 'true' ]; then
 
         echo "There is no InstallSettings.php or reinstall was forced, create one using maintenance/install.php"
@@ -282,10 +283,10 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
 
     fi
 
-    ln -s "$MW_HOME/InstallSettings.php" "$MW_HOME/LocalSettings.php"
-
-    # Append inclusion of DockerSettings.php - unfortunately this leads to strange errors
-    #echo "require_once 'DockerSettings.php';"  >> "$MW_HOME/LocalSettings.php"
+    # Build LocalSettings.php by copying InstallSettings.php and appending config files.
+    # Using cp instead of symlink prevents DockerSettings/CustomSettings from accumulating
+    # in InstallSettings.php across restarts.
+    cp "$MW_HOME/InstallSettings.php" "$MW_HOME/LocalSettings.php"
 
     # merge DockerSettings.php to LocalSettings.php if existing
     if [ -e "$MW_HOME/DockerSettings.php" ]; then
@@ -299,7 +300,7 @@ if [ ! -e "$MW_HOME/LocalSettings.php" ] || [ -L "$MW_HOME/LocalSettings.php" ];
         cat  "$MW_HOME/CustomSettings.php" >> "$MW_HOME/LocalSettings.php"
     fi
 
-fi
+}
 
 ########## Run maintenance scripts ##########
 if [ "$MW_AUTOUPDATE" == 'true' ]; then

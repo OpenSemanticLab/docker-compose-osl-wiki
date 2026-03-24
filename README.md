@@ -224,6 +224,7 @@ wfLoadExtension( 'OATHAuth' );          # Two-factor authentication (see Two-Fac
 wfLoadExtension( 'PluggableAuth' );     # Pluggable authentication framework
 wfLoadExtension( 'OpenIDConnect' );     # OpenID Connect login (e.g. via Keycloak)
 wfLoadExtension( 'Realnames' );         # Display real names beside user IDs
+wfLoadExtension( 'ConfirmAccount' );    # Requires approval for new account requests
 
 # Content & Moderation
 wfLoadExtension( 'ApprovedRevs' );      # Allows setting approved revisions of pages
@@ -231,6 +232,14 @@ wfLoadExtension( 'CommentStreams' );    # Discussion comments on pages
 wfLoadExtension( 'Lockdown' );          # Restrict namespace access per group
 wfLoadExtension( 'HitCounters' );       # Page view counters
 wfLoadExtension( 'UrlGetParameters' );  # Access URL parameters in wiki pages
+wfLoadExtension( 'AbuseFilter' );       # Automated abuse detection and prevention
+
+# Anti-Spam (for public instances)
+wfLoadExtension( 'ConfirmEdit' );       # CAPTCHA for edits
+wfLoadExtension( 'SpamBlacklist' );     # Block known spam URLs
+
+# Semantic Web
+wfLoadExtension( 'SemanticExtraSpecialProperties' ); # Exposes extra properties (creator, approved status, etc.)
 
 # UI & Display
 wfLoadExtension( 'Iframe' );            # Embed external content via iframes (see Iframes section)
@@ -238,11 +247,56 @@ wfLoadExtension( 'PagedTiffHandler' );  # Multi-page TIFF file support
 wfLoadExtension( 'InteractiveSemanticGraph2' ); # Interactive graph visualization (v2)
 
 # Data & Export
-wfLoadExtension( 'WebDAV' );            # Access uploaded files via WebDAV (e.g. directly with MS Word)
-wfLoadExtension( 'RdfExport' );         # DCAT catalog at /api.php?action=catalog&format=json&rdf_format=turtle and OWL ontology export (use only in public instances, requires SPARQL-Store)
+wfLoadExtension( 'WebDAV' );            # Access uploaded files via WebDAV (e.g. directly with MS Word/Excel)
+wfLoadExtension( 'RdfExport' );         # DCAT catalog and OWL ontology export (public instances only, requires SPARQL store)
 wfLoadExtension( 'Chatbot' );           # AI chatbot integration
 wfLoadExtension( 'ApiGateway' );        # API gateway for external service integration
 ```
+
+#### Example configurations
+
+See `mediawiki/config/CustomSettings.php` for a working example. Below are some common configurations:
+
+**CommentStreams** — enable discussion threads on pages:
+```php
+wfLoadExtension( 'CommentStreams' );
+$wgCommentStreamsEnableVoting = true;
+$wgCommentStreamsAllowedNamespaces = [
+    NS_MAIN, NS_USER, NS_FILE, NS_CATEGORY,
+    7000, // Item
+];
+$wgCommentStreamsInitiallyCollapsedNamespaces = $wgCommentStreamsAllowedNamespaces;
+```
+
+**ApprovedRevs + SemanticExtraSpecialProperties** — track approved revisions and page metadata:
+```php
+wfLoadExtension( 'ApprovedRevs' );
+$egApprovedRevsShowApproveLatest = true;
+$egApprovedRevsShowNotApprovedMessage = true;
+wfLoadExtension( 'SemanticExtraSpecialProperties' );
+$sespgEnabledPropertyList = [
+    '_EUSER',         // Last editor
+    '_CUSER',         // Page creator
+    '_APPROVED',      // Approved revision
+    '_APPROVEDBY',    // Approved by user
+    '_APPROVEDDATE',  // Approval date
+    '_APPROVEDSTATUS', // Approval status
+];
+```
+
+**WebDAV** — access uploaded files directly with MS Office / LibreOffice:
+```php
+wfLoadExtension( 'WebDAV' );
+```
+
+**QLever SPARQL store** — use [QLever](https://github.com/ad-freiburg/qlever) instead of Blazegraph:
+```php
+$smwgSparqlRepositoryConnector = 'sparql11';
+$smwgSparqlEndpoint["query"] = 'http://qlever:7001';
+$smwgSparqlEndpoint["update"] = 'http://qlever:7001';
+$smwgSparqlEndpoint["data"] = '';
+```
+Run with: `docker compose --profile qlever up`
 
 #### DrawIO SVG uploads with embedded images
 

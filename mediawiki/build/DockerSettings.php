@@ -478,8 +478,7 @@ $wgContentNamespaces[] = 102; # SMW_NS_PROPERTY
 $wgContentNamespaces[] = 114; # SMW_NS_SCHEMA
 $wgContentNamespaces[] = 108; # SMW_NS_CONCEPT
 
-# extra properties for approval status, needs ApprovedRevs extension
-#wfLoadExtension( 'SemanticApprovedRevs' ); // not enabled by default
+# extra properties for e.g. for approval status
 # see https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties/blob/master/docs/configuration.md
 #wfLoadExtension( 'SemanticExtraSpecialProperties' );
 

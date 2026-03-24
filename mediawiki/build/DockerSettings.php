@@ -476,8 +476,6 @@ $wgContentNamespaces[] = NS_FILE;
 $wgContentNamespaces[] = 102; # SMW_NS_PROPERTY
 $wgContentNamespaces[] = 114; # SMW_NS_SCHEMA
 $wgContentNamespaces[] = 108; # SMW_NS_CONCEPT
-$smwgNamespacesWithSemanticLinks[690] = true; #Action
-$smwgNamespacesWithSemanticLinks[692] = true; #Label
 
 
 ############# Slots ############
@@ -583,7 +581,6 @@ $wgMwJsonSlotRenderResultTransformation = [
 ];
 wfLoadExtension( 'OpenSemanticLab' );
 // $wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
-wfLoadExtension( 'SemanticProperties' );
 wfLoadExtension( 'WellplateEditor' );
 wfLoadExtension( 'SvgEditor' );
 wfLoadExtension( 'SpreadsheetEditor' );

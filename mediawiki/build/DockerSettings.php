@@ -399,6 +399,7 @@ wfLoadExtension( 'WikiEditor' );
 
 ##### Non-bundled Core Extensions ####
 wfLoadExtension( 'MyVariables' ); #additional variables like USERLANGUAGECODE
+$wgUseRCPatrol = false; // not enabled by default
 #wfLoadExtension( 'ApprovedRevs' ); // not enabled by default
 wfLoadExtension( 'UserMerge' ); //to merge and delete users
 #wfLoadExtension( 'HitCounters' ); // not enabled by default
@@ -477,6 +478,10 @@ $wgContentNamespaces[] = 102; # SMW_NS_PROPERTY
 $wgContentNamespaces[] = 114; # SMW_NS_SCHEMA
 $wgContentNamespaces[] = 108; # SMW_NS_CONCEPT
 
+# extra properties for approval status, needs ApprovedRevs extension
+#wfLoadExtension( 'SemanticApprovedRevs' ); // not enabled by default
+# see https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties/blob/master/docs/configuration.md
+#wfLoadExtension( 'SemanticExtraSpecialProperties' );
 
 ############# Slots ############
 wfLoadExtension( 'WSSlots' );
@@ -536,7 +541,7 @@ wfLoadExtension( 'DisplayTitle' );
 $wgAllowDisplayTitle = true;
 $wgRestrictDisplayTitle = false;
 wfLoadExtension( 'SimpleBatchUpload' );
-#wfLoadExtension( 'Iframe' );
+#wfLoadExtension( 'Iframe' ); // not enabled by default
 wfLoadExtension( 'Reveal' );
 wfLoadExtension( 'WikiMarkdown' );
 $wgAllowMarkdownExtra = true; // allows usage of Parsedown Extra
@@ -544,7 +549,7 @@ $wgAllowMarkdownExtended = true; // allows usage of Parsedown Extended
 
 ####################### Auth ####################
 ## Manual Account request and confirmation
-wfLoadExtension( 'ConfirmAccount' );
+#wfLoadExtension( 'ConfirmAccount' ); // not enabled by default
 
 ## Wiki as auth provider for other services (e.g. jupyterhub)
 wfLoadExtension( 'OAuth' );

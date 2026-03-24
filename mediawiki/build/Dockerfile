@@ -214,6 +214,7 @@ RUN set -x; \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:^3.0.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:~12.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:^2.3.2 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:~4.0 \
     ## SRF
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b dev-5.1.0 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \

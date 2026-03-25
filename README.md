@@ -523,11 +523,11 @@ This is also required if you change the database passwords after the first run.
 
 ## Restore
 
-Reset your instance first, then import your backup
+Reset your instance first, then import your backup. Make sure to set file and folder permissions afterwards.
 ```bash
 zcat backup/db_backup_<date>.sql.gz | docker compose exec -T db sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
 tar -xf backup/file_backup_<date>.tar
-chown -R www-data:www-data mediawiki/data
+sudo chown -R www-data:www-data mediawiki/data
 ```
 
 ## Development

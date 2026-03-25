@@ -289,6 +289,50 @@ $sespgEnabledPropertyList = [
 wfLoadExtension( 'WebDAV' );
 ```
 
+**Account management via OpenID Connect** (e.g. Keycloak, ORCID):
+```php
+wfLoadExtension( 'PluggableAuth' );
+$wgPluggableAuth_EnableAutoLogin = false;       // auto-login on visit
+$wgPluggableAuth_EnableLocalLogin = true;       // allow local password login
+$wgPluggableAuth_EnableLocalProperties = true;  // allow users to edit email/realname
+wfLoadExtension( 'OpenIDConnect' );
+$wgGroupPermissions['*']['autocreateaccount'] = true; // required for PluggableAuth
+$wgHooks['BeforePageDisplay'][] = function( OutputPage &$out, Skin &$skin ) {
+    $out->addInlineStyle("#pt-createaccount { display: none;}"); // hide misleading "Create Account" link
+};
+wfLoadExtension( 'Realnames' ); // display real names instead of OIDC subject IDs
+
+// Example: ORCID as identity provider
+// See https://github.com/ORCID/ORCID-Source/blob/development/orcid-web/ORCID_AUTH_WITH_OPENID_CONNECT.md
+$wgPluggableAuth_Config['Login with your ORCID Account'] = [
+    'plugin' => 'OpenIDConnect',
+    'data' => [
+        'providerURL' => 'https://orcid.org',
+        'clientID' => 'APP-...',
+        'clientsecret' => '...',
+        'scope' => ['openid'],
+        'preferred_username' => 'sub'
+    ]
+];
+
+// Optional: restrict login to specific users
+/*
+$wgHooks['PluggableAuthUserAuthorization'][] = function( MediaWiki\User\UserIdentity $user, bool &$authorized ) {
+    $validUsernames = [
+        '0000-0003-0410-3616' // Simon Stier
+    ];
+    $authorized = in_array($user->getName(), $validUsernames);
+};
+*/
+```
+
+To debug authentication issues, add to `CustomSettings.php`:
+```php
+$wgDebugLogGroups['PluggableAuth'] = '/tmp/pluggableauth.log';
+$wgDebugLogGroups['OpenID Connect'] = '/tmp/oidc.log';
+```
+Then check with: `docker compose exec mediawiki cat /tmp/oidc.log`
+
 **QLever SPARQL store** — use [QLever](https://github.com/ad-freiburg/qlever) instead of Blazegraph:
 ```php
 $smwgSparqlRepositoryConnector = 'sparql11';

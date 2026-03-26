@@ -146,7 +146,7 @@ RUN set -x; \
 ##### Skins ####
 RUN set -x; \
     cd $MW_HOME/skins \
-    && git clone --depth 1 -b osw https://github.com/OpenSemanticLab/mediawiki-skins-Citizen Citizen \
+    && git clone --depth 1 -b osw-REL1_43 https://github.com/OpenSemanticLab/mediawiki-skins-Citizen Citizen \
     # && git clone --depth 1 -b https://github.com/StarCitizenTools/mediawiki-skins-Citizen Citizen \
     && cd $MW_HOME \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/bootstrap-components:~5.0 \
@@ -208,16 +208,19 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:^6.0.0 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-result-formats:^5.1.0 \
+    # SRF is installed via git clone below (OSL fork), not via composer
     && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.1 \
     && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:~1.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:^3.0.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:~12.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:^2.3.2 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:~4.0 \
-    ## SRF
+    ## SRF (git clone from OSL fork, register with composer for dependency resolution)
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b dev-5.1.0 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
+    && cd $MW_HOME \
+    && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    && cd $MW_HOME/extensions \
     && git clone --depth 1 -b master https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
     && git clone -b dev-MW1.43 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticACL.git SemanticACL \
     && git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/Lockdown \

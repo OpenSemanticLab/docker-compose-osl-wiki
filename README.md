@@ -328,10 +328,10 @@ $wgHooks['PluggableAuthUserAuthorization'][] = function( MediaWiki\User\UserIden
 
 To debug authentication issues, add to `CustomSettings.php`:
 ```php
-$wgDebugLogGroups['PluggableAuth'] = '/tmp/pluggableauth.log';
-$wgDebugLogGroups['OpenID Connect'] = '/tmp/oidc.log';
+$wgDebugLogGroups['PluggableAuth'] = '/var/www/html/w/cache/pluggableauth.log';
+$wgDebugLogGroups['OpenIDConnect'] = '/var/www/html/w/cache/oidc.log';
 ```
-Then check with: `docker compose exec mediawiki cat /tmp/oidc.log`
+Then check with: `docker compose exec mediawiki cat /var/www/html/w/cache/oidc.log`
 
 **QLever SPARQL store** — use [QLever](https://github.com/ad-freiburg/qlever) instead of Blazegraph:
 ```php
@@ -529,6 +529,16 @@ zcat backup/db_backup_<date>.sql.gz | docker compose exec -T db sh -c 'exec mysq
 tar -xf backup/file_backup_<date>.tar
 sudo chown -R www-data:www-data mediawiki/data
 ```
+
+If the database dump was created with different passwords (e.g. restoring on a new instance), update the MySQL passwords to match your `.env` configuration:
+```bash
+docker compose exec db mysql -uroot -p -e "
+  FLUSH PRIVILEGES;
+  ALTER USER 'root'@'%' IDENTIFIED BY '$(read -sp 'New root password: ' p && echo $p)';
+  ALTER USER 'mwuser'@'%' IDENTIFIED BY '$(read -sp 'New mwuser password: ' p && echo $p)';
+"
+```
+Enter the old root password when prompted by `mysql -p`, then the new passwords matching `MYSQL_ROOT_PASSWORD` and `MW_DB_PASS` from your `.env` file. Restart with `docker compose restart` afterwards.
 
 ## Development
 

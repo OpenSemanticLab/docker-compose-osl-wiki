@@ -146,7 +146,7 @@ RUN set -x; \
 ##### Skins ####
 RUN set -x; \
     cd $MW_HOME/skins \
-    && git clone --depth 1 -b osw-REL1_43 https://github.com/OpenSemanticLab/mediawiki-skins-Citizen Citizen \
+    && git clone --depth 1 -b osw https://github.com/OpenSemanticLab/mediawiki-skins-Citizen Citizen \
     # && git clone --depth 1 -b https://github.com/StarCitizenTools/mediawiki-skins-Citizen Citizen \
     && cd $MW_HOME \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/bootstrap-components:~5.0 \

@@ -217,7 +217,7 @@ RUN set -x; \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:~4.0 \
     ## SRF (git clone from OSL fork, register with composer for dependency resolution)
     && cd $MW_HOME/extensions \
-    && git clone --depth 1 -b dev-5.1.0 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
+    && git clone --depth 1 -b dev-master https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
     && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && cd $MW_HOME/extensions \

@@ -604,6 +604,7 @@ $wgFileExtensions = array_merge($wgFileExtensions, array(
 ####################### Custom Content #####################
 wfLoadExtension( 'PageExchange' );
 $wgPageExchangeFileDirectories[] = 'https://raw.githubusercontent.com/OpenSemanticLab/PagePackages/main/package_index.txt';
+$wgPageExchangeMaxDisplayedPages = 0; # 0=hide page diffs, false=show all, N=show first N
 
 $wgPageImagesNamespaces[] = 7000;
 $wgPageImagesNamespaces[] = NS_CATEGORY;

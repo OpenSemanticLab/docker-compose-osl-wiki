@@ -342,6 +342,24 @@ $smwgSparqlEndpoint["data"] = '';
 ```
 Run with: `docker compose --profile qlever up`
 
+**ApiGateway + Prefect** — route [Prefect](https://www.prefect.io/) workflow engine API through the wiki's server-side proxy:
+```php
+wfLoadExtension( 'ApiGateway' );
+$wgGroupPermissions['user']['apigateway'] = true;
+$wgApiGatewayEndpoints['prefect'] = [
+    'url' => 'http://prefect-server:4200/api',  // internal Docker service URL
+    'allowedMethods' => ['GET', 'POST'],
+    'timeout' => 60,
+];
+```
+On the corresponding wiki service page (linked via `Hosts` property to the workflow), set:
+```json
+{
+    "url": "https://your-wiki.example.com/w/rest.php/apigateway/v1/prefect"
+}
+```
+This routes all Prefect API calls through the wiki, adding CSRF protection and hiding the internal Prefect URL from clients. For direct access without ApiGateway, configure `scheme`, `domain`, `network_port`, and `url_path` on the service page instead.
+
 #### DrawIO SVG uploads with embedded images
 
 DrawIO diagrams may contain embedded SVG images (mostly from the built in icon library) using `data:image/svg+xml` URIs. MediaWiki blocks these by default as a security measure (embedded SVGs could contain scripts). If you need this feature, add to `mediawiki/config/CustomSettings.php`:

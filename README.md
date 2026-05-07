@@ -348,7 +348,7 @@ wfLoadExtension( 'ApiGateway' );
 $wgGroupPermissions['user']['apigateway'] = true;
 $wgApiGatewayEndpoints['prefect'] = [
     'url' => 'http://prefect-server:4200/api',  // internal Docker service URL
-    'allowedMethods' => ['GET', 'POST'],
+    'allowedMethods' => ['GET', 'POST', 'PATCH'],
     'timeout' => 60,
 ];
 ```

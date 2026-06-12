@@ -212,7 +212,9 @@ RUN set -x; \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.1 \
     && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:~1.0 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:^3.0.0 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:~12.0 \
+    ## Pin Maps to 12.1.3: 12.1.4-12.1.6 reference SMW\DataItems\DataItem which does not
+    ## exist in SMW 6.x. See https://github.com/ProfessionalWiki/Maps/issues/908
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:12.1.3 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:^2.3.2 \
     && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:~4.0 \
     ## SRF (git clone from OSL fork, register with composer for dependency resolution)

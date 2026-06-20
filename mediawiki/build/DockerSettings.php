@@ -46,6 +46,16 @@ $wgLanguageCode = 'en';
 # see also: https://www.mediawiki.org/wiki/Manual:$wgDefaultUserOptions
 $wgDefaultUserOptions['language'] = getenv( 'MW_SITE_LANG', true ) ?: getenv( 'MW_SITE_LANG' );
 
+# SMW preference: apply user's MediaWiki timecorrection to special pages like
+# Special:Browse, property pages, and #ask printouts that use #LOCL#TO. Without
+# this default-on, Special:Browse renders SMW datetimes in the wiki's $wgLocaltimezone
+# (UTC) regardless of each user's timezone preference. Anonymous users still see
+# wiki-time (no timecorrection preference exists for them).
+# Cache caveat: parser-cached pages embedding #LOCL#TO still suffer from
+# https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/6820 - the first
+# viewer's timezone leaks into the cached HTML until the cache invalidates.
+$wgDefaultUserOptions['smw-prefs-general-options-time-correction'] = 1;
+
 # we have to override the options loading to apply our defaults
 # https://www.mediawiki.org/wiki/Manual_talk:$wgDefaultUserOptions#Setting_$wgDefaultUserOptions['language']_=_'de';_fails
 $wgHooks['LoadUserOptions'][] = function( $user, array &$options ) use ($wgDefaultUserOptions) {

@@ -448,6 +448,29 @@ php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 ```
 
 
+### Time zones
+The wiki's server time zone is set via `MW_TIME_ZONE` in `.env`.
+
+By default this stack sets the SMW user preference
+`smw-prefs-general-options-time-correction` to on, so `Special:Browse`,
+property pages, and `#ask` / `#show` printouts using `#LOCL#TO` render in
+each logged-in user's MediaWiki "time offset" preference instead of the
+wiki's server time.
+
+Caveats:
+- Anonymous viewers always see wiki-server time (no per-user `timecorrection` exists).
+- Users who saved `Special:Preferences` before the upgrade may have an
+  empty stored value that overrides the default. Either re-toggle the
+  checkbox on `Special:Preferences` (Semantic MediaWiki tab) once, or
+  clear stored rows in `user_properties`:
+  ```sql
+  DELETE FROM user_properties WHERE up_property = 'smw-prefs-general-options-time-correction';
+  ```
+- Parser-cached pages embedding `#LOCL#TO` via `{{#ask}}` still leak the
+  first viewer's time zone into the cached HTML until invalidated
+  (upstream [SMW#6820](https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/6820), fixed in SMW 7.0).
+
+
 ## Maintenance
 
 ### Mediawiki

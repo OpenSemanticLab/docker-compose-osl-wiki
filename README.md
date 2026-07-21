@@ -496,10 +496,7 @@ php /var/www/html/w/maintenance/refreshLinks.php
 php /var/www/html/w/maintenance/refreshImageMetadata.php --force
 ```
 
-- Error when deleting a file
-`Error deleting file: Could not create directory "metastore/local-backend/local-deleted/v1/"`
-
-Fix the permission on the host
+- Error when deleting a file or other file permission / access errors e.g. `Error deleting file: Could not create directory "metastore/local-backend/local-deleted/v1/"` or `RuntimeException: Could not open '/var/www/html/w/images/temp/mw-GlobalIdGenerator33-UUID-128'.`: Fix the permission on the host
 ```bash
 sudo chown -R www-data:www-data mediawiki/data
 ```

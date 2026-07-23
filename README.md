@@ -289,6 +289,11 @@ $sespgEnabledPropertyList = [
 wfLoadExtension( 'WebDAV' );
 ```
 
+**MwJson jsondata cleanup** — the editor recursively strips empty values (`""`, `null`, `[]`, `{}`) from `jsondata` before saving (default: on). To keep empty container keys in saved data (e.g. templates that check for the presence of `attachments: []`):
+```php
+$wgMwJsonRemoveEmptyOnSubmit = false;
+```
+
 **Account management via OpenID Connect** (e.g. Keycloak, ORCID):
 ```php
 wfLoadExtension( 'PluggableAuth' );

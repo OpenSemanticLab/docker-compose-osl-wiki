@@ -549,6 +549,9 @@ wfLoadExtension( 'TreeAndMenu' );
 wfLoadExtension( 'DisplayTitle' );
 $wgAllowDisplayTitle = true;
 $wgRestrictDisplayTitle = false;
+# ShortDescription: adds {{SHORTDESC:...}} which surfaces as a subtitle
+# under the page title in skins that render it (e.g. Citizen).
+wfLoadExtension( 'ShortDescription' );
 wfLoadExtension( 'SimpleBatchUpload' );
 #wfLoadExtension( 'Iframe' ); // not enabled by default
 wfLoadExtension( 'Reveal' );

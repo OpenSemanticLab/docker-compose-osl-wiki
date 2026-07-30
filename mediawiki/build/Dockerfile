@@ -164,6 +164,7 @@ RUN set -x; \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/BetaFeatures \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/CookieWarning \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-HitCounters HitCounters \
+    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/ShortDescription \
     && cd $MW_HOME \
     #&& COMPOSER=composer.local.json composer config --no-plugins allow-plugins.composer/installers true \
     && composer update  --no-dev --prefer-source \

@@ -289,6 +289,28 @@ $sespgEnabledPropertyList = [
 wfLoadExtension( 'WebDAV' );
 ```
 
+**Chatbot** — embed an [osw-chatbot](https://github.com/opensemanticworld/osw-chatbot)
+backend. Loading the extension alone does nothing: without `iframe_src` the
+assistant does not render.
+```php
+wfLoadExtension( 'Chatbot' );
+$wgChatbotPopupAssistentConfig = [
+    // note the /main suffix: panel serves the app under its script name
+    'iframe_src' => 'https://osw-chatbot.your-domain.org/main',
+    'confirm_redirect' => true,
+];
+// Must match CHATBOT_SHARED_SECRET in the backend's .env. The wiki then mints
+// a signed per-user token (action=chatbottoken) that the backend verifies.
+// Leave empty to let the backend accept unauthenticated sessions.
+$wgChatbotSecret = '';
+// Origins a user may point the "Custom backend for iframe" preference at.
+// Empty hides that preference - it hands the whole tool-call channel
+// (page content, file downloads, redirects) to the chosen origin.
+$wgChatbotAllowedBackendOrigins = [];
+```
+The backend must in turn accept this wiki as a parent (`PARENT_ORIGIN`) and as
+a websocket origin (`BOKEH_ALLOW_WS_ORIGIN`).
+
 **MwJson jsondata cleanup** — the editor recursively strips empty values (`""`, `null`, `[]`, `{}`) from `jsondata` before saving (default: on). To keep empty container keys in saved data (e.g. templates that check for the presence of `attachments: []`):
 ```php
 $wgMwJsonRemoveEmptyOnSubmit = false;

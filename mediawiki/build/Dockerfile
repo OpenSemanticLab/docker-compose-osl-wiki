@@ -156,10 +156,14 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-MyVariables.git MyVariables \
-    # pin to REL1_43: master/2.4.x type-hints onFileDeleteComplete against the new
-    # MediaWiki\FileRepo\File\File namespace, which does not exist until MW 1.44.
-    # MW 1.43 still passes the global \File, so the master build throws TypeError.
-    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-ApprovedRevs ApprovedRevs \
+    # OSL fork, branch 'osw' off REL1_43. Carries two fixes with no upstream
+    # equivalent: link updates are built from the whole revision, so a display title
+    # emitted by a non-main slot survives approval, and approval is offered on the
+    # page itself rather than only via the history.
+    # REL1_43 rather than master: master/2.4.x type-hints onFileDeleteComplete against
+    # the new MediaWiki\FileRepo\File\File namespace, which does not exist until MW
+    # 1.44. MW 1.43 still passes the global \File, so the master build throws TypeError.
+    && git clone --depth 1 -b osw https://github.com/OpenSemanticLab/mediawiki-extensions-ApprovedRevs ApprovedRevs \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/UserMerge.git \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/BetaFeatures \
     && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/CookieWarning \

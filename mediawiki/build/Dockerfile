@@ -186,6 +186,8 @@ RUN set -x; \
 RUN set -x; \
     cd $MW_HOME \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CommentStreams extensions/CommentStreams \
+    ## SMWHooks indexes a Reply object as an array, which aborts rebuildData
+    && cd extensions/CommentStreams && patch -p1 < /tmp/patches/CommentStreams-reply-object.patch && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/CommentStreams/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source
 
@@ -199,6 +201,8 @@ RUN set -x; \
     && cd $MW_HOME \
     ## WSSlots
     && git clone --depth 1 https://github.com/Open-CSP/WSSlots.git extensions/WSSlots \
+    ## performSlotEdits ignored the save status and clobbered main on create
+    && cd extensions/WSSlots && patch -p1 < /tmp/patches/WSSlots-save-status-and-main-slot.patch && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/WSSlots/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## PageExchange
     && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-PageExchange extensions/PageExchange \

@@ -1,0 +1,32 @@
+--- a/src/WSSlots.php
++++ b/src/WSSlots.php
+@@ -166,7 +166,7 @@
+ 			}
+ 		}
+ 
+-		if ( $oldRevisionRecord === null && !isset( $slotUpdates[SlotRecord::MAIN] ) ) {
++		if ( $oldRevisionRecord === null && !isset( $updates[SlotRecord::MAIN] ) ) {
+ 			// The 'main' content slot MUST be set when creating a new page
+ 			$logger->debug( 'Setting empty "main" slot' );
+ 
+@@ -205,6 +205,20 @@
+ 		$pageUpdater->saveRevision( $comment, $flags );
+ 		$logger->debug( 'Finished calling saveRevision on PageUpdater' );
+ 
++		// saveRevision reports failure through the updater status, not by
++		// throwing. Without this a save refused by a hook, an edit conflict or
++		// a read-only wiki was reported to the caller as a success, so the
++		// editor told the author their page had been saved when nothing had.
++		$saveStatus = $pageUpdater->getStatus();
++		if ( $saveStatus !== null && !$saveStatus->isOK() ) {
++			$logger->alert( 'Saving {page} failed: {status}', [
++				'page' => $titleObject->getFullText(),
++				'status' => $saveStatus->getWikiText( false, false, 'en' ),
++			] );
++
++			return [ \Status::wrap( $saveStatus )->getMessage() ];
++		}
++
+ 		// Add the page to the watchlist
+ 		$watch = self::getWatchlistValue( $options->watchlist, $titleObject, $user );
+ 		if ( method_exists( MediaWikiServices::class, 'getWatchlistManager' ) ) {

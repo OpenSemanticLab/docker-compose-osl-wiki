@@ -289,13 +289,16 @@ $sespgEnabledPropertyList = [
 ```
 
 Readers are served the approved revision of a page rather than the latest, and
-queries answer from it too.
+queries answer from it too. The files a page embeds are reviewed with it: the
+page header offers **Approve latest with all embedded files**, and lists those
+files marking which are not yet approved.
 
 Queryable state, once the properties below are enabled:
 
 | Property | Values |
 |---|---|
 | `Approval status` | `approved`, `pending`, `unapproved` |
+| `File approval status` | `approved`, `pending` |
 | `Approved revision`, `Approved by`, `Approved date` | who approved what, and when |
 
 Settings:
@@ -311,12 +314,19 @@ Settings:
   than handing out admin.
 - `$egApprovedRevsBlankIfUnapproved`, default false, serves a blank page where
   nothing has been approved yet. It applies to whole namespaces at once.
+- `$egApprovedRevsApproveFilesWithPage` turns on the file half. The extension
+  defaults to false; this image ships it on.
 - `$sespgEnabledPropertyList` has to list the `_APPROVED*` entries, or the
   properties above do not exist.
 
+Two things to expect. A file added by the revision under review is picked up
+once that revision is approved, so reviewing it can take a second pass. And
+approving a file approves it everywhere it is embedded, which the header names
+so the decision is visible.
+
 `Special:ApprovedRevs` lists what is waiting for review. There is no
 notification, so either reviewers check it or the same set is queried with
-`[[Approval status::pending]]`.
+`[[Approval status::pending]]` and `[[File approval status::pending]]`.
 
 ApprovedRevs is the OSL fork, branch `osw`. SemanticApprovedRevs is installed
 from a pinned upstream commit and patched during the image build, see

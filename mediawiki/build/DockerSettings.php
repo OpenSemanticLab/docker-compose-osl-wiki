@@ -411,6 +411,8 @@ wfLoadExtension( 'WikiEditor' );
 wfLoadExtension( 'MyVariables' ); #additional variables like USERLANGUAGECODE
 $wgUseRCPatrol = false; // not enabled by default
 #wfLoadExtension( 'ApprovedRevs' ); // not enabled by default
+#offer to approve a page together with the files it embeds, and count them as part of its approval
+$egApprovedRevsApproveFilesWithPage = true;
 wfLoadExtension( 'UserMerge' ); //to merge and delete users
 #wfLoadExtension( 'HitCounters' ); // not enabled by default
 // By default nobody can use this function, enable for bureaucrat?

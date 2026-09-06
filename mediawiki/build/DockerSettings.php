@@ -593,6 +593,19 @@ wfLoadExtension( 'MwJson' );
 $wgMwJsonSlotRenderResultTransformation = [
     "enabled" => true,
 ];
+## MwJson rendering, shipped at the safe end. Each one is a separate opt-in.
+$wgMwJsonRenderer = 'lua'; #'php' renders header/footer in the extension: faster, and one implementation instead of two
+$wgMwJsonResolveLinkLabels = true; #link labels from the store, instead of one template call per link
+$wgMwJsonBypassLegacyTemplates = false; #true renders recognised legacy eval_templates natively, skipping the wikitext round trip
+$wgMwJsonRegisterSlotDependencies = false; #true refreshes the pages below a category when its schema changes, instead of leaving them stale until purged
+
+## Slot patches: a patch changes what other pages read, so enable it deliberately
+$wgMwJsonEnablePatches = false;
+$wgMwJsonPatchCategory = 'Category:OSWbd03ae43c1954ca889860ecf170682ef'; #only this type is honoured
+#creating or editing a patch needs mwjson-editpatch (sysop): a patch can rewrite a category ACL
+$wgMwJsonCategoryEditRights = [
+    'Category:OSWbd03ae43c1954ca889860ecf170682ef' => 'mwjson-editpatch',
+];
 wfLoadExtension( 'OpenSemanticLab' );
 // $wgExtraSignatureNamespaces = [7100]; #allow signatures in NS LabNote
 wfLoadExtension( 'WellplateEditor' );

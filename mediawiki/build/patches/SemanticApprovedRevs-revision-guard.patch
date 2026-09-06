@@ -1,0 +1,112 @@
+diff --git a/src/ApprovedRevsHandler.php b/src/ApprovedRevsHandler.php
+index 9a0fc03..3f45549 100644
+--- a/src/ApprovedRevsHandler.php
++++ b/src/ApprovedRevsHandler.php
+@@ -4,7 +4,7 @@ namespace SMW\ApprovedRevs;
+ 
+ use File;
+ use MediaWiki\MediaWikiServices;
+-use MediaWiki\Revision\RevisionStoreRecord;
++use MediaWiki\Revision\RevisionRecord;
+ use MediaWiki\Title\Title;
+ use OldLocalFile;
+ use RepoGroup;
+@@ -47,14 +47,15 @@ class ApprovedRevsHandler {
+ 	 * @return bool
+ 	 */
+ 	public function isApprovedUpdate( Title $title, $latestRevID ) {
+-		if ( !$this->approvedRevsFacade->hasApprovedRevision( $title ) ) {
+-			return true;
+-		}
+-
+-		if ( ( $approvedRevID = $this->approvedRevsFacade->getApprovedRevID( $title ) ) !== null ) {
+-			return $approvedRevID == $latestRevID;
+-		}
+-
++		// Never skip. doChangeRevision() below moves the update onto the
++		// approved revision, so an update that runs while a newer revision is
++		// pending still stores approved content, and letting it run is the only
++		// way the approval-status annotation ever gets to say "pending".
++		//
++		// Skipping instead leaves the store describing whatever it last held.
++		// That is right only where the last thing it held was already the
++		// approved revision, and wrong for every page whose data was written
++		// before approvals were in force.
+ 		return true;
+ 	}
+ 
+@@ -62,15 +63,15 @@ class ApprovedRevsHandler {
+ 	 * @since  1.0
+ 	 *
+ 	 * @param Title $title
+-	 * @param ?RevisionStoreRecord &$revision
++	 * @param ?RevisionRecord &$revision
+ 	 */
+-	public function doChangeRevision( Title $title, ?RevisionStoreRecord &$revision ) {
++	public function doChangeRevision( Title $title, ?RevisionRecord &$revision ) {
+ 		// Forcibly change the revision to match what ApprovedRevs sees as
+ 		// approved
+ 		if ( ( $approvedRevID = $this->approvedRevsFacade->getApprovedRevID( $title ) ) !== null ) {
+ 			$approvedRev = MediaWikiServices::getInstance()
+ 					   ->getRevisionLookup()->getRevisionById( $approvedRevID );
+-			if ( $approvedRev instanceof RevisionStoreRecord ) {
++			if ( $approvedRev instanceof RevisionRecord ) {
+ 				$revision = $approvedRev;
+ 			}
+ 		}
+@@ -84,7 +85,9 @@ class ApprovedRevsHandler {
+ 	 */
+ 	public function doChangeRevisionID( Title $title, &$revisionID ) {
+ 		if ( ( $approvedRevID = $this->approvedRevsFacade->getApprovedRevID( $title ) ) !== null ) {
+-			$revisionID = $approvedRevID;
++			// Cast: the id arrives as the raw database field, a string, and
++			// RevisionGuard::getLatestRevID discards anything that is not an int.
++			$revisionID = (int)$approvedRevID;
+ 		}
+ 	}
+ 
+diff --git a/src/Hooks.php b/src/Hooks.php
+index 27c39d3..ce46e78 100644
+--- a/src/Hooks.php
++++ b/src/Hooks.php
+@@ -3,7 +3,7 @@
+ namespace SMW\ApprovedRevs;
+ 
+ use MediaWiki\MediaWikiServices;
+-use MediaWiki\Revision\RevisionStoreRecord;
++use MediaWiki\Revision\RevisionRecord;
+ use MediaWiki\Title\Title;
+ use Onoi\Cache\Cache;
+ use SMW\SemanticData;
+@@ -170,9 +170,9 @@ class Hooks {
+ 	 * @since 1.0
+ 	 *
+ 	 * @param Title $title
+-	 * @param ?RevisionStoreRecord $record
++	 * @param ?RevisionRecord &$record
+ 	 */
+-	public function onChangeRevision( $title, ?RevisionStoreRecord $record ) {
++	public function onChangeRevision( $title, ?RevisionRecord &$record ) {
+ 		$approvedRevsHandler = new ApprovedRevsHandler(
+ 			new ApprovedRevsFacade()
+ 		);
+@@ -312,8 +312,17 @@ class Hooks {
+ 			'SMW::RevisionGuard::ChangeRevision' => [ $this, 'onChangeRevision' ],
+ 			'SMW::RevisionGuard::ChangeRevisionID' => [ $this, 'onOverrideRevisionID' ],
+ 			'SMW::RevisionGuard::ChangeFile' => [ $this, 'onChangeFile' ],
+-			'SMW::Property::initProperties' => [ $this, 'onInitProperties' ],
+-			'SMWStore::updateDataBefore' => [ $this, 'onUpdateDataBefore' ],
++			// Deliberately not registered: SMW::Property::initProperties and
++			// SMWStore::updateDataBefore. The four properties they add claim the
++			// same labels as the _APPROVED* set of
++			// SemanticExtraSpecialProperties, so whichever extension registers
++			// second becomes unreachable by label, and which one that is depends
++			// on the order LocalSettings loads them in.
++			//
++			// SESP is the set worth keeping: its status is computed against the
++			// current revision and says approved / pending / unapproved, while
++			// the status here is the raw approval log action, and is empty for
++			// the auto-approvals that are deliberately never logged.
+ 		];
+ 	}
+ 

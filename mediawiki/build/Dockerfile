@@ -237,6 +237,23 @@ RUN set -x; \
     && git clone --depth 1 -b master https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
     && git clone -b dev-MW1.43 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticACL.git SemanticACL \
     && git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/Lockdown \
+    ## Answers the SMW::RevisionGuard hooks, without which SemanticMediaWiki and
+    ## MwJson read the latest revision whatever ApprovedRevs has approved.
+    ## Pinned rather than tracking master, which is 0.10-alpha and unreleased:
+    ## the patch below is written against this tree, and upstream moving under
+    ## it would fail the build at the patch step.
+    && git clone https://github.com/SemanticMediaWiki/SemanticApprovedRevs.git SemanticApprovedRevs \
+    && cd SemanticApprovedRevs \
+    && git checkout --quiet 70b363ae3176d7c926752dbebfd4a81601699280 \
+    ## Patched: ChangeRevision is dispatched by reference and taken by value,
+    ## and the revision id arrives as a string where an int is required, so
+    ## neither guard path reaches the approved revision; the update is skipped
+    ## rather than moved onto the approved revision, which leaves the store
+    ## describing whatever it last held; and its four properties claim the same
+    ## labels as the _APPROVED* set of SemanticExtraSpecialProperties, so one
+    ## set or the other was unreachable depending on load order
+    && patch -p1 < /tmp/patches/SemanticApprovedRevs-revision-guard.patch \
+    && cd $MW_HOME/extensions \
     && cd $MW_HOME \
     && composer update  --no-dev --prefer-source --optimize-autoloader
     # fix: videos in gallery format not shown

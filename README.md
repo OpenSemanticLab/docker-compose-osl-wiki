@@ -228,6 +228,7 @@ wfLoadExtension( 'ConfirmAccount' );    # Requires approval for new account requ
 
 # Content & Moderation
 wfLoadExtension( 'ApprovedRevs' );      # Allows setting approved revisions of pages
+wfLoadExtension( 'SemanticApprovedRevs' ); # Semantic data follows the approved revision
 wfLoadExtension( 'CommentStreams' );    # Discussion comments on pages
 wfLoadExtension( 'Lockdown' );          # Restrict namespace access per group
 wfLoadExtension( 'HitCounters' );       # Page view counters
@@ -273,6 +274,9 @@ $wgCommentStreamsInitiallyCollapsedNamespaces = $wgCommentStreamsAllowedNamespac
 wfLoadExtension( 'ApprovedRevs' );
 $egApprovedRevsShowApproveLatest = true;
 $egApprovedRevsShowNotApprovedMessage = true;
+# Required alongside Semantic MediaWiki, so stored data and queries follow the
+# approved revision rather than the latest one.
+wfLoadExtension( 'SemanticApprovedRevs' );
 wfLoadExtension( 'SemanticExtraSpecialProperties' );
 $sespgEnabledPropertyList = [
     '_EUSER',         // Last editor
@@ -283,6 +287,40 @@ $sespgEnabledPropertyList = [
     '_APPROVEDSTATUS', // Approval status
 ];
 ```
+
+Readers are served the approved revision of a page rather than the latest, and
+queries answer from it too.
+
+Queryable state, once the properties below are enabled:
+
+| Property | Values |
+|---|---|
+| `Approval status` | `approved`, `pending`, `unapproved` |
+| `Approved revision`, `Approved by`, `Approved date` | who approved what, and when |
+
+Settings:
+
+- `$egApprovedRevsEnabledNamespaces` decides which namespaces are approvable.
+  The default `0, 2, 4, 6, 10, 12` covers none of the OSL namespaces, so add
+  `14` (Category) and `7000` (Item) to put entities under review. Individual
+  pages opt in regardless with the `__APPROVEDREVS__` magic word.
+- `$egApprovedRevsAutomaticApprovals`, default true, approves an edit as it is
+  saved when its author holds `approverevisions`, so review applies only to
+  everyone else. Set it false to review every edit.
+- `approverevisions` is granted to `sysop`. Grant it to a reviewer group rather
+  than handing out admin.
+- `$egApprovedRevsBlankIfUnapproved`, default false, serves a blank page where
+  nothing has been approved yet. It applies to whole namespaces at once.
+- `$sespgEnabledPropertyList` has to list the `_APPROVED*` entries, or the
+  properties above do not exist.
+
+`Special:ApprovedRevs` lists what is waiting for review. There is no
+notification, so either reviewers check it or the same set is queried with
+`[[Approval status::pending]]`.
+
+ApprovedRevs is the OSL fork, branch `osw`. SemanticApprovedRevs is installed
+from a pinned upstream commit and patched during the image build, see
+`mediawiki/build/patches/`.
 
 **WebDAV** — access uploaded files directly with MS Office / LibreOffice:
 ```php
@@ -315,6 +353,36 @@ a websocket origin (`BOKEH_ALLOW_WS_ORIGIN`).
 ```php
 $wgMwJsonRemoveEmptyOnSubmit = false;
 ```
+
+**MwJson rendering**: shipped at the safe end, each setting a separate opt-in.
+The shipped values are in `mediawiki/build/DockerSettings.php` and every setting
+is described in the MwJson README. What each one buys:
+```php
+# render the header/footer pipeline in the extension rather than in Module:MwJson:
+# faster, and one implementation instead of two. Also a live rollback switch, so
+# 'lua' returns to the old behaviour without editing a page.
+$wgMwJsonRenderer = 'php';
+# render recognised legacy eval_templates natively, skipping the wikitext round trip
+$wgMwJsonBypassLegacyTemplates = true;
+# refresh the pages below a category when its schema changes, rather than leaving
+# them stale until purged. Switching it on queues a refresh for every entity below
+# every edited category, so schedule it on a large wiki
+$wgMwJsonRegisterSlotDependencies = true;
+```
+`$wgMwJsonResolveLinkLabels` is on already: it resolves a link label from the
+semantic store instead of expanding a template once per link.
+
+**MwJson slot patches**: shipped off. A patch is an instance of the PagePatch
+category naming target pages and per-slot operations, applied when those slots
+are read, without editing the target. Enable with:
+```php
+$wgMwJsonEnablePatches = true;
+```
+`$wgMwJsonPatchCategory` and `$wgMwJsonCategoryEditRights` are preset to the
+PagePatch category and only need changing if a package supplies a different one.
+Creating or editing a patch requires `mwjson-editpatch`, held by `sysop`,
+because a patch can rewrite a category jsonschema and categories carry the
+SemanticACL rules.
 
 **Account management via OpenID Connect** (e.g. Keycloak, ORCID):
 ```php

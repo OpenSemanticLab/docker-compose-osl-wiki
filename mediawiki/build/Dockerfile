@@ -360,6 +360,8 @@ RUN set -x; \
     && cd $MW_HOME \
     && git clone --depth 1 https://github.com/opensemanticworld/mediawiki-extensions-RdfExport.git extensions/RdfExport \
     && jq '.extra."merge-plugin".include += ["extensions/RdfExport/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
+    ## MwJson renders templates with mustache/mustache, which nothing else pulls in
+    && jq '.extra."merge-plugin".include += ["extensions/MwJson/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source \
     && cd ..
 

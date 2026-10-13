@@ -363,6 +363,17 @@ $wgChatbotSecret = '';
 // Empty hides that preference - it hands the whole tool-call channel
 // (page content, file downloads, redirects) to the chosen origin.
 $wgChatbotAllowedBackendOrigins = [];
+
+// What the assistant may do. Only 'websearch' is on by default; 'edit',
+// 'delete' and 'script' have to be opted into.
+$wgChatbotActions = [ 'websearch', 'redirect', 'edit' ];
+// Confirmed with a dialog in the browser before the action runs.
+$wgChatbotConfirmActions = [ 'websearch', 'redirect', 'script' ];
+
+// Required for 'script'. MediaWiki disables personal JavaScript by default, so
+// without this a User:<name>/*.js page saves but never loads. Scripts written
+// by the assistant stay in the author's user space and run only for them.
+$wgAllowUserJs = true;
 ```
 The backend must in turn accept this wiki as a parent (`PARENT_ORIGIN`) and as
 a websocket origin (`BOKEH_ALLOW_WS_ORIGIN`).

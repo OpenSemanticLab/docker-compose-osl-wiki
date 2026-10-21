@@ -630,6 +630,15 @@ $wgFileExtensions = array_merge($wgFileExtensions, array(
 wfLoadExtension( 'PageExchange' );
 $wgPageExchangeFileDirectories[] = 'https://raw.githubusercontent.com/OpenSemanticLab/PagePackages/main/package_index.txt';
 $wgPageExchangeMaxDisplayedPages = 0; # 0=hide page diffs, false=show all, N=show first N
+# not used: packages are managed through Special:Packages.
+# Deferred, because extension.json merges $wgAPIModules after this file has run.
+$wgExtensionFunctions[] = static function () {
+    unset(
+        $GLOBALS['wgAPIModules']['pxinstallpackage'],
+        $GLOBALS['wgAPIModules']['pxupdatepackage'],
+        $GLOBALS['wgAPIModules']['pxuninstallpackage']
+    );
+};
 
 $wgPageImagesNamespaces[] = 7000;
 $wgPageImagesNamespaces[] = NS_CATEGORY;

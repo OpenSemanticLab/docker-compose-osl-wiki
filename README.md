@@ -160,9 +160,17 @@ $wgAvailableRights[] = 'schema-edit';
 $wgGroupPermissions['custom-group']['schema-edit'] = true;
 $wgGroupPermissions['sysop']['schema-edit'] = true;
 
-// restrict the creation of new categories outside installed packages
+// require it for every edit in the Category namespace
 $wgNamespaceProtection[NS_CATEGORY] = ['schema-edit'];
 ```
+`$wgNamespaceProtection` covers all edits in the namespace, not only page creation. Editing an existing category needs the right too, which includes what the form editor does when it regenerates a schema. MediaWiki has no per-namespace create-only right; that needs a `getUserPermissionsErrors` hook testing `!$title->exists()`.
+
+**Bots need the right twice.** A right is granted to an account through `$wgGroupPermissions`, but a bot password or OAuth session is additionally capped by its grants, and a right declared in `$wgAvailableRights` belongs to no grant by default. Without the second line below, no bot password can use the right, even one belonging to a sysop:
+```php
+$wgGroupPermissions['bot']['schema-edit'] = true;
+$wgGrantPermissions['editprotected']['schema-edit'] = true; // or a grant of its own
+```
+The same applies to the built-in `editprotected`: the `bot` group has `editsemiprotected` but not `editprotected`, and the common `editpage` grant ("Edit existing pages") does not carry it either. Pages protected at `sysop` level, and pages reached by cascading protection, need both.
 
 #### Additional content packages
 Please note: Content packages defined by MW_PAGE_PACKAGES will be install automatically.

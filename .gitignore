@@ -10,3 +10,4 @@ mediawiki/data/*
 mysql/data/*
 tests/codecept/output/*
 docker-compose.override.yml
+TODO.md

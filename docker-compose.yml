@@ -58,6 +58,13 @@ services:
             context: ./mediawiki/build
             dockerfile: Dockerfile
         restart: unless-stopped
+        # rebuildData on a SPARQLStore opens many short-lived connections to the
+        # triplestore and the search backend at once. The docker default of 8192
+        # is not enough for annotation-heavy pages.
+        ulimits:
+            nofile:
+                soft: 65536
+                hard: 65536
         depends_on:
             - db
             - elasticsearch

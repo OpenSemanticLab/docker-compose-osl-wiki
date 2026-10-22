@@ -462,13 +462,12 @@ $smwgSparqlDefaultGraph = (getenv( 'MW_SITE_SERVER', true ) ?: getenv( 'MW_SITE_
 $smwgNamespace =  (getenv( 'MW_SITE_SERVER', true ) ?: getenv( 'MW_SITE_SERVER' )) . '/id/';
 #needs rebuild: php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 
-# SMW 5 types this parameter as int and rejects the old strings. The constants
-# are defined by SemanticMediaWiki::initExtension, which runs after settings are
-# read, so they exist here only while the legacy enableSemantics() is called.
-# Guarded so that dropping that call does not turn this into a fatal.
-#$smwgShowFactbox = defined( 'SMW_FACTBOX_NONEMPTY' ) ? SMW_FACTBOX_NONEMPTY : 3; #only if they have content
-#$smwgShowFactbox = defined( 'SMW_FACTBOX_SHOWN' ) ? SMW_FACTBOX_SHOWN : 5; #always shown
-$smwgShowFactbox = defined( 'SMW_FACTBOX_HIDDEN' ) ? SMW_FACTBOX_HIDDEN : 1; #never show it
+# SMW 7 takes the string form. The SMW_FACTBOX_* integer constants still work
+# but are deprecated and emit a notice per request, and SMW 8 removes them.
+# On SMW 6 the reverse held: the parameter was typed int and a string was fatal.
+#$smwgShowFactbox = 'nonempty'; #only if they have content
+#$smwgShowFactbox = 'shown'; #always shown
+$smwgShowFactbox = 'hidden'; #never show it
 
 wfLoadExtension( 'SemanticResultFormats' );
 wfLoadExtension( 'Mermaid' );

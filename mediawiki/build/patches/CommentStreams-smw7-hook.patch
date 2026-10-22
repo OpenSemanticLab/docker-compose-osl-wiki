@@ -1,0 +1,27 @@
+-- CommentStreams registers SMWStore::updateDataBefore, one of four legacy hook
+-- names SMW 7 removed. Nothing fires it, so the comment annotations
+-- (___CS_ASSOCPG, ___CS_REPLYTO) silently stop being written while
+-- Special:Properties still lists them. Same arguments, so only the hook
+-- name and the method MediaWiki derives from it need to change.
+--- a/extension.json	2026-10-22 08:19:10.496676837 +0000
++++ b/extension.json	2026-10-22 08:19:10.536676297 +0000
+@@ -342,7 +342,7 @@
+ 		"LoadExtensionSchemaUpdates": "noservice",
+ 		"BeforeCreateEchoEvent": "MediaWiki\\Extension\\CommentStreams\\Notifier\\EchoNotifier::onBeforeCreateEchoEvent",
+ 		"SMW::Property::initProperties": "smw",
+-		"SMWStore::updateDataBefore": "smw",
++		"SMW::Store::BeforeDataUpdateComplete": "smw",
+ 		"SMW::Settings::BeforeInitializationComplete": "smw",
+ 		"MediaWikiServices": "talkPageStore",
+ 		"BSUsageTrackerRegisterCollectors": "registerUsageTracker",
+--- a/includes/SMWHooks.php	2026-10-22 08:19:10.500676784 +0000
++++ b/includes/SMWHooks.php	2026-10-22 08:19:10.536676297 +0000
+@@ -82,7 +82,7 @@
+ 	 * @return bool true to continue
+ 	 * @throws ConfigException
+ 	 */
+-	public function onSMWStore__updateDataBefore( Store $store, SemanticData $semanticData ) {
++	public function onSMW__Store__BeforeDataUpdateComplete( Store $store, SemanticData $semanticData ) {
+ 		$subject = $semanticData->getSubject();
+ 		if ( !$subject || !$subject->getTitle() || $subject->getTitle()->getNamespace() !== NS_COMMENTSTREAMS ) {
+ 			return true;

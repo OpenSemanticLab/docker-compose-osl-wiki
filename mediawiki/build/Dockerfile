@@ -208,7 +208,10 @@ RUN set -x; \
     cd $MW_HOME \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CommentStreams extensions/CommentStreams \
     ## SMWHooks indexes a Reply object as an array, which aborts rebuildData
-    && cd extensions/CommentStreams && patch -p1 < /tmp/patches/CommentStreams-reply-object.patch && cd $MW_HOME \
+    && cd extensions/CommentStreams && patch -p1 < /tmp/patches/CommentStreams-reply-object.patch \
+    ## SMW 7 removed SMWStore::updateDataBefore, which CommentStreams still registers,
+    ## so its comment annotations stop being written with no error
+    && patch -p1 < /tmp/patches/CommentStreams-smw7-hook.patch && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/CommentStreams/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source
 

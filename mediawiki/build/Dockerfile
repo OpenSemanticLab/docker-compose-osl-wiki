@@ -8,7 +8,9 @@ ENV MW_VERSION=REL1_43 \
     WWW_USER=www-data \
     WWW_GROUP=www-data \
     APACHE_LOG_DIR=/var/log/apache2 \
-    PHP_VERSION=8.1 \
+    # 8.1 is end of life and receives no fix for CVE-2026-109618 and
+    # CVE-2026-109619. MediaWiki 1.43 supports 8.1 to 8.3.
+    PHP_VERSION=8.2 \
     DEBIAN_FRONTEND=noninteractive \
     # allow plugins to run as root/super user
     COMPOSER_ALLOW_SUPERUSER=1 
@@ -120,7 +122,25 @@ RUN set -x; \
     mkdir -p $MW_HOME \
     && git clone --depth 1 -b $MW_VERSION https://github.com/mediawiki/mediawiki.git $MW_HOME \
     && cd $MW_HOME \
-    ## Bundled extensions
+    ## gerrit.wikimedia.org answers 403 to CI runners. Wikimedia mirrors every
+    ## repository to GitHub, so .gitmodules is pointed at the mirror before the
+    ## submodules are fetched. Both gerrit path forms appear, with and without /p/.
+    && sed -i -e 's|https://gerrit\.wikimedia\.org/r/\(p/\)\?mediawiki/extensions/|https://github.com/wikimedia/mediawiki-extensions-|g' \
+              -e 's|https://gerrit\.wikimedia\.org/r/\(p/\)\?mediawiki/skins/|https://github.com/wikimedia/mediawiki-skins-|g' \
+              -e 's|https://gerrit\.wikimedia\.org/r/\(p/\)\?mediawiki/vendor|https://github.com/wikimedia/mediawiki-vendor|g' .gitmodules \
+    && ! grep -q gerrit.wikimedia.org .gitmodules \
+    && git submodule sync \
+    ## Bundled extensions. Fetched one level first, because VisualEditor carries
+    ## its own .gitmodules pointing at gerrit, which cannot be rewritten before
+    ## the extension itself exists.
+    && git submodule update --init \
+    && find . -name .gitmodules -exec sed -i \
+         -e 's|https://gerrit\.wikimedia\.org/r/\(p/\)\?mediawiki/extensions/|https://github.com/wikimedia/mediawiki-extensions-|g' \
+         -e 's|https://gerrit\.wikimedia\.org/r/\(p/\)\?mediawiki/skins/|https://github.com/wikimedia/mediawiki-skins-|g' \
+         -e 's|https://gerrit\.wikimedia\.org/r/\(p/\)\?mediawiki/vendor|https://github.com/wikimedia/mediawiki-vendor|g' \
+         -e 's|https://gerrit\.wikimedia\.org/r/VisualEditor/VisualEditor|https://github.com/wikimedia/VisualEditor|g' {} + \
+    && ! grep -rq gerrit.wikimedia.org --include=.gitmodules . \
+    && git submodule sync --recursive \
     && git submodule update --init --recursive \
     && composer install --no-dev \
     && chown -R $WWW_USER:$WWW_GROUP images \
@@ -164,9 +184,9 @@ RUN set -x; \
     # the new MediaWiki\FileRepo\File\File namespace, which does not exist until MW
     # 1.44. MW 1.43 still passes the global \File, so the master build throws TypeError.
     && git clone --depth 1 -b osw https://github.com/OpenSemanticLab/mediawiki-extensions-ApprovedRevs ApprovedRevs \
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/UserMerge.git \
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/BetaFeatures \
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/CookieWarning \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-UserMerge.git UserMerge \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-BetaFeatures BetaFeatures \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CookieWarning CookieWarning \
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-HitCounters HitCounters \
     && cd $MW_HOME \
     #&& COMPOSER=composer.local.json composer config --no-plugins allow-plugins.composer/installers true \
@@ -176,8 +196,8 @@ RUN set -x; \
 ##### ElasticSearch extensions
 RUN set -x; \
     cd $MW_HOME/extensions \
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/CirrusSearch \
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/p/mediawiki/extensions/Elastica \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-CirrusSearch CirrusSearch \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-Elastica Elastica \
     && cd Elastica \
     && composer install --no-dev \
     && cd ..
@@ -236,7 +256,7 @@ RUN set -x; \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 -b master https://github.com/wikimedia/mediawiki-extensions-PageForms.git PageForms \
     && git clone -b dev-MW1.43 https://github.com/OpenSemanticLab/mediawiki-extensions-SemanticACL.git SemanticACL \
-    && git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/Lockdown \
+    && git clone --depth 1 https://github.com/wikimedia/mediawiki-extensions-Lockdown Lockdown \
     ## Answers the SMW::RevisionGuard hooks, without which SemanticMediaWiki and
     ## MwJson read the latest revision whatever ApprovedRevs has approved.
     ## Pinned rather than tracking master, which is 0.10-alpha and unreleased:
@@ -277,7 +297,7 @@ RUN set -x; \
     && apt-get update &&  apt-get install -y --no-install-recommends poppler-utils ghostscript \
     && git clone --depth 1 https://github.com/WolfgangFahl/PDFEmbed.git PDFEmbed \
     # Videos
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler.git \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-TimedMediaHandler.git TimedMediaHandler \
     && apt-get update && apt-get install -y --no-install-recommends ffmpeg \
     && cd $MW_HOME && jq '.extra."merge-plugin".include += ["extensions/TimedMediaHandler/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json && cd $MW_HOME/extensions \
     && git clone --depth 1 -b $MW_VERSION https://github.com/StarCitizenWiki/mediawiki-extensions-EmbedVideo EmbedVideo \
@@ -309,7 +329,7 @@ RUN set -x; \
     #&& composer update  --no-dev --prefer-source \
     && cd $MW_HOME/extensions \
     && git clone --depth 1 https://github.com/debtcompliance/TreeAndMenu TreeAndMenu \
-    #&& git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/DisplayTitle DisplayTitle \
+    #&& git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-DisplayTitle DisplayTitle \
     && git clone --depth 1 -b REL1_43-dev https://github.com/OpenSemanticLab/mediawiki-extensions-DisplayTitle.git DisplayTitle \
     ## Iframes
     && git clone --depth 1 https://github.com/sigbertklinke/Iframe Iframe \
@@ -323,7 +343,7 @@ RUN set -x; \
     #OAUTH
     && cd $MW_HOME/extensions \
     ## Manual Account request and confirmation
-    && git clone --depth 1 -b $MW_VERSION https://gerrit.wikimedia.org/r/mediawiki/extensions/ConfirmAccount.git \
+    && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-ConfirmAccount.git ConfirmAccount \
     && cd $MW_HOME \
     ## Wiki as auth provider for other services (e.g. jupyterhub)
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-OAuth.git extensions/OAuth \

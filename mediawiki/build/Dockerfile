@@ -242,19 +242,22 @@ RUN set -x; \
 # https://raw.githubusercontent.com/CanastaWiki/RecommendedRevisions/1df2c155b67658d999f96cc7f6e5408ab8f56243/1.43.yaml
 RUN set -x; \
     cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:^7.2.1 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:7.3.1 \
     # SRF is installed via git clone below (OSL fork), not via composer
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:^6.0 \
-    && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:^4.0 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:^4.0 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:^14.2 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:^3.0 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:^5.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:6.0.2 \
+    && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:4.0.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:4.0.1 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:14.2.1 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:3.0.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:5.0.2 \
     ## SRF (git clone from OSL fork, register with composer for dependency resolution)
     && cd $MW_HOME/extensions \
     ## dev-master-smw7 is dev-master merged with upstream 6.0.0, which requires SMW >= 7.2.
     ## dev-master stays on the 5.2.0 line for deployments still running SMW 6.
-    && git clone --depth 1 -b dev-master-smw7 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
+    ## Pinned: it is a branch head, so an unpinned clone makes two builds of the
+    ## same commit differ.
+    && git clone -b dev-master-smw7 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
+    && git -C SemanticResultFormats checkout --quiet ba8d6d8758eb2b16b0d5e8d0860a350c54f51558 \
     && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && cd $MW_HOME/extensions \
@@ -395,6 +398,9 @@ RUN set -x; \
 # Increase value for run maintenance script before web service started
 ENV MW_AUTOUPDATE=true \
     MW_MAINTENANCE_UPDATE=8 \
+    # Changing this triggers a one-off semantic data rebuild on the next start,
+    # in the background, because SMW 7.3 changed how some values are stored.
+    MW_SMW_VERSION=7.3.1 \
     MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG=1 \
     MW_MAINTENANCE_CIRRUSSEARCH_FORCEINDEX=1 \
     MW_MAINTENANCE_ULS_INDEXER=1 \

@@ -425,6 +425,34 @@ a2enconf servername > /dev/null 2>&1
 
 #apachectl -e info & #run in the background
 
+# SMW 7.3 changed how URL, Annotation URI and Email values are stored and needs
+# a data rebuild, or queries silently miss values containing %2F, an apostrophe
+# or a brace, and on the SPARQLStore also parentheses and non-ASCII letters.
+# Run in the background: the wiki serves throughout, and on a large wiki this
+# takes hours. The marker lives in $MW_VOLUME, which is a named volume and so
+# survives recreating the container, and records the SMW version so the rebuild
+# happens once per upgrade. A new wiki has nothing to rebuild and the run costs
+# seconds, so it is not special cased: InstallSettings.php sits in the image
+# layer, which makes "is this a fresh install" false on every recreate, and a
+# recreate is exactly how an upgrade arrives.
+SMW_REBUILD_MARKER="$MW_VOLUME/maintenance_smw_rebuildData.info"
+if [ "$MW_AUTOUPDATE" == 'true' ] && [ -n "$MW_SMW_VERSION" ] \
+   && [ "$(cat "$SMW_REBUILD_MARKER" 2>/dev/null)" != "$MW_SMW_VERSION" ]; then
+        echo "SMW version changed to $MW_SMW_VERSION, rebuilding semantic data in the background"
+        # The rebuild runs as www-data, but the marker is written by this shell,
+        # which is root: $MW_VOLUME is root owned and www-data cannot write there.
+        # Writing it inside the su would fail after the rebuild had already
+        # succeeded, and the rebuild would then repeat on every start.
+        (
+            if su -s /bin/bash -c "nohup php $MW_HOME/extensions/SemanticMediaWiki/maintenance/rebuildData.php -v" $WWW_USER; then
+                echo "$MW_SMW_VERSION" > "$SMW_REBUILD_MARKER"
+                echo "SMW data rebuild finished"
+            else
+                echo "SMW data rebuild failed, it will be retried on the next start"
+            fi
+        ) &
+fi
+
 su -s /bin/bash -c '/mwjobrunner.sh &' www-data  #run in the background as www-data, fixes https://www.mediawiki.org/wiki/Topic:Tn0u0v07qa9cb9v8 
 su -s /bin/bash -c '/mwmaintenance.sh &' www-data 
 if [ "$MW_AUTOBUILD_SITEMAP" == 'true' ]; then

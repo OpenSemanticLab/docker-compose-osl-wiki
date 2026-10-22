@@ -66,19 +66,39 @@ index 9a0fc03..3f45549 100644
  	}
  
 diff --git a/src/Hooks.php b/src/Hooks.php
-index 27c39d3..ce46e78 100644
+index 27c39d3..3ecd88d 100644
 --- a/src/Hooks.php
 +++ b/src/Hooks.php
-@@ -3,7 +3,7 @@
+@@ -2,13 +2,14 @@
+ 
  namespace SMW\ApprovedRevs;
  
++use MediaWiki\Logger\LoggerFactory;
  use MediaWiki\MediaWikiServices;
 -use MediaWiki\Revision\RevisionStoreRecord;
 +use MediaWiki\Revision\RevisionRecord;
  use MediaWiki\Title\Title;
- use Onoi\Cache\Cache;
+-use Onoi\Cache\Cache;
  use SMW\SemanticData;
-@@ -170,9 +170,9 @@ class Hooks {
+ use SMW\Services\ServicesFactory as ApplicationFactory;
+ use SMW\Store;
++use Wikimedia\ObjectCache\BagOStuff;
+ 
+ /**
+  * @license GPL-2.0-or-later
+@@ -40,9 +41,9 @@ class Hooks {
+ 	/**
+ 	 * @since 1.0
+ 	 *
+-	 * @param Cache $cache
++	 * @param BagOStuff $cache
+ 	 */
+-	public function setCache( Cache $cache ) {
++	public function setCache( BagOStuff $cache ) {
+ 		$this->cache = $cache;
+ 	}
+ 
+@@ -170,9 +171,9 @@ class Hooks {
  	 * @since 1.0
  	 *
  	 * @param Title $title
@@ -90,7 +110,49 @@ index 27c39d3..ce46e78 100644
  		$approvedRevsHandler = new ApprovedRevsHandler(
  			new ApprovedRevsFacade()
  		);
-@@ -312,8 +312,17 @@ class Hooks {
+@@ -226,7 +227,7 @@ class Hooks {
+ 		);
+ 
+ 		$propertyAnnotator->setLogger(
+-			ApplicationFactory::getInstance()->getMediaWikiLogger( 'smw-approved-revs' )
++			LoggerFactory::getInstance( 'smw-approved-revs' )
+ 		);
+ 
+ 		$propertyAnnotator->addAnnotation( $semanticData );
+@@ -248,7 +249,7 @@ class Hooks {
+ 		$ttl = 60 * 60; // 1hr
+ 
+ 		if ( $this->cache === null ) {
+-			$this->cache = ApplicationFactory::getInstance()->getCache();
++			$this->cache = ApplicationFactory::getInstance()->getObjectCache();
+ 		}
+ 
+ 		// Send an event to ParserAfterTidy and allow it to pass the preliminary
+@@ -257,7 +258,7 @@ class Hooks {
+ 		// version (no SMW related annotations or categories) the update is carried
+ 		// out and the store is able to remove any remaining annotations.
+ 		$key = smwfCacheKey( 'smw:parseraftertidy', $title->getPrefixedDBKey() );
+-		$this->cache->save( $key, $rev_id, $ttl );
++		$this->cache->set( $key, $rev_id, $ttl );
+ 
+ 		return true;
+ 	}
+@@ -276,12 +277,12 @@ class Hooks {
+ 		$ttl = 60 * 60; // 1hr
+ 
+ 		if ( $this->cache === null ) {
+-			$this->cache = ApplicationFactory::getInstance()->getCache();
++			$this->cache = ApplicationFactory::getInstance()->getObjectCache();
+ 		}
+ 
+ 		// @see onApprovedRevsRevisionApproved for the same reason
+ 		$key = smwfCacheKey( 'smw:parseraftertidy', $title->getPrefixedDBKey() );
+-		$this->cache->save( $key, $sha1, $ttl );
++		$this->cache->set( $key, $sha1, $ttl );
+ 
+ 		return true;
+ 	}
+@@ -312,8 +313,17 @@ class Hooks {
  			'SMW::RevisionGuard::ChangeRevision' => [ $this, 'onChangeRevision' ],
  			'SMW::RevisionGuard::ChangeRevisionID' => [ $this, 'onOverrideRevisionID' ],
  			'SMW::RevisionGuard::ChangeFile' => [ $this, 'onChangeFile' ],

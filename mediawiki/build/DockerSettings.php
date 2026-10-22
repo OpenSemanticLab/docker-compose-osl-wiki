@@ -442,6 +442,12 @@ wfLoadExtension( 'SemanticMediaWiki' );
 #$smwgChangePropagationProtection = false; #temp fix to restore locked pages
 $smwgQMaxSize = 50; #increase max query conditions, default 12
 $smwgQMaxDepth = 20; #increase property chain query limit, default 4
+
+# Track which subjects each #ask result depended on, so editing one of them
+# refreshes the pages embedding the query instead of leaving them stale until
+# someone purges. Dependents refresh on next view rather than through a job per
+# dependent, so the cost is paid on pages that are actually visited.
+$smwgEnabledQueryDependencyLinksStore = true;
 $maxRecursionDepth = 5; #increase limit of nested templates in query results, default 2
 
 $smwgDefaultStore = 'SMW\SPARQLStore\SPARQLStore';
@@ -493,6 +499,11 @@ $wgContentNamespaces[] = NS_FILE;
 $wgContentNamespaces[] = 102; # SMW_NS_PROPERTY
 $wgContentNamespaces[] = 114; # SMW_NS_SCHEMA
 $wgContentNamespaces[] = 108; # SMW_NS_CONCEPT
+# OpenSemanticLab marks its own namespaces as content in its namespaces block.
+# These two are core namespaces, so an extension cannot declare them and they
+# are listed here instead.
+$wgContentNamespaces[] = NS_USER;
+$wgContentNamespaces[] = NS_CATEGORY;
 
 # extra properties for e.g. for approval status
 # see https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties/blob/master/docs/configuration.md

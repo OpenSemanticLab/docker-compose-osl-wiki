@@ -8,9 +8,10 @@ ENV MW_VERSION=REL1_43 \
     WWW_USER=www-data \
     WWW_GROUP=www-data \
     APACHE_LOG_DIR=/var/log/apache2 \
-    # 8.1 is end of life and receives no fix for CVE-2026-109618 and
-    # CVE-2026-109619. MediaWiki 1.43 supports 8.1 to 8.3.
-    PHP_VERSION=8.2 \
+    # 8.2 is the floor for SemanticResultFormats 6.x, and 8.1 is end of life
+    # with no fix for CVE-2026-109618 and CVE-2026-109619. 8.3 is the ceiling
+    # MediaWiki 1.43 supports.
+    PHP_VERSION=8.3 \
     DEBIAN_FRONTEND=noninteractive \
     # allow plugins to run as root/super user
     COMPOSER_ALLOW_SUPERUSER=1 
@@ -238,19 +239,19 @@ RUN set -x; \
 # https://raw.githubusercontent.com/CanastaWiki/RecommendedRevisions/1df2c155b67658d999f96cc7f6e5408ab8f56243/1.43.yaml
 RUN set -x; \
     cd $MW_HOME \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:^6.0.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-media-wiki:^7.2.1 \
     # SRF is installed via git clone below (OSL fork), not via composer
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:~3.1 \
-    && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:~1.0 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:^3.0.0 \
-    ## Pin Maps to 12.1.3: 12.1.4-12.1.6 reference SMW\DataItems\DataItem which does not
-    ## exist in SMW 6.x. See https://github.com/ProfessionalWiki/Maps/issues/908
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:12.1.3 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:^2.3.2 \
-    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:~4.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/mermaid:^6.0 \
+    && COMPOSER=composer.local.json composer require --no-update professional-wiki/modern-timeline:^4.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-compound-queries:^4.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/maps:^14.2 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-scribunto:^3.0 \
+    && COMPOSER=composer.local.json composer require --no-update mediawiki/semantic-extra-special-properties:^5.0 \
     ## SRF (git clone from OSL fork, register with composer for dependency resolution)
     && cd $MW_HOME/extensions \
-    && git clone --depth 1 -b dev-master https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
+    ## dev-master-smw7 is dev-master merged with upstream 6.0.0, which requires SMW >= 7.2.
+    ## dev-master stays on the 5.2.0 line for deployments still running SMW 6.
+    && git clone --depth 1 -b dev-master-smw7 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
     && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && cd $MW_HOME/extensions \
@@ -271,7 +272,9 @@ RUN set -x; \
     ## rather than moved onto the approved revision, which leaves the store
     ## describing whatever it last held; and its four properties claim the same
     ## labels as the _APPROVED* set of SemanticExtraSpecialProperties, so one
-    ## set or the other was unreachable depending on load order
+    ## set or the other was unreachable depending on load order. It also calls
+    ## three APIs SMW 7 removed, the logger accessor and the Onoi cache, which
+    ## would fatal on every store update
     && patch -p1 < /tmp/patches/SemanticApprovedRevs-revision-guard.patch \
     && cd $MW_HOME/extensions \
     && cd $MW_HOME \

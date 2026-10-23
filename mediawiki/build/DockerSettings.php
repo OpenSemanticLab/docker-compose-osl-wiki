@@ -433,6 +433,8 @@ $wgGroupPermissions['user']['embed_pdf'] = true; //Allow user the usage of the p
 
 ########## External Data ############
 wfLoadExtension( 'ExternalData' );
+# not used: no data sources are defined.
+$wgExternalDataAllowGetters = false;
 
 ########### Semantic Mediawiki ###############
 wfLoadExtension( 'SemanticMediaWiki' );

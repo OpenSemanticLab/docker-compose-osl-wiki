@@ -323,6 +323,12 @@ $wgPageFormsUseDisplayTitle = true;
 $wgPageFormsSimpleUpload = true; #skip upload form
 $smwgNamespacesWithSemanticLinks[106] = true; #PF_NS_FORM
 
+# not used: the shipped page packages define no forms.
+# Deferred, because extension.json merges $wgAPIModules after this file has run.
+$wgExtensionFunctions[] = static function () {
+    unset( $GLOBALS['wgAPIModules']['pfautoedit'] );
+};
+
 ############### Private Wiki ######################################
 $wgGroupPermissions['*']['createaccount'] = false;
 $wgGroupPermissions['*']['edit'] = false;

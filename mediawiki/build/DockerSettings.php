@@ -188,6 +188,9 @@ switch ( getenv( 'MW_MAIN_CACHE_TYPE', true ) ?: getenv( 'MW_MAIN_CACHE_TYPE' ) 
         $wgMainCacheType = CACHE_NONE;
 }
 
+# Browsers default to Lax, but say so rather than relying on the default.
+$wgCookieSameSite = 'Lax';
+
 #The path of the temporary directory. see https://www.mediawiki.org/wiki/Manual:$wgTmpDirectory
 $wgTmpDirectory = $IP . '/images/temp';
 $wgCacheDirectory = $IP . '/cache';

@@ -429,9 +429,9 @@ a2enconf servername > /dev/null 2>&1
 # a data rebuild, or queries silently miss values containing %2F, an apostrophe
 # or a brace, and on the SPARQLStore also parentheses and non-ASCII letters.
 # Run in the background: the wiki serves throughout, and on a large wiki this
-# takes hours. The marker lives in $MW_VOLUME, which is a named volume and so
-# survives recreating the container, and records the SMW version so the rebuild
-# happens once per upgrade. A new wiki has nothing to rebuild and the run costs
+# takes hours. The marker lives in $MW_VOLUME, an anonymous volume that survives
+# recreating the container but not "compose down -v", and records the SMW version
+# so the rebuild happens once per upgrade. A new wiki has nothing to rebuild and the run costs
 # seconds, so it is not special cased: InstallSettings.php sits in the image
 # layer, which makes "is this a fresh install" false on every recreate, and a
 # recreate is exactly how an upgrade arrives.

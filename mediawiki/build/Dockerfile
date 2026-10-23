@@ -423,6 +423,12 @@ COPY php.ini /etc/php/$PHP_VERSION/apache2/conf.d/mediawiki.ini
 COPY mediawiki.conf /etc/apache2/sites-available/mediawiki.conf
 RUN set -x; ln -s /etc/apache2/sites-available/mediawiki.conf /etc/apache2/sites-enabled/mediawiki.conf
 
+# run.sh starts the job runner and the SMW data rebuild through su, which runs
+# pam_limits and resets the soft file descriptor limit to 1024, discarding the
+# limit the container was started with. Both open many connections to the search
+# backend and the triplestore at once and hit that ceiling.
+RUN printf 'www-data soft nofile 65536\nwww-data hard nofile 65536\n' > /etc/security/limits.d/mediawiki.conf
+
 COPY run.sh /run.sh
 RUN chmod -v +x /run.sh
 

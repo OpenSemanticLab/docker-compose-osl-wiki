@@ -608,7 +608,7 @@ $wgPluggableAuth_EnableLocalProperties = true; #If true, users can edit their em
 $wgPluggableAuth_ButtonLabel = "Login"; #If $wgPluggableAuth_ButtonLabelMessage is not set and $wgPluggableAuth_ButtonLabel is set to a string value, this string value will be used as the label of the login button on the Special:UserLogin form.
 #wfLoadExtension( 'OpenIDConnect' );
 #$wgGroupPermissions['*']['createaccount'] = true; #for PluggableAuth
-#$wgGroupPermissions['*']['autcreateaccount'] = true; #for PluggableAuth
+#$wgGroupPermissions['*']['autocreateaccount'] = true; #for PluggableAuth
 #$wgHooks['BeforePageDisplay'][] = function( OutputPage &$out, Skin &$skin ) {
 #  $out->addInlineStyle("#pt-createaccount { display: none;}"); #hides enables misleading "Create Account" link
 #};

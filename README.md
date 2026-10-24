@@ -450,6 +450,8 @@ $wgHooks['PluggableAuthUserAuthorization'][] = function( MediaWiki\User\UserIden
 */
 ```
 
+`$wgCookieSameSite = 'Lax'` works with the code flow above, because the provider redirects back with a top level GET. A provider configured for `response_mode=form_post` posts back cross site instead, so the session cookie is withheld and login fails on a state mismatch: either switch it to query response mode or set `'None'` together with `$wgCookieSecure`.
+
 To debug authentication issues, add to `CustomSettings.php`:
 ```php
 $wgDebugLogGroups['PluggableAuth'] = '/var/www/html/w/cache/pluggableauth.log';

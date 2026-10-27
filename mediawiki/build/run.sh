@@ -463,7 +463,8 @@ if [ "$MW_AUTOUPDATE" == 'true' ] && [ -n "$MW_SMW_VERSION" ] \
 fi
 
 su -s /bin/bash -c '/mwjobrunner.sh &' www-data  #run in the background as www-data, fixes https://www.mediawiki.org/wiki/Topic:Tn0u0v07qa9cb9v8 
-su -s /bin/bash -c '/mwmaintenance.sh &' www-data 
+su -s /bin/bash -c '/mwmaintenance.sh &' www-data
+su -s /bin/bash -c '/mwmaintenance_smw.sh &' www-data
 if [ "$MW_AUTOBUILD_SITEMAP" == 'true' ]; then
     su -s /bin/bash -c '/mwsitemapbuilder.sh "$MW_SITE_SERVER" &'  #updates the sitemap in the background
 fi

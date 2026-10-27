@@ -436,6 +436,8 @@ COPY mwjobrunner.sh /mwjobrunner.sh
 RUN chmod -v +x /mwjobrunner.sh
 COPY mwmaintenance.sh /mwmaintenance.sh
 RUN chmod -v +x /mwmaintenance.sh
+COPY mwmaintenance_smw.sh /mwmaintenance_smw.sh
+RUN chmod -v +x /mwmaintenance_smw.sh
 COPY mwsitemapbuilder.sh /mwsitemapbuilder.sh
 RUN chmod -v +x /mwsitemapbuilder.sh
 

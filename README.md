@@ -608,6 +608,8 @@ php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 ```
   The container runs this by itself once per Semantic MediaWiki upgrade, in the background, and records the version in `maintenance_smw_rebuildData.info` so it happens once. The wiki stays available meanwhile. On a busy instance set `MW_SMW_REBUILD_DELAY` to a number of milliseconds to wait after each entity: `nice` and `ionice` are applied already, but they only hold back cpu and local disk, while the rebuild mostly loads the triplestore, the search backend and the database.
 
+  On top of that the container runs `rebuildData.php --shallow-update` on the first of each month at 01:00 local time, which only reprocesses entities whose revision moved on. It is there because the SPARQLStore is a secondary store fed by jobs, so an abandoned job drops an update and the triplestore drifts away from the SQL store without reporting it. Check for that drift with `php maintenance/run.php showJobs --group` and look for abandoned jobs. Set `MW_SMW_REBUILD_DAY` (1 to 28) and `MW_SMW_REBUILD_HOUR` to move the pass, or `MW_SMW_REBUILD_DAY=off` to switch it off.
+
 - no search results after backup restore
 ```bash
 php /var/www/html/w/extensions/CirrusSearch/maintenance/ForceSearchIndex.php

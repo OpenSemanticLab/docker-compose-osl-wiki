@@ -606,9 +606,9 @@ Run the following commands inside the mediawiki container if you run in one of t
 ```bash
 php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 ```
-  The container runs this by itself once per Semantic MediaWiki upgrade, in the background, and records the version in `maintenance_smw_rebuildData.info` so it happens once. The wiki stays available meanwhile. On a busy instance set `MW_SMW_REBUILD_DELAY` to a number of milliseconds to wait after each entity: `nice` and `ionice` are applied already, but they only hold back cpu and local disk, while the rebuild mostly loads the triplestore, the search backend and the database.
+  With `MW_AUTOUPDATE=true` the container runs this by itself once per Semantic MediaWiki upgrade, in the background, and records the version in `maintenance_smw_rebuildData.info` so it happens once. The wiki stays available meanwhile. On a busy instance set `MW_SMW_REBUILD_DELAY` to a number of milliseconds to wait after each entity: `nice` and `ionice` are applied already, but they only hold back cpu and local disk, while the rebuild mostly loads the triplestore, the search backend and the database.
 
-  On top of that the container runs `rebuildData.php --shallow-update` on the first of each month at 01:00 local time, which only reprocesses entities whose revision moved on. It is there because the SPARQLStore is a secondary store fed by jobs, so an abandoned job drops an update and the triplestore drifts away from the SQL store without reporting it. Check for that drift with `php maintenance/run.php showJobs --group` and look for abandoned jobs. Set `MW_SMW_REBUILD_DAY` (1 to 28) and `MW_SMW_REBUILD_HOUR` to move the pass, or `MW_SMW_REBUILD_DAY=off` to switch it off.
+  On top of that the container runs `rebuildData.php --force-update --ignore-exceptions` on the first of each month at 01:00 local time. It is there because the SPARQLStore is a secondary store: `doDataUpdate` writes the SQL store first and the triplestore second, so a failed or abandoned job leaves the triplestore behind while the SQL store already looks current. `--shallow-update` and `--revision-mode` cannot repair that, because both decide what to skip from the SQL store's own modification date, which is the value that is already correct in this case. A full pass is the only thing that fixes it, and it takes hours; the wiki stays available throughout. Watch for the drift with `php maintenance/run.php showJobs --group` and look for abandoned jobs. Set `MW_SMW_REBUILD_DAY` (1 to 28) and `MW_SMW_REBUILD_HOUR` to move the pass, or `MW_SMW_REBUILD_DAY=off` to switch it off.
 
 - no search results after backup restore
 ```bash
@@ -619,7 +619,7 @@ php /var/www/html/w/extensions/CirrusSearch/maintenance/ForceSearchIndex.php
 ```bash
 php /var/www/html/w/maintenance/refreshLinks.php
 ```
-  The container already runs this every Sunday at 03:00 local time. Set `MW_REFRESHLINKS_DAY` and `MW_REFRESHLINKS_HOUR` to move it, or `MW_REFRESHLINKS_DAY=off` to switch it off. A full pass re-parses every page and writes to the triplestore and the search index for each one, so repair a known subset with `--tracking-category`, `--namespace` or `-s`/`-e` instead where possible.
+  The container already runs this every Sunday at 03:00 local time. Set `MW_REFRESHLINKS_DAY` and `MW_REFRESHLINKS_HOUR` to move it, or `MW_REFRESHLINKS_DAY=off` to switch it off. A full pass re-parses every page and writes to the triplestore and the search index for each one, so repair a known subset with `--tracking-category`, `--namespace`, or a page id range instead where possible. The range takes the first id as a positional argument and the last with `--e`, as in `refreshLinks.php 1 --e 2000`.
 
 - missing thumbnails for tif images
 ```bash

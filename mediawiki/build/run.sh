@@ -443,7 +443,13 @@ SMW_REBUILD_MARKER="$MW_VOLUME/maintenance_smw_rebuildData.info"
 # slows it down. Unset by default: the wiki stays available during a plain run.
 SMW_REBUILD_DELAY=""
 if [ -n "$MW_SMW_REBUILD_DELAY" ]; then
-    SMW_REBUILD_DELAY="--d $MW_SMW_REBUILD_DELAY"
+    # Checked because the command below is assembled into a string that the
+    # shell started by su parses a second time.
+    if [ "$MW_SMW_REBUILD_DELAY" -ge 0 ] 2>/dev/null; then
+        SMW_REBUILD_DELAY="--d $MW_SMW_REBUILD_DELAY"
+    else
+        echo "MW_SMW_REBUILD_DELAY must be a number of milliseconds, ignoring '$MW_SMW_REBUILD_DELAY'"
+    fi
 fi
 if [ "$MW_AUTOUPDATE" == 'true' ] && [ -n "$MW_SMW_VERSION" ] \
    && [ "$(cat "$SMW_REBUILD_MARKER" 2>/dev/null)" != "$MW_SMW_VERSION" ]; then

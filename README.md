@@ -672,10 +672,12 @@ To change the setting, adapt `/etc/docker/daemon.json`
 
 ## Backup
 ```bash
-mkdir backup
-docker compose exec db /bin/bash -c 'mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD" 2>/dev/null | gzip | base64 -w 0' | base64 -d > backup/db_backup_$(date +"%Y%m%d_%H%M%S").sql.gz
-tar -zcf backup/file_backup_$(date +"%Y%m%d_%H%M%S").tar mediawiki/data
+mkdir -p backup
+STAMP=$(date +"%Y%m%d_%H%M%S")
+docker compose exec db /bin/bash -c 'mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD" 2>/dev/null | gzip | base64 -w 0' | base64 -d > backup/db_backup_$STAMP.sql.gz
+tar -zcf backup/file_backup_$STAMP.tar.gz mediawiki/data
 ```
+One timestamp for both files, so the database dump and the uploads that belong with it keep the same name. `mediawiki/data` is world readable as the container creates it, so no `sudo` is needed; prefix the `tar` with `sudo` if your uploads ended up with stricter permissions.
 
 
 ## Reset

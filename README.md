@@ -616,6 +616,7 @@ php /var/www/html/w/extensions/CirrusSearch/maintenance/ForceSearchIndex.php
 ```bash
 php /var/www/html/w/maintenance/refreshLinks.php
 ```
+  The container already runs this every Sunday at 03:00 local time. Set `MW_REFRESHLINKS_DAY` and `MW_REFRESHLINKS_HOUR` to move it, or `MW_REFRESHLINKS_DAY=off` to switch it off. A full pass re-parses every page and writes to the triplestore and the search index for each one, so repair a known subset with `--tracking-category`, `--namespace` or `-s`/`-e` instead where possible.
 
 - missing thumbnails for tif images
 ```bash

@@ -436,6 +436,15 @@ a2enconf servername > /dev/null 2>&1
 # layer, which makes "is this a fresh install" false on every recreate, and a
 # recreate is exactly how an upgrade arrives.
 SMW_REBUILD_MARKER="$MW_VOLUME/maintenance_smw_rebuildData.info"
+# MW_SMW_REBUILD_DELAY passes --d to the rebuild, which waits that many
+# milliseconds after each entity. nice and ionice below only hold back cpu and
+# local disk, while the rebuild mostly loads the triplestore, the search
+# backend and the database over the network, so this is the only setting that
+# slows it down. Unset by default: the wiki stays available during a plain run.
+SMW_REBUILD_DELAY=""
+if [ -n "$MW_SMW_REBUILD_DELAY" ]; then
+    SMW_REBUILD_DELAY="--d $MW_SMW_REBUILD_DELAY"
+fi
 if [ "$MW_AUTOUPDATE" == 'true' ] && [ -n "$MW_SMW_VERSION" ] \
    && [ "$(cat "$SMW_REBUILD_MARKER" 2>/dev/null)" != "$MW_SMW_VERSION" ]; then
         echo "SMW version changed to $MW_SMW_VERSION, rebuilding semantic data in the background"
@@ -444,7 +453,7 @@ if [ "$MW_AUTOUPDATE" == 'true' ] && [ -n "$MW_SMW_VERSION" ] \
         # Writing it inside the su would fail after the rebuild had already
         # succeeded, and the rebuild would then repeat on every start.
         (
-            if su -s /bin/bash -c "nohup php $MW_HOME/extensions/SemanticMediaWiki/maintenance/rebuildData.php -v" $WWW_USER; then
+            if su -s /bin/bash -c "nohup nice -n 19 ionice -c3 php $MW_HOME/extensions/SemanticMediaWiki/maintenance/rebuildData.php -v $SMW_REBUILD_DELAY" $WWW_USER; then
                 echo "$MW_SMW_VERSION" > "$SMW_REBUILD_MARKER"
                 echo "SMW data rebuild finished"
             else

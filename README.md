@@ -606,6 +606,7 @@ Run the following commands inside the mediawiki container if you run in one of t
 ```bash
 php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 ```
+  The container runs this by itself once per Semantic MediaWiki upgrade, in the background, and records the version in `maintenance_smw_rebuildData.info` so it happens once. The wiki stays available meanwhile. On a busy instance set `MW_SMW_REBUILD_DELAY` to a number of milliseconds to wait after each entity: `nice` and `ionice` are applied already, but they only hold back cpu and local disk, while the rebuild mostly loads the triplestore, the search backend and the database.
 
 - no search results after backup restore
 ```bash

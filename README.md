@@ -675,9 +675,12 @@ To change the setting, adapt `/etc/docker/daemon.json`
 mkdir -p backup
 STAMP=$(date +"%Y%m%d_%H%M%S")
 docker compose exec db /bin/bash -c 'mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD" 2>/dev/null | gzip | base64 -w 0' | base64 -d > backup/db_backup_$STAMP.sql.gz
-tar -zcf backup/file_backup_$STAMP.tar.gz mediawiki/data
+tar -zcf backup/file_backup_$STAMP.tar.gz \
+    --exclude=mediawiki/data/temp --exclude=mediawiki/data/lockdir mediawiki/data
 ```
-One timestamp for both files, so the database dump and the uploads that belong with it keep the same name. `mediawiki/data` is world readable as the container creates it, so no `sudo` is needed; prefix the `tar` with `sudo` if your uploads ended up with stricter permissions.
+One timestamp for both files, so the database dump and the uploads that belong with it keep the same name.
+
+`temp` and `lockdir` are scratch space and are left out on purpose. PHP creates temporary files there with mode 600 owned by `www-data`, so an upload or a thumbnail job running while the backup does would otherwise make `tar` fail on a file it cannot read. Add `sudo` in front of `tar` if you prefer to capture them anyway, keeping in mind that the archive then belongs to root.
 
 
 ## Reset

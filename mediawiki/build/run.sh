@@ -472,7 +472,18 @@ su -s /bin/bash -c '/mwjobrunner.sh &' www-data  #run in the background as www-d
 su -s /bin/bash -c '/mwmaintenance.sh &' www-data
 su -s /bin/bash -c '/mwmaintenance_smw.sh &' www-data
 if [ "$MW_AUTOBUILD_SITEMAP" == 'true' ]; then
-    su -s /bin/bash -c '/mwsitemapbuilder.sh "$MW_SITE_SERVER" &'  #updates the sitemap in the background
+    # The builder used to run as root, because su was called without a user.
+    # $MW_HOME is root owned, so the directory and the link are prepared here
+    # and the loop itself only needs to write inside sitemap/. The chown also
+    # takes over a sitemap directory left behind by an older image.
+    mkdir -p "$MW_HOME/sitemap"
+    # Recursive, because the generator reopens the files it wrote last time and
+    # those belong to root on an instance that ran an older image.
+    chown -R "$WWW_USER":"$WWW_USER" "$MW_HOME/sitemap"
+    if [ ! -e "$MW_HOME/sitemap.xml" ]; then
+        ln -s "$MW_HOME/sitemap/sitemap-index-mediawiki.xml" "$MW_HOME/sitemap.xml"
+    fi
+    su -s /bin/bash -c '/mwsitemapbuilder.sh "$MW_SITE_SERVER" &' "$WWW_USER"  #updates the sitemap in the background
 fi
 
 print_logo

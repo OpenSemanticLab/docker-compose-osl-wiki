@@ -257,7 +257,7 @@ RUN set -x; \
     ## Pinned: it is a branch head, so an unpinned clone makes two builds of the
     ## same commit differ.
     && git clone -b dev-master-smw7 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
-    && git -C SemanticResultFormats checkout --quiet ba8d6d8758eb2b16b0d5e8d0860a350c54f51558 \
+    && git -C SemanticResultFormats checkout --quiet 2b10ce18475d84dd0887846f1f41ce7bbaa104a5 \
     && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && cd $MW_HOME/extensions \

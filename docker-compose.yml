@@ -134,6 +134,14 @@ services:
            - "ES_JAVA_OPTS=-Xms${MW_ES_HEAP:-512m} -Xmx${MW_ES_HEAP:-512m}"
            - "discovery.type=single-node"
            - bootstrap.memory_lock=true
+        # The image declares no VOLUME, so without this the index lives in the
+        # container writable layer and any recreate discards it. Raising the
+        # heap is enough of a config change to trigger one.
+        # Named rather than a bind mount: the index is derived data that is
+        # never backed up, and docker seeds the volume with the ownership the
+        # image expects, so no chown is needed on a new instance.
+        volumes:
+            - elasticsearch-data:/usr/share/elasticsearch/data
 
     drawio:
         image: jgraph/drawio
@@ -185,6 +193,11 @@ services:
         command: --selenoid-uri http://selenoid:4444
         ports:
             - 8080:8080
+
+# Lost by compose down -v, like the smw rebuild marker. run.sh reindexes when
+# it finds the index empty, so the recovery is automatic but takes a while.
+volumes:
+    elasticsearch-data:
 
 #for internal connections, e. g. non public dockered email server
 #networks:

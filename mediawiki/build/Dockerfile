@@ -408,6 +408,12 @@ RUN set -x; \
     ## for a single chained column over 3000 rows, against 21,000 and 25s with
     ## the first element's prefetch memoised
     && patch -p1 < /tmp/patches/SemanticMediaWiki-chain-prefetch-memo.patch \
+    ## Patched: the property statistics rebuild job hands the rebuilder the
+    ## configured default store, which is the SPARQLStore whenever a
+    ## triplestore is in use, and that has no data item handlers. The job dies
+    ## after its own deleteAll(), so every hourly retry leaves smw_prop_stats
+    ## empty and property usage counts read as zero
+    && patch -p1 < /tmp/patches/SemanticMediaWiki-property-stats-store.patch \
     && cd $MW_HOME
 
 #### Run maintenance sripts

@@ -1,0 +1,38 @@
+-- smw.propertyStatisticsRebuild fatals on a SPARQLStore. The job hands the
+-- rebuilder the configured default store, on the assumption that production
+-- always wires the SQLStore. With a triplestore the default is the
+-- SPARQLStore, which delegates getPropertyTables() and getConnection() to its
+-- base store but has no getDataItemHandlerForDIType(), so the rebuild dies
+-- partway through the property loop.
+--
+-- The damage is not just a failed job. deleteAll() runs before the loop, so
+-- every hourly retry empties smw_prop_stats and leaves it empty, and property
+-- usage counts read as zero for good.
+--
+-- maintenance/rebuildPropertyStatistics.php already asks for the SQLStore by
+-- name. This makes the job do the same.
+--- a/src/MediaWiki/Jobs/PropertyStatisticsRebuildJob.php
++++ b/src/MediaWiki/Jobs/PropertyStatisticsRebuildJob.php
+@@ -5,6 +5,7 @@
+ use MediaWiki\Title\Title;
+ use SMW\MediaWiki\Job;
+ use SMW\Services\ServicesFactory as ApplicationFactory;
++use SMW\SQLStore\SQLStore;
+ use SMW\Store;
+ 
+ /**
+@@ -53,10 +54,11 @@
+ 		$maintenanceFactory = ApplicationFactory::getInstance()->newMaintenanceFactory();
+ 
+ 		// The property statistics table and its update are bound to the
+-		// SQLStore. The injected Store is the default Store; production
+-		// always wires SQLStore here, and tests inject a SQLStore mock.
++		// SQLStore, so ask for that store by name. The injected Store is the
++		// configured default, which is the SPARQLStore whenever a triplestore
++		// is in use, and that has no data item handlers.
+ 		$propertyStatisticsRebuilder = $maintenanceFactory->newPropertyStatisticsRebuilder(
+-			$this->store
++			ApplicationFactory::getInstance()->getStore( SQLStore::class )
+ 		);
+ 
+ 		$propertyStatisticsRebuilder->rebuild();

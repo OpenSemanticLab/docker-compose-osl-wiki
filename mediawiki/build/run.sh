@@ -423,6 +423,20 @@ SERVER_HOST=$(echo "$MW_SITE_SERVER" | sed 's|https\?://||; s|/.*||; s|:.*||')
 echo "ServerName ${SERVER_HOST}" > /etc/apache2/conf-available/servername.conf
 a2enconf servername > /dev/null 2>&1
 
+# Worker ceiling. Apache reads this from a file rather than the environment, so
+# it is written here instead of being passed through like the php limits.
+# Raise it only when the workers in use approach the ceiling: a saturated pool
+# queues requests and reads as slowness while memory still looks idle. Each
+# worker is a process holding its own php memory allowance, so this multiplied
+# by PHP_MEMORY_LIMIT is the worst case the container can ask for.
+cat > /etc/apache2/conf-available/maxworkers.conf <<APACHECONF
+<IfModule mpm_prefork_module>
+    MaxRequestWorkers ${MW_APACHE_MAX_WORKERS:-150}
+    ServerLimit ${MW_APACHE_MAX_WORKERS:-150}
+</IfModule>
+APACHECONF
+a2enconf maxworkers > /dev/null 2>&1
+
 #apachectl -e info & #run in the background
 
 # SMW 7.3 changed how URL, Annotation URI and Email values are stored and needs

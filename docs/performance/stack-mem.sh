@@ -146,9 +146,18 @@ for r in "${ROWS[@]}"; do
               /etc/apache2/mods-enabled/ /usr/local/etc/php-fpm.d/ /etc/php/*/fpm/pool.d/ 2>/dev/null \
             | grep -oE "[0-9]+$" | head -1)
       echo "  web workers      ${cur} of ${max:-?}"
-      webini=$(ls /etc/php/*/apache2/php.ini /usr/local/etc/php/php.ini 2>/dev/null | head -1)
-      getini() { grep -hE "^$1" "$webini" 2>/dev/null | head -1 | cut -d= -f2 | tr -d " "; }
-      echo "  php web memory   $(getini memory_limit)"
-      echo "  php web time     $(getini max_execution_time)s   (a render exceeding this is killed)"
+      # effective values, not the file: conf.d is read after the main php.ini
+      # and this image ships its limits there, so grepping php.ini lies.
+      # php -i avoids quoting trouble inside this single quoted sh -c block.
+      cdir=$(ls -d /etc/php/*/apache2/conf.d 2>/dev/null | head -1)
+      pini=$(ls /etc/php/*/apache2/php.ini 2>/dev/null | head -1)
+      eff=$(PHP_INI_SCAN_DIR="$cdir" php -c "$pini" -i 2>/dev/null)
+      mem=$(echo "$eff" | awk "/^memory_limit =>/{print \$3}")
+      # the cli sapi forces max_execution_time to 0 whatever the ini says, so
+      # it cannot be read the way memory_limit can. Report what the web config
+      # is set from instead.
+      tmo=${PHP_MAX_EXECUTION_TIME:-}
+      echo "  php web memory   ${mem:-?}"
+      echo "  php web time     ${tmo:-?}s   (a render exceeding this is killed)"
       echo "  php cli memory   $(php -r "echo ini_get(\"memory_limit\");")"' 2>/dev/null || echo "  unreachable"
 done

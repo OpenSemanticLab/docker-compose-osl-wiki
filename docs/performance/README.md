@@ -1,5 +1,17 @@
 # Performance
 
+## Tuning
+
+Everything tunable lives in `.env`, with defaults in `docker-compose.yml` and
+the image that reproduce the untuned behaviour, so leaving a variable unset
+changes nothing. See the Tuning section of `.env.example` for the full list and
+the symptom that calls for each.
+
+`php` limits reach the image as environment variables rather than a mounted
+file, because the ini that ships into `conf.d` interpolates `${VAR}`
+natively. Apache is the exception: it reads its worker ceiling from a file, so
+`run.sh` writes one from `MW_APACHE_MAX_WORKERS` at start.
+
 ## stack-mem.sh
 
 Memory pressure across a compose stack. Container RSS is rarely the signal, so

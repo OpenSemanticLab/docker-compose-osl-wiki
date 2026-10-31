@@ -454,6 +454,12 @@ wfLoadExtension( 'SemanticMediaWiki' );
 $smwgQMaxSize = 50; #increase max query conditions, default 12
 $smwgQMaxDepth = 20; #increase property chain query limit, default 4
 
+# The datatables format caps its row count at min($smwgQMaxLimit,
+# $smwgQMaxInlineLimit), so with the default of 500 a larger result set reports
+# 500, says "Showing 481 to 500 of 500" and the remaining rows cannot be
+# reached at all. Raised to match $smwgQMaxLimit.
+$smwgQMaxInlineLimit = 10000; #default 500
+
 # Track which subjects each #ask result depended on, so editing one of them
 # refreshes the pages embedding the query instead of leaving them stale until
 # someone purges. Dependents refresh on next view rather than through a job per

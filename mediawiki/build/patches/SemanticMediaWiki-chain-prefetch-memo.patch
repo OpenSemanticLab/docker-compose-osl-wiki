@@ -1,0 +1,86 @@
+-- A chained printout such as |?Has characteristic.Has length value costs
+-- O(rows^2) entity cache lookups. On a memcached backed wiki that is one
+-- network round trip each, so it dominates everything else: over 3000 rows a
+-- single chained column issues 9,021,486 lookups and takes 28 minutes, where
+-- the same property unchained issues 9,000 and takes 0.9s. Measured against
+-- SMW 7.3.1 with the SPARQL store, whose printout fetching is the SQL store.
+--
+-- ItemFetcher::fetch() bypasses isCached() whenever isChain is set. That is
+-- required for a later chain element, whose $dataItems are the previous
+-- element's per subject output and therefore differ on every call. It is not
+-- required for the first element, which is always handed $this->dataItems,
+-- the complete and immutable result list of the QueryResult, so it re-runs
+-- one identical prefetch per subject. Each run walks the whole list through
+-- CacheWarmer::prepareCache and DisplayTitleFinder::prefetchFromList, which
+-- is one cache lookup per list entry, hence the square.
+--
+-- PrefetchCache::prefetch() already memoises, but only after warming the
+-- cache and fingerprinting the list, so the guard has to sit in front of it.
+-- The memo is keyed on PrefetchCache's own value identity, so two printouts
+-- of the same property with different request options cannot be conflated,
+-- and it is held on the ItemFetcher instance, which is created per
+-- QueryResult and owns the PrefetchCache it guards, so nothing survives the
+-- query. The non first chain path is untouched.
+--
+-- After: the same column issues 21,056 lookups and takes 25s, and the cost
+-- is linear in the row count rather than quadratic. Result sets verified
+-- unchanged over 21 query shapes covering two and three hop chains, several
+-- chained columns in one query, chains mixed with direct printouts, shared
+-- and per row intermediates, rows with no value for the chained property,
+-- inverse chains, and the same property printed three times with different
+-- request options.
+--- a/src/Query/Result/ItemFetcher.php
++++ b/src/Query/Result/ItemFetcher.php
+@@ -35,6 +35,14 @@
+ 	private bool $prefetch = true;
+ 
+ 	/**
++	 * Value identities for which the first chain element's prefetch has
++	 * already been issued, see fetch().
++	 *
++	 * @var array<string,true>
++	 */
++	private array $firstChainPrefetched = [];
++
++	/**
+ 	 * @since 3.1
+ 	 */
+ 	public function __construct(
+@@ -142,17 +150,30 @@
+ 		if ( !$this->prefetchCache->isCached( $property, $requestOptions ) || $requestOptions->isChain ) {
+ 			$list = $this->dataItems;
+ 
+-			if ( $requestOptions->isChain ) {
++			// Allow the first chain element to use the entire result list
++			// to filter members as early as possible from the chain
++			$isFirstChain = $requestOptions->isChain && ( $requestOptions->isFirstChain ?? false );
++
++			if ( $requestOptions->isChain && !$isFirstChain ) {
+ 				$list = $dataItems;
++			}
++
++			// The first chain element always prefetches $this->dataItems, which
++			// is readonly and set once per QueryResult, so the call is identical
++			// for every subject. The isChain term above exists for the later
++			// elements, whose list genuinely varies, and without this guard it
++			// repeats the first element's prefetch once per subject. Each repeat
++			// walks the whole list in CacheWarmer::prepareCache, which makes a
++			// chained printout quadratic in the number of rows.
++			$key = $isFirstChain ? PrefetchCache::makeCacheKey( $property, $requestOptions ) : null;
+ 
+-				// Allow the first chain element to use the entire result list
+-				// to filter members as early as possible from the chain
+-				if ( $requestOptions->isFirstChain ?? false ) {
+-					$list = $this->dataItems;
++			if ( $key === null || !isset( $this->firstChainPrefetched[$key] ) ) {
++				$this->prefetchCache->prefetch( $list, $property, $requestOptions );
++
++				if ( $key !== null ) {
++					$this->firstChainPrefetched[$key] = true;
+ 				}
+ 			}
+-
+-			$this->prefetchCache->prefetch( $list, $property, $requestOptions );
+ 		}
+ 
+ 		foreach ( $dataItems as $subject ) {

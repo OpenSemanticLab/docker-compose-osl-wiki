@@ -257,7 +257,7 @@ RUN set -x; \
     ## Pinned: it is a branch head, so an unpinned clone makes two builds of the
     ## same commit differ.
     && git clone -b dev-master-smw7 https://github.com/OpenSemanticLab/SemanticResultFormats.git SemanticResultFormats \
-    && git -C SemanticResultFormats checkout --quiet 2b10ce18475d84dd0887846f1f41ce7bbaa104a5 \
+    && git -C SemanticResultFormats checkout --quiet 1a5f96968873d78beabaf937ec1d6f190a177337 \
     && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/SemanticResultFormats/composer.json"]' < composer.local.json > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && cd $MW_HOME/extensions \
@@ -393,6 +393,22 @@ RUN set -x; \
     && jq '.extra."merge-plugin".include += ["extensions/MwJson/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     && composer update  --no-dev --prefer-source \
     && cd ..
+
+#### SemanticMediaWiki patches ####
+# Applied after the last composer run, not next to the composer require above:
+# composer installs SMW with --prefer-source, and a later `composer update`
+# against a source checkout with local modifications aborts rather than
+# discarding them.
+RUN set -x; \
+    cd $MW_HOME/extensions/SemanticMediaWiki \
+    ## Patched: a chained printout re-runs the first chain element's prefetch
+    ## once per row, and each run walks the whole result list, so a chained
+    ## column costs O(rows^2) entity cache lookups. On a memcached backed wiki
+    ## that is one network round trip each: 9,000,000 lookups and 28 minutes
+    ## for a single chained column over 3000 rows, against 21,000 and 25s with
+    ## the first element's prefetch memoised
+    && patch -p1 < /tmp/patches/SemanticMediaWiki-chain-prefetch-memo.patch \
+    && cd $MW_HOME
 
 #### Run maintenance sripts
 # Increase value for run maintenance script before web service started

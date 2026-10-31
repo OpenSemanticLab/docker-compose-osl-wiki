@@ -11,3 +11,6 @@ mysql/data/*
 tests/codecept/output/*
 docker-compose.override.yml
 TODO.md
+
+# local only performance report, not for publication
+docs/performance/datatables.md

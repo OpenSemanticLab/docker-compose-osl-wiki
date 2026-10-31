@@ -574,6 +574,60 @@ php /var/www/html/w/extensions/SemanticMediaWiki/maintenance/rebuildData.php
 ```
 
 
+If you need neither a SPARQL endpoint nor full text relevance, the plain
+`SQLStore` removes a container from the critical path:
+```php
+$smwgDefaultStore = 'SMW\SQLStore\SQLStore';
+```
+
+**No data rebuild is needed for this one**, unlike the two above.
+`SPARQLStore::doDataUpdate()` writes its base store first and the triplestore
+second, so the `smw_*` tables are already a replica rather than a derived copy:
+```bash
+docker compose up -d --force-recreate mediawiki
+docker compose stop graphdb
+```
+
+Once nothing writes to it the triplestore goes stale, so **going back later does
+need a full `rebuildData.php`**. The switch costs minutes, the revert costs
+hours; stop the container rather than removing it if you want to keep that
+option open.
+
+You give up the SPARQL endpoint itself, meaning federated queries and any
+outside consumer reading the wiki's RDF through it. `Special:ExportRDF` is
+unaffected, as it serialises from the same data the SQL tables hold.
+
+Expect little change in query speed. The store governs only condition
+evaluation, which is a small part of most renders; printout values are fetched
+from the SQL tables whichever store is configured.
+
+Writes are where the difference is. `SPARQLStore::doDataUpdate()` writes the
+SQL store and then the triplestore, so every entity update pays a delete and an
+insert over HTTP on top of a write that has already completed. Around 40 to
+50 ms per entity on a local endpoint, which is charged to page saves, to every
+`UpdateJob` after a template or property change, to imports, and to
+`rebuildData.php`, where tens of thousands of entities turn it into a
+substantial part of the run. Dropping the store removes that work rather than
+moving it elsewhere.
+
+Once you are satisfied the wiki runs without it, remove the triplestore. Drop
+the `graphdb` service from your `docker-compose.override.yml`, or add
+`profiles: ["graphdb"]` to it in `docker-compose.yml` so it only starts when
+asked for, then:
+```bash
+docker compose rm -sv graphdb
+```
+The data directory is not removed with the container and is usually the largest
+thing in the stack, tens of gigabytes on a mature wiki:
+```bash
+du -sh blazegraph/data
+sudo rm -rf blazegraph/data/*
+```
+Drop the `$smwgSparql*` settings from `CustomSettings.php` as well, so nothing
+points at an endpoint that is no longer there. Keep a database dump from before
+the switch if you may want to go back: the SQL tables remain authoritative, but
+rebuilding the triplestore from them takes hours.
+
 ### Time zones
 The wiki's server time zone is set via `MW_TIME_ZONE` in `.env`.
 

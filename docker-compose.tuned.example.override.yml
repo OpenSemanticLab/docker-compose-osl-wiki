@@ -1,0 +1,91 @@
+# Tuning for a larger instance.
+#
+# The defaults in docker-compose.yml suit a small wiki. Every value below is a
+# default that was chosen by the upstream image rather than for this stack, and
+# each one shows up as a different symptom once the wiki grows.
+#
+# Merge the services you want into your existing docker-compose.override.yml
+# rather than copying this file over it: that file usually already carries the
+# reverse proxy labels, bind mounted extensions and extra networks, all of
+# which would be lost. Then `docker compose up -d`.
+#
+# Measure before and after with ./docs/performance/stack-mem.sh, and change one
+# thing at a time.
+#
+# Sizing below assumes a host with at least 16 GB of RAM. Add up the heaps and
+# pools you set here and leave the operating system room; the services do not
+# share memory with each other.
+
+services:
+    # Triplestore. Ships with -Xms512m -Xmx1g hardcoded in its entrypoint,
+    # overridable only through these two variables.
+    #
+    # Symptom that you need this: stack-mem.sh reports OLD% above roughly 80
+    # that does not fall after a full collection. The JVM then spends its time
+    # collecting instead of answering, and queries stall rather than slow down.
+    # Note metaspace is unbounded on this Java 8 image, so a high META% is
+    # utilisation of a region that grows on demand, not a limit being reached.
+    #
+    # Skip this service entirely if the store is SQLStore.
+    graphdb:
+        environment:
+            - JAVA_XMS=2g
+            - JAVA_XMX=4g
+
+    # Search backend. 512m is the stack default and is enough for CirrusSearch
+    # alone; it is not enough if the SMW ElasticStore is also indexing here.
+    #
+    # Symptom: OLD% high with a rising count of old generation collections, or
+    # bulk indexing failing under load.
+    elasticsearch:
+        environment:
+            - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+
+    # Object cache. The image default is 64 MB, which holds sessions, the
+    # parser cache and the message cache together.
+    #
+    # Symptom: a high hit rate alongside millions of evictions. The cache still
+    # answers most reads, while constantly discarding entries to make room, so
+    # pages are re-parsed that should have been cached. Evictions, not bytes,
+    # are the signal.
+    memcached:
+        command: ["-m", "512"]
+
+    # Database. The upstream default buffer pool is 128 MB regardless of how
+    # much data there is.
+    #
+    # Symptom: a buffer pool hit rate below about 99.9 percent. A pool smaller
+    # than the data is fine as long as the working set fits, so check the hit
+    # rate rather than comparing pool size against data size. Aim for the pool
+    # to exceed the active part of the data, not all of it.
+    db:
+        command: >
+            mysqld
+            --default-authentication-plugin=mysql_native_password
+            --expire_logs_days=3
+            --innodb-buffer-pool-size=2G
+            --max-connections=300
+
+    mediawiki:
+        # Raise the file descriptor ceiling. Long maintenance runs open many
+        # connections to the search backend and the triplestore at once, and
+        # processes started through su inherit this as their hard limit.
+        ulimits:
+            nofile:
+                soft: 65536
+                hard: 65536
+        volumes:
+            # php limits for web requests. The image ships memory_limit 128M
+            # and max_execution_time 30, and a request that exceeds either is
+            # killed rather than slowed.
+            #
+            # Symptom of the time limit in particular: a page that renders fine
+            # from the command line but fails in a browser. The limit applies
+            # to the request, not to maintenance scripts, whose cli limit is
+            # unbounded.
+            - ./mediawiki/config/php-tuned.ini:/etc/php/8.3/apache2/conf.d/99-tuned.ini:ro
+            # Apache worker ceiling. The default MaxRequestWorkers of 150 is
+            # usually ample; raise it only if stack-mem.sh shows workers at or
+            # near the ceiling, which queues requests and looks exactly like
+            # slowness while every memory reading stays idle.
+            - ./mediawiki/config/apache-tuned.conf:/etc/apache2/conf-enabled/99-tuned.conf:ro

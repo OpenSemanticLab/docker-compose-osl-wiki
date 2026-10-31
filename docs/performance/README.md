@@ -20,7 +20,7 @@ triplestore is handled without changes.
 | Section | What matters |
 |---|---|
 | containers | Only useful to spot a container near its cgroup limit. Usually everything looks idle here even when a service is struggling |
-| jvm | `FGC`, the number of full stop the world collections, and `FGCT`, the seconds spent in them. `OLD%` is heap, `META%` is class metadata and is a separate pool: a high `META%` with a low `OLD%` wants `MaxMetaspaceSize`, not `-Xmx` |
+| jvm | `FGC`, the number of full stop the world collections, and `FGCT`, the seconds spent in them. `OLD%` sustained above roughly 80, without falling after a collection, is the one to act on: the heap is full and the process collects instead of working. `META%` is a separate pool and is usually a false alarm, because metaspace is uncapped unless someone set `MaxMetaspaceSize`, so a high reading is utilisation of a region that grows on demand rather than a limit being reached. Check `jstat -gc` for `MC` against `MU` before believing it |
 | memcached | `evictions`. A high hit rate hides eviction churn, because the cache still answers most reads while constantly discarding entries to make room |
 | mysql | The pool hit rate, not the pool size. A pool smaller than the data is fine as long as the working set fits |
 | php | `web workers` against the configured ceiling. A saturated pool queues requests and looks exactly like slowness, while container memory still reads as idle. `php web time` is the execution limit a request gets: a render that exceeds it is killed, so a page measured at minutes on the command line may simply fail in a browser. The cli limits are usually unbounded and say nothing about page rendering |

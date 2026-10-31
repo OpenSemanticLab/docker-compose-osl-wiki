@@ -83,7 +83,7 @@ wait_elasticsearch_started ()
     if [ "$i" = 0 ]; then
         echo >&2 'Could not connect to the elasticsearch'
         echo "$output"
-        retirn 1
+        return 1
     fi
     echo 'Elasticsearch started successfully'
     es_started="1"
@@ -347,6 +347,17 @@ if [ "$MW_AUTOUPDATE" == 'true' ]; then
 
         #run_maintenance_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
         #run_script_if_needed 'maintenance_CirrusSearch_updateConfig' "$MW_MAINTENANCE_CIRRUSSEARCH_UPDATECONFIG" 'extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php'
+
+        # The marker below only tracks the image version, so it cannot notice an
+        # index that was lost with its container. Clearing it lets the existing
+        # machinery rebuild rather than adding a second invocation path. An
+        # empty index on a new wiki takes the same route, which is correct.
+        wait_elasticsearch_started
+        es_doc_count=$(wget --timeout=5 -q -O - 'http://elasticsearch:9200/_cat/indices/*content*?h=docs.count' 2>/dev/null | awk '{s+=$1} END {print s+0}')
+        if [ "$es_doc_count" = '0' ]; then
+            echo 'Search index is missing or empty, forcing a rebuild'
+            rm -f "$MW_VOLUME/maintenance_CirrusSearch_forceIndex.info"
+        fi
 
         run_maintenance_script_if_needed 'maintenance_CirrusSearch_forceIndex' "$MW_VERSION-$MW_MAINTENANCE_UPDATE-${MW_MAINTENANCE_CIRRUSSEARCH_FORCEINDEX:-0}" \
             'extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipLinks --indexOnSkip' \

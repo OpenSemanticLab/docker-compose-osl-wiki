@@ -53,7 +53,7 @@ Set the config parameters in .env
 
 Example:
 ```env
-COMPOSE_PROJECT_NAME=osl-1 # unique project name (change when running multiple instances)
+COMPOSE_PROJECT_NAME=osl-1 # unique project name (must differ per instance: it scopes the triplestore alias)
 MW_IMAGE_TAG=main # Docker image tag, see table below
 MW_HOST_PORT=8081 # the port mediawiki exposes on the host (localhost only)
 MW_SITE_SERVER=http://localhost:8081 # the public URL of your wiki

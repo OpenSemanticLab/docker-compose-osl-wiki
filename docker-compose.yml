@@ -29,6 +29,14 @@ services:
             # is a region growing on demand, not a limit.
             JAVA_XMS: ${MW_GRAPHDB_HEAP_MIN:-512m}
             JAVA_XMX: ${MW_GRAPHDB_HEAP:-1g}
+        networks:
+            default:
+                # Every stack's graphdb also answers to the bare name "graphdb"
+                # on a shared external network, which the resolver prefers over
+                # the project network first, so "graphdb" can hit another stack's
+                # store. This alias is project-scoped and cannot be shadowed.
+                aliases:
+                    - ${COMPOSE_PROJECT_NAME:-osl}-graphdb
         volumes:
             - ./blazegraph/data:/var/lib/blazegraph
             - ./blazegraph/config:/docker-entrypoint-initdb.d
@@ -41,6 +49,11 @@ services:
         image: secoresearch/fuseki
         profiles: [fuseki]
         restart: unless-stopped
+        networks:
+            default:
+                # Same shadowing hazard as graphdb above.
+                aliases:
+                    - ${COMPOSE_PROJECT_NAME:-osl}-fuseki
         volumes:
         - './fuseki/data:/fuseki-base/databases'
         - './fuseki/config/shiro.ini:/jena-fuseki/shiro.ini' # override config before docker-init
@@ -82,6 +95,8 @@ services:
             - ./mediawiki/data:/var/www/html/w/images
         environment:
             - TZ=${MW_TIME_ZONE}
+            # Must match the graphdb alias above.
+            - MW_SPARQL_HOST=${COMPOSE_PROJECT_NAME:-osl}-graphdb
             - MW_SITE_SERVER=${MW_SITE_SERVER}
             - MW_SITE_NAME=${MW_SITE_NAME}
             - MW_SITE_LANG=${MW_SITE_LANG}

@@ -469,8 +469,16 @@ $maxRecursionDepth = 5; #increase limit of nested templates in query results, de
 
 $smwgDefaultStore = 'SMW\SPARQLStore\SPARQLStore';
 $smwgSparqlRepositoryConnector = 'blazegraph';
-$smwgSparqlEndpoint["query"] = 'http://graphdb:9999/blazegraph/namespace/kb/sparql';
-$smwgSparqlEndpoint["update"] = 'http://graphdb:9999/blazegraph/namespace/kb/sparql';
+# Not the bare "graphdb": on a host running several stacks that name also exists
+# on the shared external network and resolves there first, round-robin, so SMW
+# reads and writes land in another wiki's store. docker-compose.yml sets this to
+# a project-scoped alias. Fallback keeps hand-rolled deployments working.
+$mwSparqlHost = getenv( 'MW_SPARQL_HOST', true ) ?: getenv( 'MW_SPARQL_HOST' );
+if ( !$mwSparqlHost ) {
+	$mwSparqlHost = 'graphdb';
+}
+$smwgSparqlEndpoint["query"] = "http://$mwSparqlHost:9999/blazegraph/namespace/kb/sparql";
+$smwgSparqlEndpoint["update"] = "http://$mwSparqlHost:9999/blazegraph/namespace/kb/sparql";
 $smwgSparqlEndpoint["data"] = '';
 
 # Optional name of default graph

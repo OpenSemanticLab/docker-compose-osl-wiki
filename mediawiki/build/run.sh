@@ -512,9 +512,12 @@ if [ "$MW_AUTOBUILD_SITEMAP" == 'true' ]; then
     # Recursive, because the generator reopens the files it wrote last time and
     # those belong to root on an instance that ran an older image.
     chown -R "$WWW_USER":"$WWW_USER" "$MW_HOME/sitemap"
-    if [ ! -e "$MW_HOME/sitemap.xml" ]; then
-        ln -s "$MW_HOME/sitemap/sitemap-index-mediawiki.xml" "$MW_HOME/sitemap.xml"
-    fi
+    # -f and no guard: the link points at a file the builder has not written
+    # yet, so `[ ! -e ]` is true for the dangling link it created last start
+    # while `ln` without -f still refuses to replace it. Under `set -e` that
+    # aborted the script before apache, and the container then restarted into
+    # the same state forever.
+    ln -sfn "$MW_HOME/sitemap/sitemap-index-mediawiki.xml" "$MW_HOME/sitemap.xml"
     su -s /bin/bash -c '/mwsitemapbuilder.sh "$MW_SITE_SERVER" &' "$WWW_USER"  #updates the sitemap in the background
 fi
 

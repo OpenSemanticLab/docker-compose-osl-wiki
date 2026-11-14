@@ -229,7 +229,11 @@ RUN set -x; \
     && cd extensions/WSSlots && patch -p1 < /tmp/patches/WSSlots-save-status-and-main-slot.patch && cd $MW_HOME \
     && jq '.extra."merge-plugin".include += ["extensions/WSSlots/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \
     ## PageExchange
-    && git clone --depth 1 -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-PageExchange extensions/PageExchange \
+    ## Pinned: dev is a branch head, so an unpinned clone makes two builds of
+    ## the same commit differ, and a change merged there reaches every instance
+    ## on the next build with nothing in between to stage it.
+    && git clone -b dev https://github.com/OpenSemanticLab/mediawiki-extensions-PageExchange extensions/PageExchange \
+    && git -C extensions/PageExchange checkout --quiet c691c1a8db96a593a0a69cd0a831f0e9427e1f06 \
     ## ExternalData
     && git clone --depth 1 -b $MW_VERSION https://github.com/wikimedia/mediawiki-extensions-ExternalData.git extensions/ExternalData \
     && jq '.extra."merge-plugin".include += ["extensions/ExternalData/composer.json"]' < composer.local.json  > tmp.$$.json && mv tmp.$$.json composer.local.json \

@@ -415,9 +415,16 @@ fi
 if [ "$MW_AUTOIMPORT_PAGES" == 'true' ]; then
     #php /var/www/html/w/extensions/PageImporter/importPages.php 
     #php /var/www/html/w/extensions/PageExchange/maintenance/maintainPackage.php --packageid org.open-semantic-lab.core --update
+    # Never abort startup over a package. maintainPackage.php exits non-zero
+    # when a package file cannot be read or the package fails to load, both of
+    # which depend on a remote host, and set -e would then end this script
+    # before apache starts. The container would restart into the same failure
+    # for as long as the remote is unhappy. A wiki serving a stale package is
+    # better than a wiki that does not serve.
     while IFS=';' read -ra PACKAGES; do #split package list by ';'
         for i in "${PACKAGES[@]}"; do #interate over packages
-            php /var/www/html/w/extensions/PageExchange/maintenance/maintainPackage.php --packageid "$i" --update
+            php /var/www/html/w/extensions/PageExchange/maintenance/maintainPackage.php --packageid "$i" --update \
+                || echo >&2 "Warning: package update failed for $i, continuing"
         done
     done <<< "$MW_PAGE_PACKAGES"
 fi
